@@ -14,21 +14,21 @@ const makeFunctionalApi = ({ someService }) => {
   // Dependencies are passed in with an object as the first parameter.
 
   // An API method.
-  const getStuff = async (ctx) => {
-    const data = await someService.getStuff('What is the universe?')
+  const getClient = async ctx => {
+    const data = await someService.getClient()
 
     // .ok comes from responseCalls.js middleware.
     return ctx.ok({ data, testing: env.TESTING })
   }
 
   // Another API method
-  const postStuff = async (ctx) => {
+  const postStuff = async ctx => {
     // echo back stuff to prove bodyparser works.
     return ctx.ok({ youSaid: ctx.request.body })
   }
 
   return {
-    getStuff,
+    getClient,
     postStuff
   }
 }
@@ -37,13 +37,13 @@ const makeFunctionalApi = ({ someService }) => {
 // It gets passed the router and uses makeInvoker
 // to create route handler middleware.
 // For more info, visit the Awilix docs: https://github.com/jeffijoe/awilix
-export default function (router) {
+export default function(router) {
   // What's this?
   // This trick lets us construct an API for each request.
   // That means that it may store request-local state.
   const api = makeInvoker(makeFunctionalApi)
   // router is a KoaRouter.
   router
-    .get('/api/functional', api('getStuff'))
+    .get('/api/client', api('getClient'))
     .post('/api/functional', api('postStuff'))
 }
