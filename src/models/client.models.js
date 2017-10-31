@@ -1,4 +1,4 @@
-export default function(sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Client = sequelize.define('Client', {
     id: {
       type: DataTypes.INTEGER,
@@ -6,7 +6,7 @@ export default function(sequelize, DataTypes) => {
       primaryKey: true
     },
     abboWebId: {
-      type: DataTypes.INT
+      type: DataTypes.INTEGER
     },
     email: {
       type: DataTypes.STRING,

@@ -13,8 +13,11 @@ const sequelize = new Sequelize(
   env.POSTGRESPASSWORD,
   {
     dialect: 'postgres',
-    port: POSTGRESPORT,
-    host: POSTGRESHOST
+    port: env.POSTGRESPORT,
+    host: env.POSTGRESHOST,
+    dialectOptions: {
+      ssl: true
+    }
   }
 )
 

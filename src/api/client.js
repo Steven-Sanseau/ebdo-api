@@ -16,7 +16,7 @@ class ClientAPI {
   }
 
   async list(ctx) {
-    const body = await this.clientService.getAll()
+    const body = await this.clientService.findAll()
     ctx.ok(body)
   }
 
@@ -43,5 +43,5 @@ class ClientAPI {
 export default function(router) {
   const api = makeClassInvoker(ClientAPI)
 
-  router.get('/client', api('findClasses'))
+  router.get('/clients', api('list'))
 }
