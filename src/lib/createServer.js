@@ -16,10 +16,12 @@ import notFoundHandler from '../middleware/notFound'
  *
  * @return {Promise<Koa>} The configured app.
  */
-export default async function createServer () {
+export default async function createServer() {
   logger.debug('Creating server...', { scope: 'startup' })
   const app = new Koa()
-  const router = new Router()
+  const router = new Router({
+    prefix: '/v1'
+  })
 
   // adds ctx.ok(), ctx.notFound(), etc..
   app.use(respond())
