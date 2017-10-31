@@ -11,7 +11,8 @@
     "build": "babel src -d dist -s",
     "dev": "nodemon src/bin/server.js",
     "debug-brk": "npm run debug -- --break",
-    "test": "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
+    "test":
+      "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
     "test-watch": "npm run test -- --watch",
     "lint": "eslint src/ test/",
     "lint-watch": "esw -w src/ test/",
@@ -94,12 +95,7 @@
   "nyc": {
     "sourceMap": false,
     "instrument": false,
-    "reporter": [
-      "text",
-      "lcov"
-    ],
-    "include": [
-      "src/**/*.js"
-    ]
+    "reporter": ["text", "lcov"],
+    "include": ["src/**/*.js"]
   }
 }
