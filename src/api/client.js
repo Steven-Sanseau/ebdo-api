@@ -11,6 +11,8 @@ class ClientAPI {
   }
 
   async getAll(ctx) {
+    const offset = ctx.params.offset
+    const page = ctx.params.offset
     const body = await this.clientService.findAll()
     ctx.ok(body)
   }
@@ -43,6 +45,5 @@ export default function(router) {
     .get('/clients', api('getAll'))
     .get('/clients/:id', api('getById'))
     .post('/clients', api('create'))
-    .post('/clients/:id', api('update'))
-    .delete('/clients/:id', api('remove'))
+    .put('/clients/:id', api('update'))
 }

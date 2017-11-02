@@ -25,14 +25,6 @@ export default (sequelize, DataTypes) => {
     },
     time_limited: {
       type: DataTypes.BOOLEAN
-    },
-    created_at: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    updated_at: {
-      type: DataTypes.DATE,
-      allowNull: false
     }
   })
 
