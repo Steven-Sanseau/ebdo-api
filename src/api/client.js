@@ -1,4 +1,6 @@
 import { makeClassInvoker } from 'awilix-koa'
+import Paginator from 'paginator'
+import _ from 'lodash'
 
 class ClientAPI {
   constructor({ clientService }) {
@@ -11,10 +13,18 @@ class ClientAPI {
   }
 
   async getAll(ctx) {
-    const offset = ctx.params.offset
-    const page = ctx.params.offset
-    const body = await this.clientService.findAll()
-    ctx.ok(body)
+    const page = ctx.request.query.page || 1
+    const total = await this.clientService.countAll()
+
+    const paginator = new Paginator(50, 1)
+    const pagination = paginator.build(total, page)
+    console.log(pagination)
+    const body = await this.clientService.findAll(
+      pagination.last_result,
+      pagination.
+    )
+
+    ctx.ok({ data: body, pagination })
   }
 
   async create(ctx) {
