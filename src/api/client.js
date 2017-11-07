@@ -32,6 +32,7 @@ class ClientAPI {
     const body = await this.clientService.create(ctx.request.body.client)
     ctx.status = 201
     ctx.ok(body)
+    
   }
 
   async update(ctx) {
