@@ -3,10 +3,20 @@ import db from '../config/sequelize'
 export default class ClientService {
   const
 
-  findAll() {
+  findAll(limit, offset) {
     return new Promise((resolve, reject) => {
       try {
-        return resolve(db.Client.findAll({}))
+        return resolve(db.Client.findAll({ limit: limit, offset: offset }))
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+
+  countAll() {
+    return new Promise((resolve, reject) => {
+      try {
+        return resolve(db.Client.count({}))
       } catch (e) {
         reject(e)
       }
