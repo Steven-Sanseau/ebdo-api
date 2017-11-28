@@ -1,21 +1,37 @@
+import { Client } from './client.models'
+
 export default (sequelize, DataTypes) => {
-  const Client = sequelize.define(
-    'Client',
+  const Adress = sequelize.define(
+    'Adress',
     {
-      client_id: {
+      adress_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
       },
-      abboWebId: {
+      client_id: {
         type: DataTypes.INTEGER
       },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          isEmail: true
-        }
+      last_name: {
+        type: DataTypes.STRING
+      },
+      first_name: {
+        type: DataTypes.STRING
+      },
+      adress: {
+        type: DataTypes.STRING
+      },
+      city: {
+        type: DataTypes.STRING
+      },
+      postal_code: {
+        type: DataTypes.STRING
+      },
+      country: {
+        type: DataTypes.STRING
+      },
+      company: {
+        type: DataTypes.STRING
       }
     },
     {
@@ -37,14 +53,15 @@ export default (sequelize, DataTypes) => {
     {
       classMethods: {
         associate: function(models) {
-          Adress.hasMany(models.adress, {
-            foreignKey: 'adress_id',
+          Client.belongsTo(models.client, {
+            foreignKey: 'client_id',
             constraints: false
           })
         }
       },
-      tableName: 'Adress'
+      tableName: 'Client'
     }
   )
-  return Client
+
+  return Adress
 }

@@ -1,8 +1,8 @@
 export default (sequelize, DataTypes) => {
-  const Client = sequelize.define(
-    'Client',
+  const Voucher = sequelize.define(
+    'Voucher',
     {
-      client_id: {
+      id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -10,12 +10,16 @@ export default (sequelize, DataTypes) => {
       abboWebId: {
         type: DataTypes.INTEGER
       },
-      email: {
+      Voucher: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          isEmail: true
-        }
+        allowNull: false
+      },
+      start_date: {
+        type: DataTypes.DATE
+      },
+
+      end_date: {
+        type: DataTypes.DATE
       }
     },
     {
@@ -33,18 +37,8 @@ export default (sequelize, DataTypes) => {
           }
         }
       }
-    },
-    {
-      classMethods: {
-        associate: function(models) {
-          Adress.hasMany(models.adress, {
-            foreignKey: 'adress_id',
-            constraints: false
-          })
-        }
-      },
-      tableName: 'Adress'
     }
   )
-  return Client
+
+  return Voucher
 }

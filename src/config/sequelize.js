@@ -34,6 +34,8 @@ fs
     db[model.name] = model
   })
 
+db.client
+
 // Synchronizing any model changes with database.
 sequelize.sync().then(err => {
   if (err) console.log('An error occured %j', err)

@@ -49,8 +49,8 @@ export default function(router) {
   const api = makeClassInvoker(ClientAPI)
 
   router
-    .get('/clients', api('getAll'))
-    .get('/clients/:id', api('getById'))
+    .get('/payment', api('getAll'))
+    .post('/payment/charge/:token', api('getById'))
     .post('/clients', api('create'))
     .put('/clients/:id', api('update'))
 }

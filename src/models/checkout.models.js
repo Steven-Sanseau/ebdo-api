@@ -1,21 +1,11 @@
 export default (sequelize, DataTypes) => {
-  const Client = sequelize.define(
-    'Client',
+  const Checkout = sequelize.define(
+    'Checkout',
     {
-      client_id: {
+      id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
-      },
-      abboWebId: {
-        type: DataTypes.INTEGER
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          isEmail: true
-        }
       }
     },
     {
@@ -33,18 +23,8 @@ export default (sequelize, DataTypes) => {
           }
         }
       }
-    },
-    {
-      classMethods: {
-        associate: function(models) {
-          Adress.hasMany(models.adress, {
-            foreignKey: 'adress_id',
-            constraints: false
-          })
-        }
-      },
-      tableName: 'Adress'
     }
   )
-  return Client
+
+  return Checkout
 }
