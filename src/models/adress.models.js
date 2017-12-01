@@ -10,25 +10,57 @@ export default (sequelize, DataTypes) => {
         primaryKey: true
       },
       client_id: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      civility: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isIn: ['M', 'MME']
+        }
       },
       last_name: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true
+        }
       },
       first_name: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true
+        }
       },
       adress: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true
+        }
       },
       city: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true
+        }
       },
       postal_code: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true
+        }
       },
       country: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true
+        }
       },
       company: {
         type: DataTypes.STRING
@@ -49,19 +81,12 @@ export default (sequelize, DataTypes) => {
           }
         }
       }
-    },
-    {
-      classMethods: {
-        associate: function(models) {
-          Client.belongsTo(models.client, {
-            foreignKey: 'client_id',
-            constraints: false
-          })
-        }
-      },
-      tableName: 'Client'
     }
   )
+
+  Adress.associate = models => {
+    Adress.belongsTo(models.Client)
+  }
 
   return Adress
 }

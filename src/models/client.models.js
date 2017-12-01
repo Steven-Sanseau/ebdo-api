@@ -14,7 +14,8 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          isEmail: true
+          isEmail: true,
+          notEmpty: true
         }
       }
     },
@@ -33,18 +34,20 @@ export default (sequelize, DataTypes) => {
           }
         }
       }
-    },
-    {
-      classMethods: {
-        associate: function(models) {
-          Adress.hasMany(models.adress, {
-            foreignKey: 'adress_id',
-            constraints: false
-          })
-        }
-      },
-      tableName: 'Adress'
     }
   )
+
+  Client.associate = models => {
+    Client.hasMany(models.Adress, {
+      foreignKey: 'fk_adress_clients',
+      targetKey: 'client_id'
+    })
+
+    Client.hasMany(models.Checkout, {
+      foreignKey: 'fk_client_id',
+      targetKey: 'client_id'
+    })
+  }
+
   return Client
 }

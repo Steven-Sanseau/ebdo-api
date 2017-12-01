@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
 import env from '../lib/env'
+import loger from '../lib/logger'
 
 const db = {}
 
@@ -29,17 +30,23 @@ fs
   .filter(file => file.indexOf('.') !== 0 && file.indexOf('.map') === -1)
   // import model files and save model names
   .forEach(file => {
-    console.log(`Loading model file ${file}`)
+    loger.debug(`Loading model file ${file}`)
     const model = sequelize.import(path.join(modelsDir, file))
     db[model.name] = model
   })
 
-db.client
+Object.keys(db).forEach(function(modelName) {
+  if ('associate' in db[modelName]) {
+    db[modelName].associate(db)
+  }
+})
 
 // Synchronizing any model changes with database.
 sequelize.sync().then(err => {
-  if (err) console.log('An error occured %j', err)
-  else console.log('Database synchronized')
+  if (err.message) {
+    loger.error(err.message)
+  }
+  loger.debug('Database synchronized')
 })
 
 // assign the sequelize variables to the db object and returning the db.

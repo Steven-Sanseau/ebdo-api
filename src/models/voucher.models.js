@@ -12,14 +12,23 @@ export default (sequelize, DataTypes) => {
       },
       Voucher: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+          notEmpty: true
+        }
       },
       start_date: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
+        validate: {
+          isDate: true
+        }
       },
 
       end_date: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
+        validate: {
+          isDate: true
+        }
       }
     },
     {

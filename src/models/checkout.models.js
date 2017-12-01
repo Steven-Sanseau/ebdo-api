@@ -6,6 +6,9 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
+      },
+      client_id: {
+        type: DataTypes.INTEGER
       }
     },
     {
@@ -25,6 +28,10 @@ export default (sequelize, DataTypes) => {
       }
     }
   )
+
+  Checkout.associate = models => {
+    Checkout.belongsTo(models.Client)
+  }
 
   return Checkout
 }

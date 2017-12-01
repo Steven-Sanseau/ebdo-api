@@ -7,23 +7,6 @@ class ClientAPI {
     this.clientService = clientService
   }
 
-  async getById(ctx) {
-    const body = await this.clientService.findById(ctx.params.id)
-    ctx.ok(body)
-  }
-
-  async getAll(ctx) {
-    const page = ctx.request.query.page || 1
-    const total = await this.clientService.countAll()
-
-    const paginator = new Paginator(50, 1)
-    const pagination = paginator.build(total, page)
-
-    const body = await this.clientService.findAll(pagination.last_result)
-
-    ctx.ok({ data: body, pagination })
-  }
-
   async create(ctx) {
     console.log(ctx.request.body)
     const body = await this.clientService.create(ctx.request.body.client)
@@ -37,11 +20,6 @@ class ClientAPI {
       ctx.request.body.client
     )
     ctx.ok(body)
-  }
-
-  async remove(ctx) {
-    await this.clientService.delete(ctx.params.id)
-    ctx.status = 204
   }
 }
 

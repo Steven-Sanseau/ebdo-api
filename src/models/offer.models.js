@@ -8,14 +8,14 @@ export default (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING
     },
+    aboweb_id: {
+      type: DataTypes.STRING
+    },
     price_ht: {
       type: DataTypes.FLOAT
     },
     price_ttc: {
       type: DataTypes.FLOAT
-    },
-    to_serve: {
-      type: DataTypes.INTEGER
     },
     description: {
       type: DataTypes.TEXT

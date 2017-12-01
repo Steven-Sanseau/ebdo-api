@@ -7,7 +7,11 @@ export default (sequelize, DataTypes) => {
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        isEmail: true,
+        notEmpty: true
+      }
     }
   })
 
