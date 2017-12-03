@@ -25,9 +25,5 @@ class ClientAPI {
 export default function(router) {
   const api = makeClassInvoker(ClientAPI)
 
-  router
-    .get('/clients', api('getAll'))
-    .get('/clients/:id', api('getById'))
-    .post('/clients', api('create'))
-    .put('/clients/:id', api('update'))
+  router.post('/client', api('create')).put('/client/:id', api('update'))
 }

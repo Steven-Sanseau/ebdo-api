@@ -47,7 +47,10 @@ export default class ClientService {
     return new Promise((resolve, reject) => {
       try {
         return resolve(
-          db.Client.update(client, { where: { id: id }, returning: true })
+          db.Client.update(client, {
+            where: { client_id: id },
+            returning: true
+          })
         )
       } catch (e) {
         reject(e)
