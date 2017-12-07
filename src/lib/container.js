@@ -26,8 +26,13 @@ export function configureContainer() {
     resolutionMode: ResolutionMode.CLASSIC
   }
 
-  const NewsletterModel = db.Newsletter
+  const AdressModel = db.Adress
+  const CheckoutModel = db.Checkout
   const ClientModel = db.Client
+  const NewsletterModel = db.Newsletter
+  const OfferModel = db.Offer
+  const SponsorModel = db.Sponsor
+  const TokenModel = db.Token
 
   return createContainer(opts)
     .loadModules(modulesToLoad, {
@@ -41,7 +46,12 @@ export function configureContainer() {
       // Our logger is already constructed,
       // so provide it as-is to anyone who wants it.
       logger,
+      AdressModel,
+      CheckoutModel,
       ClientModel,
-      NewsletterModel
+      NewsletterModel,
+      OfferModel,
+      SponsorModel,
+      TokenModel
     })
 }

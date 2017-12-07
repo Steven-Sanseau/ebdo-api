@@ -1,20 +1,20 @@
 import { createController } from 'awilix-koa'
 
-const api = adressService => ({
-  findAdresse: async ctx => ctx.ok(await adressService.find(ctx.query)),
-  getAdresse: async ctx => ctx.ok(await adressService.get(ctx.params.id)),
-  createAdresse: async ctx =>
-    ctx.created(await adressService.create(ctx.request.body)),
-  updateAdresse: async ctx =>
-    ctx.ok(await adressService.update(ctx.params.id, ctx.request.body)),
-  removeAdresse: async ctx =>
-    ctx.noContent(await adressService.remove(ctx.params.id))
+const api = offerService => ({
+  findOffer: async ctx => ctx.ok(await offerService.find(ctx.query)),
+  getOffer: async ctx => ctx.ok(await offerService.get(ctx.params.id)),
+  createOffer: async ctx =>
+    ctx.created(await offerService.create(ctx.request.body)),
+  updateOffer: async ctx =>
+    ctx.ok(await offerService.update(ctx.params.id, ctx.request.body)),
+  removeOffer: async ctx =>
+    ctx.noContent(await offerService.remove(ctx.params.id))
 })
 
 export default createController(api)
-  .prefix('/v1/adress')
-  .get('', 'findAdresse')
-  .get('/:id', 'getAdresse')
-  .post('', 'createAdresse')
-  .patch('/:id', 'updateAdresse')
-  .delete('/:id', 'removeAdresse')
+  .prefix('/v1/offer')
+  .get('', 'findOffer')
+  .get('/:id', 'getOffer')
+  .post('', 'createOffer')
+  .patch('/:id', 'updateOffer')
+  .delete('/:id', 'removeOffer')

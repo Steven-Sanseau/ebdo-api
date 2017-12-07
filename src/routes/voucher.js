@@ -1,20 +1,20 @@
 import { createController } from 'awilix-koa'
 
-const api = adressService => ({
-  findAdresse: async ctx => ctx.ok(await adressService.find(ctx.query)),
-  getAdresse: async ctx => ctx.ok(await adressService.get(ctx.params.id)),
-  createAdresse: async ctx =>
-    ctx.created(await adressService.create(ctx.request.body)),
-  updateAdresse: async ctx =>
-    ctx.ok(await adressService.update(ctx.params.id, ctx.request.body)),
-  removeAdresse: async ctx =>
-    ctx.noContent(await adressService.remove(ctx.params.id))
+const api = voucherService => ({
+  findVoucher: async ctx => ctx.ok(await voucherService.find(ctx.query)),
+  getVoucher: async ctx => ctx.ok(await voucherService.get(ctx.params.id)),
+  createVoucher: async ctx =>
+    ctx.created(await voucherService.create(ctx.request.body)),
+  updateVoucher: async ctx =>
+    ctx.ok(await voucherService.update(ctx.params.id, ctx.request.body)),
+  removeVoucher: async ctx =>
+    ctx.noContent(await voucherService.remove(ctx.params.id))
 })
 
 export default createController(api)
-  .prefix('/v1/adress')
-  .get('', 'findAdresse')
-  .get('/:id', 'getAdresse')
-  .post('', 'createAdresse')
-  .patch('/:id', 'updateAdresse')
-  .delete('/:id', 'removeAdresse')
+  .prefix('/v1/voucher')
+  .get('', 'findVoucher')
+  .get('/:id', 'getVoucher')
+  .post('', 'createVoucher')
+  .patch('/:id', 'updateVoucher')
+  .delete('/:id', 'removeVoucher')

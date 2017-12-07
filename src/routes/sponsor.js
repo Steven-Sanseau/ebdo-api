@@ -1,20 +1,20 @@
 import { createController } from 'awilix-koa'
 
-const api = adressService => ({
-  findAdresse: async ctx => ctx.ok(await adressService.find(ctx.query)),
-  getAdresse: async ctx => ctx.ok(await adressService.get(ctx.params.id)),
-  createAdresse: async ctx =>
-    ctx.created(await adressService.create(ctx.request.body)),
-  updateAdresse: async ctx =>
-    ctx.ok(await adressService.update(ctx.params.id, ctx.request.body)),
-  removeAdresse: async ctx =>
-    ctx.noContent(await adressService.remove(ctx.params.id))
+const api = sponsorService => ({
+  findSponsor: async ctx => ctx.ok(await sponsorService.find(ctx.query)),
+  getSponsor: async ctx => ctx.ok(await sponsorService.get(ctx.params.id)),
+  createSponsor: async ctx =>
+    ctx.created(await sponsorService.create(ctx.request.body)),
+  updateSponsor: async ctx =>
+    ctx.ok(await sponsorService.update(ctx.params.id, ctx.request.body)),
+  removeSponsor: async ctx =>
+    ctx.noContent(await sponsorService.remove(ctx.params.id))
 })
 
 export default createController(api)
-  .prefix('/v1/adress')
-  .get('', 'findAdresse')
-  .get('/:id', 'getAdresse')
-  .post('', 'createAdresse')
-  .patch('/:id', 'updateAdresse')
-  .delete('/:id', 'removeAdresse')
+  .prefix('/v1/sponsor')
+  .get('', 'findSponsor')
+  .get('/:id', 'getSponsor')
+  .post('', 'createSponsor')
+  .patch('/:id', 'updateSponsor')
+  .delete('/:id', 'removeSponsor')

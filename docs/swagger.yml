@@ -23,7 +23,7 @@ paths:
             type: array
             clients:
               $ref: '#/definitions/Client'
-  /business_models:
+  /checkout:
     get:
       tags:
         - business_model
