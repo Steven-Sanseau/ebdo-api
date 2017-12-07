@@ -7,7 +7,7 @@ export default (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true
       },
-      abboWebId: {
+      abboweb_client_id: {
         type: DataTypes.INTEGER
       },
       email: {

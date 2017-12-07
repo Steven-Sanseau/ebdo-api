@@ -1,9 +1,7 @@
-/**
- * The "Not Found" handler.
- *
- * @param  {Koa.Context} ctx
- * The Koa context.
- */
-export default function notFoundHandler(ctx) {
-  ctx.notFound('There is nothing to see 😈')
+export async function notFoundHandler(ctx) {
+  const msg = `${ctx.request.method} ${ctx.request.path}`
+  ctx.notFound({
+    message: `No endpoint matched your request: ${msg}`
+  })
 }
+

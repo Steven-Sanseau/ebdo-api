@@ -2,8 +2,8 @@ import Sequelize from 'sequelize'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import env from '../lib/env'
-import loger from '../lib/logger'
+import { env } from '../lib/env'
+import { logger } from '../lib/logger'
 
 const db = {}
 
@@ -30,7 +30,7 @@ fs
   .filter(file => file.indexOf('.') !== 0 && file.indexOf('.map') === -1)
   // import model files and save model names
   .forEach(file => {
-    loger.debug(`Loading model file ${file}`)
+    logger.debug(`Loading model file ${file}`)
     const model = sequelize.import(path.join(modelsDir, file))
     db[model.name] = model
   })
@@ -44,9 +44,9 @@ Object.keys(db).forEach(function(modelName) {
 // Synchronizing any model changes with database.
 sequelize.sync().then(err => {
   if (err.message) {
-    loger.error(err.message)
+    logger.error(err.message)
   }
-  loger.debug('Database synchronized')
+  logger.debug('Database synchronized')
 })
 
 // assign the sequelize variables to the db object and returning the db.

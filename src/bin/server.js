@@ -1,16 +1,12 @@
-import createServer from '../lib/createServer'
-import env from '../lib/env'
-import logger from '../lib/logger'
-
-const PORT = env.PORT || 1338
+import { createServer } from '../lib/server'
+import { env } from '../lib/env'
+import { logger } from '../lib/logger'
 
 createServer().then(
   app => {
-    app.listen(PORT, () => {
+    app.listen(env.PORT, () => {
       const mode = env.NODE_ENV
-      logger.debug(
-        `Server listening on http://localhost:${PORT} in ${mode} mode`
-      )
+      logger.debug(`Server listening on ${env.PORT} in ${mode} mode`)
     })
   },
   err => {
