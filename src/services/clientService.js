@@ -1,8 +1,9 @@
 import { NotFound, BadRequest, Conflict } from 'fejl'
 import { pick } from 'lodash'
+import newClientProducer from '../producers/newClientProducer'
 
 const assertEmail = BadRequest.makeAssert('No email given')
-const pickProps = data => pick(data, ['email', 'name'])
+const pickProps = data => pick(data, ['email', 'name', 'type_client'])
 
 export default class ClientService {
   constructor(clientStore) {
@@ -29,7 +30,14 @@ export default class ClientService {
     )
 
     const picked = pickProps(client)
-    return this.clientStore.create(picked)
+    client.type_client = 0
+    const clientStored = await this.clientStore.create(picked)
+    const producer = await newClientProducer({
+      client: { email: client.email }
+    })
+
+    console.log(producer)
+    return clientStored
   }
 
   async update(email, data) {

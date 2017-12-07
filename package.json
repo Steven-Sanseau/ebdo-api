@@ -8,13 +8,11 @@
   },
   "scripts": {
     "start": "node dist/bin/server.js",
-    "build":
-      "rimraf dist && cross-env NODE_ENV=production babel src -d dist -s",
+    "build": "rimraf dist && cross-env NODE_ENV=production babel src -d dist -s",
     "server": "babel-node dist/bin/server.js",
     "dev": "nodemon src/bin/server.js",
     "debug-brk": "npm run debug -- --break",
-    "test":
-      "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
+    "test": "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
     "test-watch": "npm run test -- --watch",
     "lint": "eslint src/ test/",
     "lint-watch": "esw -w src/ test/",
@@ -63,7 +61,9 @@
     "sinon-chai": "^2.14.0",
     "soap": "^0.23.0",
     "source-map-support": "^0.5.0",
+    "sqs-producer": "^1.6.2",
     "supertest": "^3.0.0",
+    "uniqid": "^4.1.1",
     "yenv": "^1.0.6"
   },
   "devDependencies": {
@@ -99,7 +99,12 @@
   "nyc": {
     "sourceMap": false,
     "instrument": false,
-    "reporter": ["text", "lcov"],
-    "include": ["src/**/*.js"]
+    "reporter": [
+      "text",
+      "lcov"
+    ],
+    "include": [
+      "src/**/*.js"
+    ]
   }
 }
