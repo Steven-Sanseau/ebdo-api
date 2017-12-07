@@ -1,6 +1,6 @@
 import { createContainer, Lifetime, ResolutionMode } from 'awilix'
 import { logger } from './logger'
-import db from '../config/sequelize'
+import db from './sequelize'
 
 /**
  * Using Awilix, the following files and folders (glob patterns)
