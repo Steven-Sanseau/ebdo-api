@@ -6,7 +6,11 @@ createServer().then(
   app => {
     app.listen(env.PORT, () => {
       const mode = env.NODE_ENV
-      logger.debug(`Server listening on ${env.PORT} in ${mode} mode`)
+      logger.debug(
+        `Server listening on ${env.PORT} http://localhost:${
+          env.PORT
+        }/ in ${mode} mode`
+      )
     })
   },
   err => {

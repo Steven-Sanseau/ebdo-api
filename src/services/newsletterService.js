@@ -1,25 +1,12 @@
 import { NotFound, BadRequest, Conflict } from 'fejl'
 import { pick } from 'lodash'
 
-// Prefab assert function.
 const assertEmail = BadRequest.makeAssert('No email given')
+const pickProps = data => pick(data, ['email', 'name'])
 
 export default class NewsletterService {
   constructor(newsletterStore) {
     this.newsletterStore = newsletterStore
-  }
-
-  async find(params) {
-    return this.todoStore.find(params)
-  }
-
-  async get(id) {
-    assertId(id)
-    // If `todoStore.get()` returns a falsy value, we throw a
-    // NotFound error with the specified message.
-    return this.todoStore
-      .get(id)
-      .then(NotFound.makeAssert(`Todo with id "${id}" not found`))
   }
 
   async findByEmail(email) {
@@ -44,21 +31,19 @@ export default class NewsletterService {
       `Newsletter with email "${newsletter.email}" already found`
     )
 
-    // Prevent overposting.
-    const pickProps = data => pick(data, ['email', 'name'])
-
-    return this.newsletterStore.create(pickProps(newsletter))
+    const picked = pickProps(newsletter)
+    return this.newsletterStore.create(picked)
   }
 
-  async update(id, data) {
-    assertId(id)
-    BadRequest.assert(data, 'No todo payload given')
+  async update(email, data) {
+    assertEmail(email)
 
-    // Make sure the todo exists by calling `get`.
-    await this.get(id)
+    const newsletter = data.newsletter
+    BadRequest.assert(newsletter, 'No newsletter payload given')
 
-    // Prevent overposting.
-    const picked = pickProps(data)
-    return this.todoStore.update(id, picked)
+    await this.findByEmail(email)
+
+    const picked = pickProps(newsletter)
+    return this.newsletterStore.update(email, picked)
   }
 }
