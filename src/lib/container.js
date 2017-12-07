@@ -25,7 +25,10 @@ export function configureContainer() {
     // names rather than passing a Proxy.
     resolutionMode: ResolutionMode.CLASSIC
   }
+
   const NewsletterModel = db.Newsletter
+  const ClientModel = db.Client
+
   return createContainer(opts)
     .loadModules(modulesToLoad, {
       // `modulesToLoad` paths should be relative
@@ -38,6 +41,7 @@ export function configureContainer() {
       // Our logger is already constructed,
       // so provide it as-is to anyone who wants it.
       logger,
+      ClientModel,
       NewsletterModel
     })
 }

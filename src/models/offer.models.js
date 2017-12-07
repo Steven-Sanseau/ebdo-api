@@ -25,6 +25,9 @@ export default (sequelize, DataTypes) => {
     },
     time_limited: {
       type: DataTypes.BOOLEAN
+    },
+    duration: {
+      type: DataTypes.INTEGER
     }
   })
 

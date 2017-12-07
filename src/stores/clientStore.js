@@ -1,23 +1,23 @@
-export default function createNewsletterStore(logger, NewsletterModel) {
+export default function createClientStore(logger, ClientModel) {
   return {
     async getByEmail(email) {
-      const newsletter = await NewsletterModel.findOne({
+      const client = await ClientModel.findOne({
         where: { email: email }
       })
-      return newsletter
+      return client
     },
 
     async create(data) {
-      const newsletter = await NewsletterModel.build(data).save()
-      return newsletter
+      const client = await ClientModel.build(data).save()
+      return client
     },
 
     async update(email, data) {
-      const newsletter = await NewsletterModel.update(data, {
+      const client = await ClientModel.update(data, {
         where: { email: email },
         returning: true
       })
-      return newsletter
+      return client
     }
   }
 }

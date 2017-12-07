@@ -1,32 +1,22 @@
 export default (sequelize, DataTypes) => {
   const Voucher = sequelize.define('Voucher', {
-    voucher_id: {
+    sponsor_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
     },
-    abboweb_id: {
+    client_sponsor_id: {
       type: DataTypes.INTEGER
     },
-    voucher: {
+    code: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: true
       }
     },
-    start_date: {
-      type: DataTypes.DATE,
-      validate: {
-        isDate: true
-      }
-    },
-
-    end_date: {
-      type: DataTypes.DATE,
-      validate: {
-        isDate: true
-      }
+    checkout_id: {
+      type: DataTypes.INTEGER
     }
   })
 

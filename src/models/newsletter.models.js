@@ -1,13 +1,9 @@
 export default (sequelize, DataTypes) => {
   const Newsletter = sequelize.define('Newsletter', {
-    newsletter_id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
-    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       validate: {
         isEmail: true,
         notEmpty: true
