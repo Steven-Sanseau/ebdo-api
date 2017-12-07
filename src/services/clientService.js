@@ -1,8 +1,6 @@
 import db from '../config/sequelize'
 
 export default class ClientService {
-  const
-
   findAll(limit, offset) {
     return new Promise((resolve, reject) => {
       try {

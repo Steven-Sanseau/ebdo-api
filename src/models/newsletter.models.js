@@ -12,6 +12,9 @@ export default (sequelize, DataTypes) => {
         isEmail: true,
         notEmpty: true
       }
+    },
+    name: {
+      type: DataTypes.STRING
     }
   })
 

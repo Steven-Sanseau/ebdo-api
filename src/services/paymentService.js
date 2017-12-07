@@ -1,12 +1,10 @@
 import db from '../config/sequelize'
 
-export default class ClientService {
-  const
-
+export default class PaymentService {
   findAll(limit, offset) {
     return new Promise((resolve, reject) => {
       try {
-        return resolve(db.Client.findAll({ limit: limit, offset: offset }))
+        return resolve(db.Payment.findAll({ limit: limit, offset: offset }))
       } catch (e) {
         reject(e)
       }
@@ -16,7 +14,7 @@ export default class ClientService {
   countAll() {
     return new Promise((resolve, reject) => {
       try {
-        return resolve(db.Client.count({}))
+        return resolve(db.Payment.count({}))
       } catch (e) {
         reject(e)
       }
@@ -26,28 +24,28 @@ export default class ClientService {
   findById(id) {
     return new Promise((resolve, reject) => {
       try {
-        return resolve(db.Client.findById(id))
+        return resolve(db.Payment.findById(id))
       } catch (e) {
         reject(e)
       }
     })
   }
 
-  create(client) {
+  create(Payment) {
     return new Promise((resolve, reject) => {
       try {
-        return resolve(db.Client.build(client).save())
+        return resolve(db.Payment.build(Payment).save())
       } catch (e) {
         reject(e)
       }
     })
   }
 
-  update(id, client) {
+  update(id, Payment) {
     return new Promise((resolve, reject) => {
       try {
         return resolve(
-          db.Client.update(client, { where: { id: id }, returning: true })
+          db.Payment.update(Payment, { where: { id: id }, returning: true })
         )
       } catch (e) {
         reject(e)
