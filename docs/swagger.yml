@@ -1,0 +1,111 @@
+swagger: '2.0'
+info:
+  description: API in Node for Ebdo
+  version: 1.0.0
+  title: ebdo API
+  contact:
+    email: s.sanseau@ebdo-lejournal.com
+host: api.ebdo-lejournal.com
+basePath: /v1
+schemes:
+  - https
+
+paths:
+  /client:
+    get:
+      summary: All clients
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: succussful operation
+          schema:
+            type: array
+            clients:
+              $ref: '#/definitions/Client'
+  /business_models:
+    get:
+      tags:
+        - business_model
+      summary: All Business Models
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BusinessModel'
+  /comments:
+    post:
+      tags:
+        - comment
+      summary: Post a comment
+      produces:
+        - application/json
+      parameters:
+        - name: comment
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CommentPost'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Comment'
+  /comments/{type}/{ref}:
+    get:
+      tags:
+        - comment
+      summary: Comments
+      produces:
+        - application/json
+      parameters:
+        - name: type
+          in: path
+          description: Type of target
+          required: true
+          type: string
+          enum:
+            - project
+            - user
+        - name: ref
+          in: path
+          description: Ref of target
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Comment'
+
+
+# =============================================================================
+# Definitions
+# =============================================================================
+definitions:
+
+  # ===========================================================================
+  # Activity
+  # ===========================================================================
+  Activity:
+    type: object
+    properties:
+      id:
+        type: integer
+      phrase:
+        type: string
+      type_of:
+        type: string
+      created_at:
+        type: string
+        format: datetime
+      project:
+        $ref: '#/definitions/ProjectSmall'
+      user:
+        $ref: '#/definitions/User'

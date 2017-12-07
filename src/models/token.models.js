@@ -9,6 +9,9 @@ export default (sequelize, DataTypes) => {
     token: {
       type: DataTypes.STRING
     },
+    stripe_id: {
+      type: DataTypes.STRING
+    },
     bic: {
       type: DataTypes.STRING
     },

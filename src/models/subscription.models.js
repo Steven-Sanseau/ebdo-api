@@ -30,6 +30,12 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     }
   })
+  Subscription.associate = models => {
+    Subscription.hasOne(models.Adress, {
+      foreignKey: 'fk_adress_sub',
+      targetKey: 'adress_id'
+    })
+  }
 
   return Subscription
 }

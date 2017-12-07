@@ -16,6 +16,21 @@ export default (sequelize, DataTypes) => {
         isEmail: true,
         notEmpty: true
       }
+    },
+    type_client: {
+      type: DataTypes.INTEGER
+    },
+    first_name: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true
+      }
+    },
+    last_name: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true
+      }
     }
   })
 
