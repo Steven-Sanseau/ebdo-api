@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
   const Offer = sequelize.define('Offer', {
-    id: {
+    offer_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true

@@ -14,7 +14,7 @@ export default class NewsletterService {
 
     return this.newsletterStore
       .getByEmail(email)
-      .then(NotFound.makeAssert(`Newsletter with id "${email}" not found`))
+      .then(NotFound.makeAssert(`Newsletter with email "${email}" not found`))
   }
 
   async create(body) {
