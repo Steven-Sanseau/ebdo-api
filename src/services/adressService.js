@@ -4,43 +4,43 @@ import { pick } from 'lodash'
 const assertEmail = BadRequest.makeAssert('No email given')
 const pickProps = data => pick(data, ['email', 'name'])
 
-export default class ClientService {
-  constructor(clientStore) {
-    this.clientStore = clientStore
+export default class AdressService {
+  constructor(adressStore) {
+    this.adressStore = adressStore
   }
 
   async findByEmail(email) {
     assertEmail(email)
 
-    return this.clientStore
+    return this.adressStore
       .getByEmail(email)
-      .then(NotFound.makeAssert(`Client with email "${email}" not found`))
+      .then(NotFound.makeAssert(`Adress with email "${email}" not found`))
   }
 
   async create(body) {
-    BadRequest.assert(body.client, 'No client payload given')
-    const client = body.client
-    BadRequest.assert(client.email, 'email is required')
+    BadRequest.assert(body.adress, 'No adress payload given')
+    const adress = body.adress
+    BadRequest.assert(adress.email, 'email is required')
 
-    const clientTest = await this.clientStore.getByEmail(client.email)
+    const adressTest = await this.adressStore.getByEmail(adress.email)
     Conflict.assert(
-      !clientTest,
-      `Client with email "${client.email}" already found`
+      !adressTest,
+      `Adress with email "${adress.email}" already found`
     )
 
-    const picked = pickProps(client)
-    return this.clientStore.create(picked)
+    const picked = pickProps(adress)
+    return this.adressStore.create(picked)
   }
 
   async update(email, data) {
     assertEmail(email)
 
-    const client = data.client
-    BadRequest.assert(client, 'No client payload given')
+    const adress = data.adress
+    BadRequest.assert(adress, 'No adress payload given')
 
     await this.findByEmail(email)
 
-    const picked = pickProps(client)
-    return this.clientStore.update(email, picked)
+    const picked = pickProps(adress)
+    return this.adressStore.update(email, picked)
   }
 }
