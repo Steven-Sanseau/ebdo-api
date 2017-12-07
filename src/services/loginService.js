@@ -1,41 +1,35 @@
-import db from '../config/sequelize'
-import env from '../lib/env'
+import { NotFound, BadRequest, Conflict } from 'fejl'
+import { pick } from 'lodash'
 import Emailer from '../lib/emailer'
 import path from 'path'
 
 export default class LoginService {
-  sendCodeLogin(email) {
-    return new Promise((resolve, reject) => {
-      db.Client.findOne({ where: { email: email } })
-        .catch(err => {
-          reject(err)
-        })
-        .then(user => {
-          const template_path = path.resolve(
-            './src/emails/codeConnexion.mjml.mustache'
-          )
+  constructor(clientStore) {
+    this.clientStore = clientStore
+  }
 
-          const template_data = {
-            ctatext: 'ME CONNECTER SUR EBDO',
-            ctalink: 'https://ebdo-lejournal.com',
-            code: 18726,
-            passwordLessText: 'password less explications etc.....',
-            homeLink: 'https://ebdo-subscribe-front-staging.herokuapp.com'
-          }
+  async sendCodeLogin(email) {
+    const user = await this.clientStore.findByEmail({ where: { email: email } })
+    Conflict.assert(
+      !user,
+      `User with email "${newsletter.email}" already found`
+    )
+    const template_path = path.resolve(
+      './src/emails/codeConnexion.mjml.mustache'
+    )
 
-          Emailer.sendMail(template_path, template_data, {
-            to: user.email,
-            from: 'contact@ebdo-lejournal.com',
-            subject: 'Votre code temporaire de connexion à Ebdo'
-          }).then(
-            function(infos) {
-              resolve(infos)
-            },
-            function(err) {
-              reject(err)
-            }
-          )
-        })
+    const template_data = {
+      ctatext: 'ME CONNECTER SUR EBDO',
+      ctalink: 'https://ebdo-lejournal.com',
+      code: 18726,
+      passwordLessText: 'password less explications etc.....',
+      homeLink: 'https://ebdo-subscribe-front-staging.herokuapp.com'
+    }
+
+    const send = await Emailer.sendMail(template_path, template_data, {
+      to: user.email,
+      from: 'contact@ebdo-lejournal.com',
+      subject: 'Votre code temporaire de connexion à Ebdo'
     })
   }
 }
