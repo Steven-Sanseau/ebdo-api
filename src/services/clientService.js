@@ -1,57 +1,54 @@
-import db from '../config/sequelize'
+import { NotFound, BadRequest, Conflict } from 'fejl'
+import { pick } from 'lodash'
+import newClientProducer from '../producers/newClientProducer'
+
+const assertEmail = BadRequest.makeAssert('No email given')
+const pickProps = data => pick(data, ['email', 'name', 'type_client'])
 
 export default class ClientService {
-  const
-
-  findAll(limit, offset) {
-    return new Promise((resolve, reject) => {
-      try {
-        return resolve(db.Client.findAll({ limit: limit, offset: offset }))
-      } catch (e) {
-        reject(e)
-      }
-    })
+  constructor(clientStore) {
+    this.clientStore = clientStore
   }
 
-  countAll() {
-    return new Promise((resolve, reject) => {
-      try {
-        return resolve(db.Client.count({}))
-      } catch (e) {
-        reject(e)
-      }
-    })
+  async findByEmail(email) {
+    assertEmail(email)
+
+    return this.clientStore
+      .getByEmail(email)
+      .then(NotFound.makeAssert(`Client with email "${email}" not found`))
   }
 
-  findById(id) {
-    return new Promise((resolve, reject) => {
-      try {
-        return resolve(db.Client.findById(id))
-      } catch (e) {
-        reject(e)
-      }
+  async create(body) {
+    BadRequest.assert(body.client, 'No client payload given')
+    const client = body.client
+    BadRequest.assert(client.email, 'email is required')
+
+    const clientTest = await this.clientStore.getByEmail(client.email)
+    Conflict.assert(
+      !clientTest,
+      `Client with email "${client.email}" already found`
+    )
+
+    const picked = pickProps(client)
+    client.type_client = 0
+    const clientStored = await this.clientStore.create(picked)
+    const producer = await newClientProducer({
+      client: { email: client.email }
     })
+
+    console.log(producer)
+    return clientStored
   }
 
-  create(client) {
-    return new Promise((resolve, reject) => {
-      try {
-        return resolve(db.Client.build(client).save())
-      } catch (e) {
-        reject(e)
-      }
-    })
-  }
+  async update(email, data) {
+    assertEmail(email)
 
-  update(id, client) {
-    return new Promise((resolve, reject) => {
-      try {
-        return resolve(
-          db.Client.update(client, { where: { id: id }, returning: true })
-        )
-      } catch (e) {
-        reject(e)
-      }
-    })
+    const client = data.client
+    BadRequest.assert(client, 'No client payload given')
+
+    await this.findByEmail(email)
+
+    const picked = pickProps(client)
+    return this.clientStore.update(email, picked)
   }
 }

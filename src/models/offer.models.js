@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
   const Offer = sequelize.define('Offer', {
-    id: {
+    offer_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
@@ -8,14 +8,14 @@ export default (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING
     },
+    aboweb_id: {
+      type: DataTypes.STRING
+    },
     price_ht: {
       type: DataTypes.FLOAT
     },
     price_ttc: {
       type: DataTypes.FLOAT
-    },
-    to_serve: {
-      type: DataTypes.INTEGER
     },
     description: {
       type: DataTypes.TEXT
@@ -25,6 +25,9 @@ export default (sequelize, DataTypes) => {
     },
     time_limited: {
       type: DataTypes.BOOLEAN
+    },
+    duration: {
+      type: DataTypes.INTEGER
     }
   })
 
