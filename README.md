@@ -1,1 +1,9 @@
-Test ebdo-api
+Ebdo-api
+
+# Install
+
+```yarn install
+
+```
+
+`yarn dev`
