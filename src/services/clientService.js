@@ -3,7 +3,15 @@ import { pick } from 'lodash'
 import newClientProducer from '../producers/newClientProducer'
 
 const assertEmail = BadRequest.makeAssert('No email given')
-const pickProps = data => pick(data, ['email', 'name', 'type_client'])
+const pickProps = data =>
+  pick(data, [
+    'email',
+    'name',
+    'type_client',
+    'aboweb_client_id',
+    'first_name',
+    'last_name'
+  ])
 
 export default class ClientService {
   constructor(clientStore) {
@@ -32,9 +40,7 @@ export default class ClientService {
     const picked = pickProps(client)
     client.type_client = 0
     const clientStored = await this.clientStore.create(picked)
-    const producer = await newClientProducer({
-      client: { email: client.email }
-    })
+    const producer = await newClientProducer({ client })
 
     console.log(producer)
     return clientStored
