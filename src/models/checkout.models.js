@@ -12,16 +12,19 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     cookie_id: {
-      type: DataTypes.STRING
+      type: DataTypes.INTEGER
     },
-    adress_id: {
-      type: DataTypes.ARRAY(DataTypes.STRING)
+    adress_delivery_id: {
+      type: DataTypes.INTEGER
+    },
+    adress_invoice_id: {
+      type: DataTypes.INTEGER
     },
     token_id: {
-      type: DataTypes.STRING
+      type: DataTypes.INTEGER
     },
     offer_id: {
-      type: DataTypes.STRING
+      type: DataTypes.INTEGER
     },
     payment_method: {
       type: DataTypes.ENUM('CB', 'SEPA')
