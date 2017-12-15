@@ -3,7 +3,17 @@ import { pick } from 'lodash'
 
 const assertId = BadRequest.makeAssert('No id given')
 const pickProps = data =>
-  pick(data, ['last_name', 'first_name', 'postal_code', 'city', 'adress'])
+  pick(data, [
+    'last_name',
+    'first_name',
+    'postal_code',
+    'city',
+    'adress',
+    'civility',
+    'country',
+    'client_id',
+    'type_adress'
+  ])
 
 export default class AdressService {
   constructor(adressStore) {
@@ -28,6 +38,7 @@ export default class AdressService {
     BadRequest.assert(adress.postal_code, 'Postal Code is required')
     BadRequest.assert(adress.first_name, 'First Name is required')
     BadRequest.assert(adress.last_name, 'Last Name is required')
+    BadRequest.assert(adress.country, 'Country is required')
 
     const picked = pickProps(adress)
     return this.adressStore.create(picked)

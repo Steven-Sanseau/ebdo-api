@@ -18,6 +18,11 @@ export default class ClientService {
     this.clientStore = clientStore
   }
 
+  async countClient() {
+    const count = this.clientStore.count()
+    return count
+  }
+
   async findByEmail(email) {
     assertEmail(email)
 
@@ -42,7 +47,6 @@ export default class ClientService {
     const clientStored = await this.clientStore.create(picked)
     const producer = await newClientProducer({ client })
 
-    console.log(producer)
     return clientStored
   }
 
