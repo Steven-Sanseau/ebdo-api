@@ -1,9 +1,7 @@
 export default function createAdressStore(logger, AdressModel) {
   return {
-    async getByEmail(email) {
-      const adress = await AdressModel.findOne({
-        where: { email: email }
-      })
+    async getById(id) {
+      const adress = await AdressModel.findById(id)
       return adress
     },
 

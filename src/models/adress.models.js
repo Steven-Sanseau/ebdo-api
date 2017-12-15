@@ -62,6 +62,9 @@ export default (sequelize, DataTypes) => {
     },
     company: {
       type: DataTypes.STRING
+    },
+    type_adress: {
+      type: DataTypes.STRING
     }
   })
 

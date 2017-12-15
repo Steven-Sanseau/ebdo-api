@@ -1,46 +1,58 @@
 import { NotFound, BadRequest, Conflict } from 'fejl'
 import { pick } from 'lodash'
 
-const assertEmail = BadRequest.makeAssert('No email given')
-const pickProps = data => pick(data, ['email', 'name'])
+const assertId = BadRequest.makeAssert('No id given')
+const pickProps = data =>
+  pick(data, [
+    'last_name',
+    'first_name',
+    'postal_code',
+    'city',
+    'adress',
+    'civility',
+    'country',
+    'client_id',
+    'type_adress'
+  ])
 
 export default class AdressService {
   constructor(adressStore) {
     this.adressStore = adressStore
   }
 
-  async findByEmail(email) {
-    assertEmail(email)
+  async findById(id) {
+    assertId(id)
+    const idParsed = parseInt(id)
+    BadRequest.assert(Number.isInteger(idParsed), 'id must be a number')
 
     return this.adressStore
-      .getByEmail(email)
-      .then(NotFound.makeAssert(`Adress with email "${email}" not found`))
+      .getById(idParsed)
+      .then(NotFound.makeAssert(`Adress with id "${id}" not found`))
   }
 
   async create(body) {
     BadRequest.assert(body.adress, 'No adress payload given')
     const adress = body.adress
-    BadRequest.assert(adress.email, 'email is required')
-
-    const adressTest = await this.adressStore.getByEmail(adress.email)
-    Conflict.assert(
-      !adressTest,
-      `Adress with email "${adress.email}" already found`
-    )
+    BadRequest.assert(adress.adress, 'adress is required')
+    BadRequest.assert(adress.city, 'city is required')
+    BadRequest.assert(adress.postal_code, 'Postal Code is required')
+    BadRequest.assert(adress.first_name, 'First Name is required')
+    BadRequest.assert(adress.last_name, 'Last Name is required')
+    BadRequest.assert(adress.country, 'Country is required')
 
     const picked = pickProps(adress)
     return this.adressStore.create(picked)
   }
 
-  async update(email, data) {
-    assertEmail(email)
+  async update(id, data) {
+    assertId(id)
 
     const adress = data.adress
     BadRequest.assert(adress, 'No adress payload given')
 
-    await this.findByEmail(email)
+    await this.findById(id)
 
     const picked = pickProps(adress)
-    return this.adressStore.update(email, picked)
+    return this.adressStore.update(id, picked)
   }
 }

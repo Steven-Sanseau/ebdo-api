@@ -20,7 +20,10 @@ export default (sequelize, DataTypes) => {
     token_id: {
       type: DataTypes.INTEGER
     },
-    adress_id: {
+    adress_delivery_id: {
+      type: DataTypes.INTEGER
+    },
+    adress_invoice_id: {
       type: DataTypes.INTEGER
     },
     voucher_id: {
