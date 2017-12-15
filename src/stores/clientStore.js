@@ -12,14 +12,21 @@ export default function createClientStore(logger, ClientModel) {
       return client
     },
 
+    async getById(id) {
+      const client = await ClientModel.findOne({
+        where: { client_id: id }
+      })
+      return client
+    },
+
     async create(data) {
       const client = await ClientModel.build(data).save()
       return client
     },
 
-    async update(email, data) {
+    async update(id, data) {
       const client = await ClientModel.update(data, {
-        where: { email: email },
+        where: { client_id: id },
         returning: true
       })
       return client
