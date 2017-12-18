@@ -35,7 +35,11 @@ export default (sequelize, DataTypes) => {
   })
 
   Checkout.associate = models => {
-    Checkout.belongsTo(models.Client)
+    Checkout.belongsTo(models.Client, { targetKey: 'client_id' })
+
+    Checkout.belongsTo(models.Token, { targetKey: 'token_id' })
+
+    Checkout.belongsTo(models.Offer, { targetKey: 'offer_id' })
   }
 
   return Checkout

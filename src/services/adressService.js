@@ -53,6 +53,9 @@ export default class AdressService {
     await this.findById(id)
 
     const picked = pickProps(adress)
-    return this.adressStore.update(id, picked)
+
+    return this.adressStore.update(id, picked).then(res => {
+      return { updated: true, adress: res[1][0] }
+    })
   }
 }

@@ -69,7 +69,7 @@ export default (sequelize, DataTypes) => {
   })
 
   Adress.associate = models => {
-    Adress.belongsTo(models.Client)
+    Adress.belongsTo(models.Client, { targetKey: 'client_id' })
   }
 
   return Adress

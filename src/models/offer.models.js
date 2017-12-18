@@ -28,6 +28,9 @@ export default (sequelize, DataTypes) => {
     },
     duration: {
       type: DataTypes.INTEGER
+    },
+    shipping_cost: {
+      type: DataTypes.INTEGER
     }
   })
 
