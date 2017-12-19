@@ -2,7 +2,6 @@ export default function createOfferStore(logger, OfferModel) {
   return {
     async getOfferFromParams(params) {
       const offer = await OfferModel.findOne({ where: params })
-      console.log(offer)
       return offer
     },
 

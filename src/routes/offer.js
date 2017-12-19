@@ -4,9 +4,9 @@ const api = offerService => ({
   findOffer: async ctx =>
     ctx.ok(
       await offerService.findOffer(
-        ctx.params.time,
+        ctx.params.duration,
         ctx.params.price,
-        ctx.params.target
+        ctx.params.gift
       )
     ),
   getOffer: async ctx => ctx.ok(await offerService.get(ctx.params.id)),
@@ -20,7 +20,7 @@ const api = offerService => ({
 
 export default createController(api)
   .prefix('/v1/offer')
-  .get('/:time/:price/:target', 'findOffer')
+  .get('/:duration/:price/:gift', 'findOffer')
   .get('/:id', 'getOffer')
   .post('', 'createOffer')
   .patch('/:id', 'updateOffer')
