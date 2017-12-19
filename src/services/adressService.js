@@ -11,6 +11,7 @@ const pickProps = data =>
     'adress',
     'civility',
     'country',
+    'phone',
     'client_id',
     'type_adress'
   ])

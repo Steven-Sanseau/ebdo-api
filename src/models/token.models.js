@@ -11,16 +11,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    token: {
+    token_stripe: {
       type: DataTypes.STRING
     },
-    stripe_id: {
-      type: DataTypes.STRING
-    },
-    bic: {
-      type: DataTypes.STRING
-    },
-    iban: {
+    rum_slimpay: {
       type: DataTypes.STRING
     }
   })

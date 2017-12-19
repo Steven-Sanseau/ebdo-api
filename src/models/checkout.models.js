@@ -31,6 +31,9 @@ export default (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.STRING
+    },
+    source: {
+      type: DataTypes.STRING
     }
   })
 
