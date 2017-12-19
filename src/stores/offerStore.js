@@ -1,5 +1,10 @@
 export default function createOfferStore(logger, OfferModel) {
   return {
+    async getAll() {
+      const offers = await OfferModel.findAndCountAll({})
+      return { data: offers.rows, count: offers.count }
+    },
+
     async getByEmail(email) {
       const offer = await OfferModel.findOne({
         where: { email: email }

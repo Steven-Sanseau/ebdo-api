@@ -9,6 +9,10 @@ export default class OfferService {
     this.offerStore = offerStore
   }
 
+  async findAll() {
+    return this.offerStore.getAll()
+  }
+
   async findByEmail(email) {
     assertEmail(email)
 

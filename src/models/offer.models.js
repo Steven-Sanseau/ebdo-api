@@ -34,6 +34,9 @@ export default (sequelize, DataTypes) => {
     },
     shipping_cost: {
       type: DataTypes.INTEGER
+    },
+    is_gift: {
+      type: DataTypes.BOOLEAN
     }
   })
 
