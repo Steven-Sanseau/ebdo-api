@@ -1,13 +1,14 @@
 export default function createOfferStore(logger, OfferModel) {
   return {
-    async getAll() {
-      const offers = await OfferModel.findAndCountAll({})
-      return { data: offers.rows, count: offers.count }
+    async getOfferFromParams(params) {
+      const offer = await OfferModel.findOne({ where: params })
+      console.log(offer)
+      return offer
     },
 
-    async getByEmail(email) {
+    async getById(id) {
       const offer = await OfferModel.findOne({
-        where: { email: email }
+        where: { offer_id: id }
       })
       return offer
     },
@@ -17,9 +18,9 @@ export default function createOfferStore(logger, OfferModel) {
       return offer
     },
 
-    async update(email, data) {
+    async update(id, data) {
       const offer = await OfferModel.update(data, {
-        where: { email: email },
+        where: { offer_id: id },
         returning: true
       })
       return offer
