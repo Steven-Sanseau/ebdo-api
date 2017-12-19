@@ -27,7 +27,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     payment_method: {
-      type: DataTypes.ENUM('CB', 'SEPA')
+      type: DataTypes.INTEGER
     },
     status: {
       type: DataTypes.STRING
