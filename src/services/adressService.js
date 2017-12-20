@@ -8,17 +8,17 @@ const pickProps = data =>
     'first_name',
     'postal_code',
     'city',
-    'adress',
+    'address',
     'civility',
     'country',
     'phone',
     'client_id',
-    'type_adress'
+    'type_address'
   ])
 
 export default class AdressService {
-  constructor(adressStore) {
-    this.adressStore = adressStore
+  constructor(addressStore) {
+    this.addressStore = addressStore
   }
 
   async findById(id) {
@@ -26,37 +26,37 @@ export default class AdressService {
     const idParsed = parseInt(id)
     BadRequest.assert(Number.isInteger(idParsed), 'id must be a number')
 
-    return this.adressStore
+    return this.addressStore
       .getById(idParsed)
       .then(NotFound.makeAssert(`Adress with id "${id}" not found`))
   }
 
   async create(body) {
-    BadRequest.assert(body.adress, 'No adress payload given')
-    const adress = body.adress
-    BadRequest.assert(adress.adress, 'adress is required')
-    BadRequest.assert(adress.city, 'city is required')
-    BadRequest.assert(adress.postal_code, 'Postal Code is required')
-    BadRequest.assert(adress.first_name, 'First Name is required')
-    BadRequest.assert(adress.last_name, 'Last Name is required')
-    BadRequest.assert(adress.country, 'Country is required')
+    BadRequest.assert(body.address, 'No address payload given')
+    const address = body.address
+    BadRequest.assert(address.address, 'address is required')
+    BadRequest.assert(address.city, 'city is required')
+    BadRequest.assert(address.postal_code, 'Postal Code is required')
+    BadRequest.assert(address.first_name, 'First Name is required')
+    BadRequest.assert(address.last_name, 'Last Name is required')
+    BadRequest.assert(address.country, 'Country is required')
 
-    const picked = pickProps(adress)
-    return this.adressStore.create(picked)
+    const picked = pickProps(address)
+    return this.addressStore.create(picked)
   }
 
   async update(id, data) {
     assertId(id)
 
-    const adress = data.adress
-    BadRequest.assert(adress, 'No adress payload given')
+    const address = data.address
+    BadRequest.assert(address, 'No address payload given')
 
     await this.findById(id)
 
-    const picked = pickProps(adress)
+    const picked = pickProps(address)
 
-    return this.adressStore.update(id, picked).then(res => {
-      return { updated: true, adress: res[1][0] }
+    return this.addressStore.update(id, picked).then(res => {
+      return { updated: true, address: res[1][0] }
     })
   }
 }

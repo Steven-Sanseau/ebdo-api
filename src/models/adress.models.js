@@ -2,7 +2,7 @@ import { Client } from './client.models'
 
 export default (sequelize, DataTypes) => {
   const Adress = sequelize.define('Adress', {
-    adress_id: {
+    address_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
@@ -25,7 +25,7 @@ export default (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
-    adress: {
+    address: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -59,7 +59,7 @@ export default (sequelize, DataTypes) => {
     company: {
       type: DataTypes.STRING
     },
-    type_adress: {
+    type_address: {
       type: DataTypes.STRING
     }
   })

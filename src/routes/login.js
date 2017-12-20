@@ -1,14 +1,14 @@
 import { createController } from 'awilix-koa'
 
-const api = adressService => ({
-  findAdresse: async ctx => ctx.ok(await adressService.find(ctx.query)),
-  getAdresse: async ctx => ctx.ok(await adressService.get(ctx.params.id)),
-  createAdresse: async ctx =>
-    ctx.created(await adressService.create(ctx.request.body)),
-  updateAdresse: async ctx =>
-    ctx.ok(await adressService.update(ctx.params.id, ctx.request.body)),
-  removeAdresse: async ctx =>
-    ctx.noContent(await adressService.remove(ctx.params.id))
+const api = addressService => ({
+  findAddress: async ctx => ctx.ok(await addressService.find(ctx.query)),
+  getAddress: async ctx => ctx.ok(await addressService.get(ctx.params.id)),
+  createAddress: async ctx =>
+    ctx.created(await addressService.create(ctx.request.body)),
+  updateAddress: async ctx =>
+    ctx.ok(await addressService.update(ctx.params.id, ctx.request.body)),
+  removeAddress: async ctx =>
+    ctx.noContent(await addressService.remove(ctx.params.id))
 })
 
 export default createController(api)
@@ -16,5 +16,5 @@ export default createController(api)
   .get('code', 'getCodeLogin')
   .get('code/:token', 'getTokenLogin')
   .post('', 'createTokenAccess')
-  .patch('/:id', 'updateAdresse')
-  .delete('/:id', 'removeAdresse')
+  .patch('/:id', 'updateAddress')
+  .delete('/:id', 'removeAddress')

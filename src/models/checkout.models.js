@@ -14,10 +14,10 @@ export default (sequelize, DataTypes) => {
     cookie_id: {
       type: DataTypes.INTEGER
     },
-    adress_delivery_id: {
+    address_delivery_id: {
       type: DataTypes.INTEGER
     },
-    adress_invoice_id: {
+    address_invoice_id: {
       type: DataTypes.INTEGER
     },
     token_id: {
