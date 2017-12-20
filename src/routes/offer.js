@@ -1,7 +1,14 @@
 import { createController } from 'awilix-koa'
 
 const api = offerService => ({
-  findOffer: async ctx => ctx.ok(await offerService.find(ctx.query)),
+  findOffer: async ctx =>
+    ctx.ok(
+      await offerService.findOffer(
+        ctx.params.duration,
+        ctx.params.price,
+        ctx.params.gift
+      )
+    ),
   getOffer: async ctx => ctx.ok(await offerService.get(ctx.params.id)),
   createOffer: async ctx =>
     ctx.created(await offerService.create(ctx.request.body)),
@@ -13,7 +20,7 @@ const api = offerService => ({
 
 export default createController(api)
   .prefix('/v1/offer')
-  .get('', 'findOffer')
+  .get('/:duration/:price/:gift', 'findOffer')
   .get('/:id', 'getOffer')
   .post('', 'createOffer')
   .patch('/:id', 'updateOffer')

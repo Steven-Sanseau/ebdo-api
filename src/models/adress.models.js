@@ -11,13 +11,6 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    civility: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn: ['M', 'MME']
-      }
-    },
     last_name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -46,6 +39,9 @@ export default (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
+    phone: {
+      type: DataTypes.STRING
+    },
     postal_code: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -69,7 +65,7 @@ export default (sequelize, DataTypes) => {
   })
 
   Adress.associate = models => {
-    Adress.belongsTo(models.Client)
+    Adress.belongsTo(models.Client, { targetKey: 'client_id' })
   }
 
   return Adress

@@ -8,7 +8,7 @@ const api = clientService => ({
   createClient: async ctx =>
     ctx.created(await clientService.create(ctx.request.body)),
   updateClient: async ctx =>
-    ctx.ok(await clientService.update(ctx.params.email, ctx.request.body))
+    ctx.ok(await clientService.update(ctx.params.id, ctx.request.body))
   // removeClient: async ctx =>
   //   ctx.noContent(await clientService.remove(ctx.params.id))
 })
@@ -19,5 +19,5 @@ export default createController(api)
   .get('/count', 'countClient')
   .get('/:email', 'getClient')
   .post('', 'createClient')
-  .patch('/:email', 'updateClient')
+  .patch('/:id', 'updateClient')
 // .delete('/:id', 'removeClient')

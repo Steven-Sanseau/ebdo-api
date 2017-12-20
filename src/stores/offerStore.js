@@ -1,8 +1,13 @@
 export default function createOfferStore(logger, OfferModel) {
   return {
-    async getByEmail(email) {
+    async getOfferFromParams(params) {
+      const offer = await OfferModel.findOne({ where: params })
+      return offer
+    },
+
+    async getById(id) {
       const offer = await OfferModel.findOne({
-        where: { email: email }
+        where: { offer_id: id }
       })
       return offer
     },
@@ -12,9 +17,9 @@ export default function createOfferStore(logger, OfferModel) {
       return offer
     },
 
-    async update(email, data) {
+    async update(id, data) {
       const offer = await OfferModel.update(data, {
-        where: { email: email },
+        where: { offer_id: id },
         returning: true
       })
       return offer

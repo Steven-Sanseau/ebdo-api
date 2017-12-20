@@ -17,6 +17,9 @@ export default (sequelize, DataTypes) => {
     price_ttc: {
       type: DataTypes.FLOAT
     },
+    monthly_price_ttc: {
+      type: DataTypes.FLOAT
+    },
     description: {
       type: DataTypes.TEXT
     },
@@ -28,6 +31,12 @@ export default (sequelize, DataTypes) => {
     },
     duration: {
       type: DataTypes.INTEGER
+    },
+    shipping_cost: {
+      type: DataTypes.INTEGER
+    },
+    is_gift: {
+      type: DataTypes.BOOLEAN
     }
   })
 

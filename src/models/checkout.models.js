@@ -27,15 +27,22 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     payment_method: {
-      type: DataTypes.ENUM('CB', 'SEPA')
+      type: DataTypes.INTEGER
     },
     status: {
+      type: DataTypes.STRING
+    },
+    source: {
       type: DataTypes.STRING
     }
   })
 
   Checkout.associate = models => {
-    Checkout.belongsTo(models.Client)
+    Checkout.belongsTo(models.Client, { targetKey: 'client_id' })
+
+    Checkout.belongsTo(models.Token, { targetKey: 'token_id' })
+
+    Checkout.belongsTo(models.Offer, { targetKey: 'offer_id' })
   }
 
   return Checkout

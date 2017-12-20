@@ -1,6 +1,7 @@
 import { createContainer, Lifetime, ResolutionMode } from 'awilix'
 import { logger } from './logger'
 import db from './sequelize'
+import buildOffers from '../migration/offer'
 
 /**
  * Using Awilix, the following files and folders (glob patterns)
@@ -33,6 +34,8 @@ export function configureContainer() {
   const OfferModel = db.Offer
   const SponsorModel = db.Sponsor
   const TokenModel = db.Token
+
+  buildOffers()
 
   return createContainer(opts)
     .loadModules(modulesToLoad, {

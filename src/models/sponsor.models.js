@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Voucher = sequelize.define('Voucher', {
+  const Sponsor = sequelize.define('Sponsor', {
     sponsor_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -20,5 +20,5 @@ export default (sequelize, DataTypes) => {
     }
   })
 
-  return Voucher
+  return Sponsor
 }
