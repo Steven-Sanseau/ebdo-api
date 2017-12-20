@@ -20,10 +20,10 @@ export default (sequelize, DataTypes) => {
     token_id: {
       type: DataTypes.INTEGER
     },
-    adress_delivery_id: {
+    address_delivery_id: {
       type: DataTypes.INTEGER
     },
-    adress_invoice_id: {
+    address_invoice_id: {
       type: DataTypes.INTEGER
     },
     voucher_id: {
@@ -36,8 +36,8 @@ export default (sequelize, DataTypes) => {
 
   Subscription.associate = models => {
     Subscription.hasOne(models.Adress, {
-      foreignKey: 'fk_adress_sub',
-      targetKey: 'adress_id'
+      foreignKey: 'fk_address_sub',
+      targetKey: 'address_id'
     })
   }
 

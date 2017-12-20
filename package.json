@@ -10,14 +10,15 @@
     "start": "node dist/bin/server.js",
     "build": "rimraf dist && cross-env NODE_ENV=production babel src -d dist -s",
     "server": "babel-node dist/bin/server.js",
-    "heroku-postbuild": "rimraf dist && cross-env babel src -d dist -s",
+    "heroku-postbuild": "npm run migrate",
     "dev": "nodemon src/bin/server.js",
     "debug-brk": "npm run debug -- --break",
     "test": "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
     "test-watch": "npm run test -- --watch",
     "lint": "eslint src/ test/",
     "lint-watch": "esw -w src/ test/",
-    "cover": "cross-env NODE_ENV=test nyc npm test"
+    "cover": "cross-env NODE_ENV=test nyc npm test",
+    "migrate": "sequelize db:migrate"
   },
   "author": "Steven Sanséau",
   "dependencies": {
@@ -30,6 +31,7 @@
     "chai": "^4.1.2",
     "cross-env": "^5.1.1",
     "crypto": "^1.0.1",
+    "dotenv": "^4.0.0",
     "eslint": "^4.12.1",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-node": "^5.2.1",
@@ -58,6 +60,7 @@
     "pg": "^7.4.0",
     "rimraf": "^2.6.2",
     "sequelize": "^4.27.0",
+    "sequelize-cli": "^3.2.0",
     "sinon": "^4.1.2",
     "sinon-chai": "^2.14.0",
     "soap": "^0.23.0",

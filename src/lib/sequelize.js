@@ -2,20 +2,19 @@ import Sequelize from 'sequelize'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import { env } from '../lib/env'
 import { logger } from '../lib/logger'
 
 const db = {}
 
 // connect to postgres db
 const sequelize = new Sequelize(
-  env.POSTGRESDB,
-  env.POSTGRESUSER,
-  env.POSTGRESPASSWORD,
+  process.env.POSTGRESDB,
+  process.env.POSTGRESUSER,
+  process.env.POSTGRESPASSWORD,
   {
     dialect: 'postgres',
-    port: env.POSTGRESPORT,
-    host: env.POSTGRESHOST,
+    port: process.env.POSTGRESPORT,
+    host: process.env.POSTGRESHOST,
     dialectOptions: {
       ssl: true
     }
@@ -39,14 +38,6 @@ Object.keys(db).forEach(function(modelName) {
   if ('associate' in db[modelName]) {
     db[modelName].associate(db)
   }
-})
-
-// Synchronizing any model changes with database.
-sequelize.sync().then(err => {
-  if (err.message) {
-    logger.error(err.message)
-  }
-  logger.debug('Database synchronized')
 })
 
 // assign the sequelize variables to the db object and returning the db.

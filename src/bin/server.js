@@ -1,14 +1,15 @@
 import { createServer } from '../lib/server'
-import { env } from '../lib/env'
 import { logger } from '../lib/logger'
+import dotenv from 'dotenv'
+dotenv.config()
 
 createServer().then(
   app => {
-    app.listen(env.PORT, () => {
-      const mode = env.NODE_ENV
+    app.listen(process.env.PORT, () => {
+      const mode = process.env.NODE_ENV
       logger.debug(
-        `Server listening on ${env.PORT} http://localhost:${
-          env.PORT
+        `Server listening on ${process.env.PORT} http://localhost:${
+          process.env.PORT
         }/ in ${mode} mode`
       )
     })
