@@ -8,18 +8,24 @@ module.exports = {
     host: process.env.POSTGRESHOST,
     dialect: 'postgres'
   },
-  production: {
+  staging: {
     username: process.env.POSTGRESUSER,
     password: process.env.POSTGRESPASSWORD,
     database: process.env.POSTGRESDB,
     host: process.env.POSTGRESHOST,
-    dialect: 'postgres'
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: true
+    }
   },
   production: {
     username: process.env.POSTGRESUSER,
     password: process.env.POSTGRESPASSWORD,
     database: process.env.POSTGRESDB,
     host: process.env.POSTGRESHOST,
-    dialect: 'postgres'
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: true
+    }
   }
 }
