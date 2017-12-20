@@ -21,7 +21,6 @@ export default (sequelize, DataTypes) => {
         isDate: true
       }
     },
-
     end_date: {
       type: DataTypes.DATE,
       validate: {

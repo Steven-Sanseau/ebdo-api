@@ -4,7 +4,7 @@ import { env } from '../lib/env'
 
 const options = {
   auth: {
-    api_key: env.SENDGRID_API_KEY
+    api_key: process.env.SENDGRID_API_KEY
   }
 }
 
