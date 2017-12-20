@@ -41,14 +41,6 @@ Object.keys(db).forEach(function(modelName) {
   }
 })
 
-// Synchronizing any model changes with database.
-sequelize.sync().then(err => {
-  if (err.message) {
-    logger.error(err.message)
-  }
-  logger.debug('Database synchronized')
-})
-
 // assign the sequelize variables to the db object and returning the db.
 export default _.extend(
   {
