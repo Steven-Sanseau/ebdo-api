@@ -8,12 +8,14 @@
   },
   "scripts": {
     "start": "node dist/bin/server.js",
-    "build": "rimraf dist && cross-env NODE_ENV=production babel src -d dist -s",
+    "build":
+      "rimraf dist && cross-env NODE_ENV=production babel src -d dist -s",
     "server": "babel-node dist/bin/server.js",
-    "heroku-postbuild": "npm run migrate",
+    "heroku-postbuild": "npm run build && npm run migrate",
     "dev": "nodemon src/bin/server.js",
     "debug-brk": "npm run debug -- --break",
-    "test": "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
+    "test":
+      "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
     "test-watch": "npm run test -- --watch",
     "lint": "eslint src/ test/",
     "lint-watch": "esw -w src/ test/",
@@ -103,12 +105,7 @@
   "nyc": {
     "sourceMap": false,
     "instrument": false,
-    "reporter": [
-      "text",
-      "lcov"
-    ],
-    "include": [
-      "src/**/*.js"
-    ]
+    "reporter": ["text", "lcov"],
+    "include": ["src/**/*.js"]
   }
 }
