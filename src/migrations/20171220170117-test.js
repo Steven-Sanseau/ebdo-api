@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    queryInterface.bulkInsert('Offer', [
+    queryInterface.bulkInsert('Offers', [
       {
         name: 'periode-3month-5',
         aboweb_id: '3MP5',
@@ -14,7 +14,9 @@ module.exports = {
         time_limited: true,
         duration: 12,
         shipping_cost: 0,
-        is_gift: false
+        is_gift: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ])
   },
