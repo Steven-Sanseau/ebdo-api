@@ -11,6 +11,7 @@ let sslObj = {}
 if (env.NODE_ENV !== 'developpment') {
   sslObj = { ssl: true }
 }
+console.log(env.POSTGRESHOST)
 
 // connect to postgres db
 const sequelize = new Sequelize(
