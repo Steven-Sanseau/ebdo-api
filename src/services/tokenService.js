@@ -31,16 +31,4 @@ export default class TokenService {
     const picked = pickProps(token)
     return this.tokenStore.create(picked)
   }
-
-  async update(email, data) {
-    assertEmail(email)
-
-    const token = data.token
-    BadRequest.assert(token, 'No token payload given')
-
-    await this.findByEmail(email)
-
-    const picked = pickProps(token)
-    return this.tokenStore.update(email, picked)
-  }
 }

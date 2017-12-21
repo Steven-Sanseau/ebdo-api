@@ -31,6 +31,9 @@ export default (sequelize, DataTypes) => {
       validate: {
         notEmpty: true
       }
+    },
+    login_code: {
+      type: DataTypes.INTEGER
     }
   })
 
