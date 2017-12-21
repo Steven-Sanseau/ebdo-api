@@ -1,9 +1,9 @@
 import Client from 'node-mjml-mustache-nodemailer'
 import sgTransport from 'nodemailer-sendgrid-transport'
-
+import { env } from '../lib/env'
 const options = {
   auth: {
-    api_key: process.env.SENDGRID_API_KEY
+    api_key: env.SENDGRID_API_KEY
   }
 }
 

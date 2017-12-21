@@ -9,11 +9,8 @@ export default class LoginService {
   }
 
   async sendCodeLogin(email) {
-    const user = await this.clientStore.findByEmail({ where: { email: email } })
-    Conflict.assert(
-      !user,
-      `User with email "${newsletter.email}" already found`
-    )
+    const user = await this.clientStore.getByEmail(email)
+    Conflict.assert(!user, `User with email "${email}" not found`)
     const template_path = path.resolve(
       './src/emails/codeConnexion.mjml.mustache'
     )
@@ -27,7 +24,7 @@ export default class LoginService {
     }
 
     const send = await Emailer.sendMail(template_path, template_data, {
-      to: user.email,
+      to: email,
       from: 'contact@ebdo-lejournal.com',
       subject: 'Votre code temporaire de connexion à Ebdo'
     })
