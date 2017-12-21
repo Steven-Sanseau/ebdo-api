@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "API Ebdo Journal",
   "engines": {
-    "npm": "5.5.x",
-    "node": "8.x"
+    "npm": ">=5.5.x",
+    "node": ">=8.x"
   },
   "scripts": {
     "start": "node dist/bin/server.js",
