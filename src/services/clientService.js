@@ -69,7 +69,7 @@ export default class ClientService {
 
     return this.clientStore
       .update(id, pickedClient)
-      .then(res => ({ updated: true, adress: res[1][0] }))
+      .then(res => ({ updated: true, address: res[1][0] }))
       .catch(err =>
         Conflict.assert(
           err,

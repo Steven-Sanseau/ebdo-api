@@ -1,7 +1,7 @@
 import { Client } from './client.models'
 
 export default (sequelize, DataTypes) => {
-  const Adress = sequelize.define('Adress', {
+  const Address = sequelize.define('Address', {
     address_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -64,9 +64,9 @@ export default (sequelize, DataTypes) => {
     }
   })
 
-  Adress.associate = models => {
-    Adress.belongsTo(models.Client, { targetKey: 'client_id' })
+  Address.associate = models => {
+    Address.belongsTo(models.Client, { targetKey: 'client_id' })
   }
 
-  return Adress
+  return Address
 }

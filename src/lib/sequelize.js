@@ -3,21 +3,25 @@ import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
 import { logger } from '../lib/logger'
+import { env } from './env'
 
 const db = {}
+let sslObj = {}
+
+if (env.NODE_ENV !== 'developpment') {
+  sslObj = { ssl: true }
+}
 
 // connect to postgres db
 const sequelize = new Sequelize(
-  process.env.POSTGRESDB,
-  process.env.POSTGRESUSER,
-  process.env.POSTGRESPASSWORD,
+  env.POSTGRESDB,
+  env.POSTGRESUSER,
+  env.POSTGRESPASSWORD,
   {
     dialect: 'postgres',
-    port: process.env.POSTGRESPORT,
-    host: process.env.POSTGRESHOST,
-    dialectOptions: {
-      ssl: true
-    }
+    port: env.POSTGRESPORT,
+    host: env.POSTGRESHOST,
+    dialectOptions: sslObj
   }
 )
 

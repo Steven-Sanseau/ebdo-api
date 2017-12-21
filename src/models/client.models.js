@@ -35,7 +35,7 @@ export default (sequelize, DataTypes) => {
   })
 
   Client.associate = models => {
-    Client.hasMany(models.Adress, {
+    Client.hasMany(models.Address, {
       foreignKey: 'fk_address_clients',
       targetKey: 'client_id'
     })
