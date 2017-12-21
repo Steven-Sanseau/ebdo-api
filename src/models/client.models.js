@@ -34,6 +34,9 @@ export default (sequelize, DataTypes) => {
     },
     login_code: {
       type: DataTypes.INTEGER
+    },
+    login_code_created_at: {
+      type: DataTypes.DATE
     }
   })
 

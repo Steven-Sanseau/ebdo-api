@@ -2,9 +2,13 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.addColumn('Clients', 'login_code', {
-      type: Sequelize.INTEGER
+    queryInterface.addColumn('Clients', 'login_code', {
+      type: Sequelize.INTEGER,
     })
+    queryInterface.addColumn('Clients', 'login_code_created_at', {
+      type: Sequelize.DATE,
+    })
+    return queryInterface;
   },
 
   down: (queryInterface, Sequelize) => {
