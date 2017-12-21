@@ -1,9 +1,10 @@
 import { NotFound, BadRequest, TooManyRequests  } from 'fejl'
 import { pick } from 'lodash'
 import Jwt from "jsonwebtoken"
-
-import Emailer from '../lib/emailer'
 import path from 'path'
+
+import { env } from '../lib/env'
+import Emailer from '../lib/emailer'
 
 export default class LoginService {
   constructor(clientStore) {
@@ -54,7 +55,7 @@ export default class LoginService {
     BadRequest.assert(user, "Invalid code");
 
     return {
-      token: Jwt.sign({email: user.email}, "secretpassphrase")
+      token: Jwt.sign({email: user.email}, env.JWT_PRIVATE_KEY)
     }
   }
 }
