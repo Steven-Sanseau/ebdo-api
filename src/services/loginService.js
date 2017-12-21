@@ -10,7 +10,7 @@ export default class LoginService {
 
   async sendCodeLogin(email) {
     const user = await this.clientStore.getByEmail(email)
-    Conflict.assert(!user, `User with email "${email}" not found`)
+    Conflict.assert(user, `User with email "${email}" not found`)
     const template_path = path.resolve(
       './src/emails/codeConnexion.mjml.mustache'
     )

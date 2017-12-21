@@ -22,7 +22,12 @@ const sequelize = new Sequelize(
     dialect: 'postgres',
     port: env.POSTGRESPORT,
     host: env.POSTGRESHOST,
-    dialectOptions: sslObj
+    dialectOptions: sslObj,
+    define: {
+      // paranoid: true, //TODO migration prod et staging
+      // underscored: true, //TODO migration prod et staging
+      freezeTableName: true
+    }
   }
 )
 

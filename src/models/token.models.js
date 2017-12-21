@@ -14,6 +14,9 @@ export default (sequelize, DataTypes) => {
     token_stripe: {
       type: DataTypes.STRING
     },
+    stripe_custom_id: {
+      type: DataTypes.STRING
+    },
     rum_slimpay: {
       type: DataTypes.STRING
     }
