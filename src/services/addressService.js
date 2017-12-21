@@ -16,7 +16,7 @@ const pickProps = data =>
     'type_address'
   ])
 
-export default class AdressService {
+export default class AddressService {
   constructor(addressStore) {
     this.addressStore = addressStore
   }
@@ -28,7 +28,7 @@ export default class AdressService {
 
     return this.addressStore
       .getById(idParsed)
-      .then(NotFound.makeAssert(`Adress with id "${id}" not found`))
+      .then(NotFound.makeAssert(`Address with id "${id}" not found`))
   }
 
   async create(body) {

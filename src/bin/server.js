@@ -1,7 +1,6 @@
 import { createServer } from '../lib/server'
 import { logger } from '../lib/logger'
-import dotenv from 'dotenv'
-dotenv.config()
+import { env } from '../lib/env'
 
 createServer().then(
   app => {
