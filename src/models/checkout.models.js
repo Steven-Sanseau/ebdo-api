@@ -11,9 +11,6 @@ export default (sequelize, DataTypes) => {
     client_id: {
       type: DataTypes.INTEGER
     },
-    cookie_id: {
-      type: DataTypes.INTEGER
-    },
     address_delivery_id: {
       type: DataTypes.INTEGER
     },
@@ -28,6 +25,9 @@ export default (sequelize, DataTypes) => {
     },
     payment_method: {
       type: DataTypes.INTEGER
+    },
+    is_gift: {
+      type: DataTypes.BOOLEAN
     },
     status: {
       type: DataTypes.STRING

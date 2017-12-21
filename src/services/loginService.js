@@ -1,6 +1,6 @@
-import { NotFound, BadRequest, TooManyRequests  } from 'fejl'
+import { NotFound, BadRequest, TooManyRequests } from 'fejl'
 import { pick } from 'lodash'
-import Jwt from "jsonwebtoken"
+import Jwt from 'jsonwebtoken'
 import path from 'path'
 
 import { env } from '../lib/env'
@@ -12,25 +12,33 @@ export default class LoginService {
   }
 
   async sendCodeLogin(email) {
-    BadRequest.assert(email);
+    BadRequest.assert(email)
     const user = await this.clientStore.getByEmail(email)
     NotFound.assert(user, 'User not found')
 
-    if (user.login_code_created_at && (new Date() - user.login_code_created_at) / (1000 * 60) < 5) {
-      // throw new TooManyRequests;
+    const validDate =
+      (new Date() - user.login_code_created_at) / (1000 * 60) < 5
+
+    if (user.login_code_created_at && validDate) {
+      TooManyRequests.makeAssert('Bad code login')
     }
 
-    const template_path = path.resolve(
-      './src/emails/codeConnexion.mjml.mustache'
-    )
-
     // Code between 1000 & 9999
-    const code = Math.floor(Math.random() * (9999-1000+1)+1000);
+    const code = Math.floor(Math.random() * (9999 - 1000 + 1) + 1000)
     user.update({
       login_code: code,
       login_code_created_at: new Date()
-    });
+    })
 
+    const emailSend = await this.sendMailCodeLogin(code, email)
+
+    return emailSend
+  }
+
+  async sendMailCodeLogin(code, email) {
+    const template_path = path.resolve(
+      './src/emails/codeConnexion.mjml.mustache'
+    )
     const template_data = {
       ctatext: 'ME CONNECTER SUR EBDO',
       ctalink: 'https://ebdo-lejournal.com',
@@ -44,18 +52,15 @@ export default class LoginService {
       from: 'contact@ebdo-lejournal.com',
       subject: 'Votre code temporaire de connexion à Ebdo'
     })
-
-    return {
-      message: "Ok"
-    }
+    return send
   }
 
   async getJwt(email, code) {
     const user = await this.clientStore.getByEmailAndCode(email, code)
-    BadRequest.assert(user, "Invalid code");
+    BadRequest.assert(user, 'Invalid code')
 
     return {
-      token: Jwt.sign({email: user.email}, env.JWT_PRIVATE_KEY)
+      token: Jwt.sign({ email: user.email }, env.JWT_PRIVATE_KEY)
     }
   }
 }

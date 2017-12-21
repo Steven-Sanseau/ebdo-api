@@ -1,14 +1,14 @@
-'use strict';
+'use strict'
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    queryInterface.addColumn('Clients', 'login_code', {
-      type: Sequelize.INTEGER,
+    queryInterface.addColumn('Client', 'login_code', {
+      type: Sequelize.INTEGER
     })
-    queryInterface.addColumn('Clients', 'login_code_created_at', {
-      type: Sequelize.DATE,
+    queryInterface.addColumn('Client', 'login_code_created_at', {
+      type: Sequelize.DATE
     })
-    return queryInterface;
+    return queryInterface
   },
 
   down: (queryInterface, Sequelize) => {
@@ -20,4 +20,4 @@ module.exports = {
       return queryInterface.dropTable('users');
     */
   }
-};
+}
