@@ -6,6 +6,7 @@ export default function createAddressStore(logger, AddressModel) {
     },
 
     async create(data) {
+      console.log('model', AddressModel.build(data))
       const address = await AddressModel.build(data).save()
       return { address }
     },
