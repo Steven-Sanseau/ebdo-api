@@ -31,6 +31,12 @@ export default (sequelize, DataTypes) => {
       validate: {
         notEmpty: true
       }
+    },
+    login_code: {
+      type: DataTypes.INTEGER
+    },
+    login_code_created_at: {
+      type: DataTypes.DATE
     }
   })
 

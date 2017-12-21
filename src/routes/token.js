@@ -2,7 +2,7 @@ import { createController } from 'awilix-koa'
 
 const api = tokenService => ({
   createToken: async ctx =>
-    ctx.created(await tokenService.create(ctx.request.body))
+    ctx.created(await tokenService.create(ctx.request.body)),
 })
 
 export default createController(api)
