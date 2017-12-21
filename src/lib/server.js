@@ -5,8 +5,6 @@ import respond from 'koa-respond'
 import bodyParser from 'koa-bodyparser'
 import compress from 'koa-compress'
 import { scopePerRequest, loadControllers } from 'awilix-koa'
-import dotenv from 'dotenv'
-dotenv.config()
 
 import { logger } from './logger'
 import { configureContainer } from './container'
