@@ -1,7 +1,7 @@
 import { createServer } from '../lib/server'
 import { logger } from '../lib/logger'
 import { env } from '../lib/env'
-const port = env.PORT || process.env.PORT
+
 createServer().then(
   app => {
     app.listen(env.PORT, () => {

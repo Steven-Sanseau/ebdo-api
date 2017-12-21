@@ -8,8 +8,7 @@
   },
   "scripts": {
     "start": "node dist/bin/server.js",
-    "build":
-      "rimraf dist && cross-env NODE_ENV=production babel src -d dist -s",
+    "build": "rimraf dist && cross-env babel src -d dist -s",
     "server": "babel-node dist/bin/server.js",
     "heroku-postbuild": "npm run build && npm run migrate",
     "dev": "nodemon src/bin/server.js",
@@ -33,6 +32,7 @@
     "chai": "^4.1.2",
     "cross-env": "^5.1.1",
     "crypto": "^1.0.1",
+    "dotenv": "^4.0.0",
     "eslint": "^4.13.1",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-node": "^5.2.1",
