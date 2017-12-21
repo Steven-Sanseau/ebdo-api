@@ -16,10 +16,10 @@ export default class LoginService {
     const user = await this.clientStore.getByEmail(email)
     NotFound.assert(user, 'User not found')
 
-    const validDate =
+    if (
+      user.login_code_created_at &&
       (new Date() - user.login_code_created_at) / (1000 * 60) < 5
-
-    if (user.login_code_created_at && validDate) {
+    ) {
       TooManyRequests.makeAssert('Bad code login')
     }
 
@@ -57,10 +57,13 @@ export default class LoginService {
 
   async getJwt(email, code) {
     const user = await this.clientStore.getByEmailAndCode(email, code)
-    BadRequest.assert(user, 'Invalid code')
+    NotFound.assert(user, 'Invalid code')
 
     return {
-      token: Jwt.sign({ email: user.email }, env.JWT_PRIVATE_KEY)
+      token: Jwt.sign(
+        { email: user.email, date: new Date() },
+        env.JWT_PRIVATE_KEY
+      )
     }
   }
 }

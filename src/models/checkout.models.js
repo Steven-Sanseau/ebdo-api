@@ -11,6 +11,12 @@ export default (sequelize, DataTypes) => {
     client_id: {
       type: DataTypes.INTEGER
     },
+    aboweb_client_id: {
+      type: DataTypes.INTEGER
+    },
+    aboweb_subscribe_id: {
+      type: DataTypes.INTEGER
+    },
     address_delivery_id: {
       type: DataTypes.INTEGER
     },
@@ -31,6 +37,9 @@ export default (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.STRING
+    },
+    cgv_accepted: {
+      type: DataTypes.BOOLEAN
     },
     source: {
       type: DataTypes.STRING

@@ -5,6 +5,13 @@ export default function createAddressStore(logger, AddressModel) {
       return address
     },
 
+    async getByIdAndClientId(id, clientId) {
+      const address = await AddressModel.findOne.findOne({
+        where: { address_id: id, client_id: clientId }
+      })
+      return address
+    },
+
     async create(data) {
       console.log('model', AddressModel.build(data))
       const address = await AddressModel.build(data).save()

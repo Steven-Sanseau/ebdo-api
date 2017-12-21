@@ -2,29 +2,57 @@ import { NotFound, BadRequest, Conflict } from 'fejl'
 import { pick } from 'lodash'
 import stripe from '../lib/stripe'
 
-const pickProps = data => pick(data, ['token_id', 'name'])
+const pickProps = data =>
+  pick(data, [
+    'client_id',
+    'token_type',
+    'stripe_token_id',
+    'stripe_customer_id',
+    'stripe_card_id',
+    'slimpay_rum_id',
+    'slimpay_token_id',
+    'slimpay_rum_code'
+  ])
 
 export default class TokenService {
-  constructor(tokenStore) {
+  constructor(tokenStore, clientStore) {
     this.tokenStore = tokenStore
+    this.clientStore = clientStore
   }
 
   async create(body) {
     BadRequest.assert(body.token, 'No token payload given')
+    BadRequest.assert(body.client, 'No token payload given')
+
     const token = body.token
-    BadRequest.assert(token, 'is required')
-    BadRequest.assert(token.tokenStripe, 'token stripe is required')
+    const client = body.client
+    const clientPicked = pickProps(client)
+    const tokenPicked = pickProps(token)
 
-    // const tokenTest = await this.tokenStore.getByStripeId(token.token_id)
-    // Conflict.assert(
-    //   !tokenTest,
-    //   `Token with id "${token.tokenStripe.id}" already found`
-    // )
+    BadRequest.assert(clientPicked.client_id, 'client id is required')
+    BadRequest.assert(tokenPicked, 'token object is required')
+    BadRequest.assert(tokenPicked.token_type, 'token type is required')
+    BadRequest.assert(
+      tokenPicked.token_type === 'stripe' && tokenPicked.stripe_token_id,
+      'token stripe is required'
+    )
 
-    const striperesponse = await this.createStripeCustomer(token.tokenStripe.id)
-    console.log(striperesponse)
-    const picked = pickProps(token)
-    // return this.tokenStore.create(picked)
+    const tokenTest = await this.tokenStore.getByStripeTokenId(
+      tokenPicked.stripe_token_id
+    )
+    Conflict.assert(
+      !tokenTest,
+      `Token with id "${tokenPicked.stripe_token_id}" already found`
+    )
+
+    const clientTest = await this.clientStore.getById(clientPicked.client_id)
+    Conflict.assert(
+      clientTest,
+      `Client with id "${clientPicked.client_id}" not found`
+    )
+    tokenPicked.client_id = clientPicked.client_id
+
+    return this.tokenStore.create(tokenPicked)
   }
 
   async createStripeCustomer(token) {
@@ -36,21 +64,21 @@ export default class TokenService {
       .then(function(customer) {
         // YOUR CODE: Save the customer ID and other info in a database for later.
         console.log('customeer', customer)
-        stripe.charges.create({
-          amount: 1000,
-          currency: 'eur',
-          customer: customer.id
-        })
-        stripe.charges.create({
-          amount: 1500,
-          currency: 'eur',
-          customer: customer.id
-        })
-        stripe.charges.create({
-          amount: 2000,
-          currency: 'eur',
-          customer: customer.id
-        })
+        // stripe.charges.create({
+        //   amount: 1000,
+        //   currency: 'eur',
+        //   customer: customer.id
+        // })
+        // stripe.charges.create({
+        //   amount: 1500,
+        //   currency: 'eur',
+        //   customer: customer.id
+        // })
+        // stripe.charges.create({
+        //   amount: 2000,
+        //   currency: 'eur',
+        //   customer: customer.id
+        // })
       })
       .then(function(charge) {
         console.log('customeer', charge)
