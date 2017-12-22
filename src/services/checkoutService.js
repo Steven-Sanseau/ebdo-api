@@ -23,13 +23,15 @@ export default class CheckoutService {
     clientStore,
     addressStore,
     tokenStore,
-    offerStore
+    offerStore,
+    chargeStore
   ) {
     this.clientStore = clientStore
     this.addressStore = addressStore
     this.tokenStore = tokenStore
     this.offerStore = offerStore
     this.checkoutStore = checkoutStore
+    this.chargeStore = chargeStore
   }
 
   async create(body) {
@@ -100,14 +102,14 @@ export default class CheckoutService {
     if (offer.time_limited) {
       try {
         const chargeStripe = await this.chargeCard(
-          token.stripe_customer_id,
-          offer.price_ttc,
-          checkoutStored.checkout_id,
-          offer.description
+          token,
+          offer,
+          checkoutStored,
+          client
         )
         checkoutStored.status = 'paid'
 
-        newSubscriptionProducer({
+        const producer = await newSubscriptionProducer({
           offer,
           checkoutStored,
           client,
@@ -123,14 +125,22 @@ export default class CheckoutService {
     return { checkout: checkoutreturn }
   }
 
-  async chargeCard(customerId, amount, checkoutId, description) {
+  async chargeCard(token, offer, checkout, client) {
     const stripeCharge = await stripe.charges.create({
-      amount: amount,
+      amount: offer.price_ttc,
       currency: 'eur',
-      description: description,
-      customer: customerId,
-      metadata: { order_id: checkoutId }
+      description: offer.description,
+      customer: token.stripe_customer_id,
+      metadata: { order_id: checkout.checkout_id }
     })
+
+    const chargeStored = await this.chargeStore.create({
+      stripe_charge_return: stripeCharge
+    })
+    chargeStored.setToken(token)
+    chargeStored.setClient(client)
+    chargeStored.setCheckout(checkout)
+
     return stripeCharge
   }
 }
