@@ -2,10 +2,15 @@ import Sequelize from 'sequelize'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import { env } from '../lib/env'
 import { logger } from '../lib/logger'
+import { env } from './env'
 
 const db = {}
+let sslObj = {}
+
+if (env.NODE_ENV !== 'developpment') {
+  sslObj = { ssl: true }
+}
 
 // connect to postgres db
 const sequelize = new Sequelize(
@@ -16,8 +21,11 @@ const sequelize = new Sequelize(
     dialect: 'postgres',
     port: env.POSTGRESPORT,
     host: env.POSTGRESHOST,
-    dialectOptions: {
-      ssl: true
+    dialectOptions: sslObj,
+    define: {
+      paranoid: true,
+      underscored: true,
+      freezeTableName: true
     }
   }
 )
@@ -40,15 +48,8 @@ Object.keys(db).forEach(function(modelName) {
     db[modelName].associate(db)
   }
 })
-
-// Synchronizing any model changes with database.
-sequelize.sync().then(err => {
-  if (err.message) {
-    logger.error(err.message)
-  }
-  logger.debug('Database synchronized')
-})
-
+// DEVHACK
+// sequelize.sync()
 // assign the sequelize variables to the db object and returning the db.
 export default _.extend(
   {

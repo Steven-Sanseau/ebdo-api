@@ -17,6 +17,9 @@ export default (sequelize, DataTypes) => {
     price_ttc: {
       type: DataTypes.FLOAT
     },
+    monthly_price_ttc: {
+      type: DataTypes.FLOAT
+    },
     description: {
       type: DataTypes.TEXT
     },
@@ -28,8 +31,21 @@ export default (sequelize, DataTypes) => {
     },
     duration: {
       type: DataTypes.INTEGER
+    },
+    shipping_cost: {
+      type: DataTypes.FLOAT
+    },
+    is_gift: {
+      type: DataTypes.BOOLEAN
     }
   })
+
+  Offer.associate = models => {
+    Offer.hasMany(models.Checkout, {
+      targetKey: 'checkout_id',
+      foreignKey: 'offer_id'
+    })
+  }
 
   return Offer
 }

@@ -1,20 +1,21 @@
 import { createController } from 'awilix-koa'
+import jwtMiddleware from "koa-jwt"
 
-const api = adressService => ({
-  findAdresse: async ctx => ctx.ok(await adressService.find(ctx.query)),
-  getAdresse: async ctx => ctx.ok(await adressService.get(ctx.params.id)),
-  createAdresse: async ctx =>
-    ctx.created(await adressService.create(ctx.request.body)),
-  updateAdresse: async ctx =>
-    ctx.ok(await adressService.update(ctx.params.id, ctx.request.body)),
-  removeAdresse: async ctx =>
-    ctx.noContent(await adressService.remove(ctx.params.id))
+import { env } from '../lib/env'
+
+const api = loginService => ({
+  getCodeLogin: async ctx =>
+    ctx.ok(await loginService.sendCodeLogin(ctx.params.email)),
+  getJwt: async ctx =>
+    ctx.ok(await loginService.getJwt(ctx.params.email, ctx.params.code)),
+  protectedRoute: async ctx =>
+    ctx.ok()
 })
 
 export default createController(api)
   .prefix('/v1/login')
-  .get('code', 'getCodeLogin')
-  .get('code/:token', 'getTokenLogin')
-  .post('', 'createTokenAccess')
-  .patch('/:id', 'updateAdresse')
-  .delete('/:id', 'removeAdresse')
+  .get('/code/:email', 'getCodeLogin')
+  .get('/:code/:email', 'getJwt')
+  .get('/protectedRoute', 'protectedRoute', {
+    before: [jwtMiddleware({ secret: env.JWT_PRIVATE_KEY })]
+  })

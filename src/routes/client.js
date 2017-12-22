@@ -1,20 +1,20 @@
 import { createController } from 'awilix-koa'
 
 const api = clientService => ({
-  // findClient: async ctx => ctx.ok(await clientService.find(ctx.query)),
-  // getClient: async ctx => ctx.ok(await clientService.get(ctx.params.id)),
+  countClient: async ctx => ctx.ok(await clientService.countClient()),
+  getClient: async ctx =>
+    ctx.ok(await clientService.findByEmail(ctx.params.email)),
   createClient: async ctx =>
     ctx.created(await clientService.create(ctx.request.body)),
   updateClient: async ctx =>
     ctx.ok(await clientService.update(ctx.params.id, ctx.request.body))
-  // removeClient: async ctx =>
-  //   ctx.noContent(await clientService.remove(ctx.params.id))
 })
 
 export default createController(api)
   .prefix('/v1/client')
   // .get('', 'findClient')
-  .get('/:id', 'getClient')
+  .get('/count', 'countClient')
+  .get('/:email', 'getClient')
   .post('', 'createClient')
   .patch('/:id', 'updateClient')
 // .delete('/:id', 'removeClient')

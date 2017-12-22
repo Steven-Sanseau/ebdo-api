@@ -1,6 +1,6 @@
 import { createServer } from '../lib/server'
-import { env } from '../lib/env'
 import { logger } from '../lib/logger'
+import { env } from '../lib/env'
 
 createServer().then(
   app => {

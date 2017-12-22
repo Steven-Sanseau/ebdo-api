@@ -2,45 +2,32 @@ import { NotFound, BadRequest, Conflict } from 'fejl'
 import { pick } from 'lodash'
 
 const assertEmail = BadRequest.makeAssert('No email given')
-const pickProps = data => pick(data, ['email', 'name'])
+const pickProps = data =>
+  pick(data, ['monthly_price_ttc', 'is_gift', 'time_limited', 'duration'])
 
 export default class OfferService {
   constructor(offerStore) {
     this.offerStore = offerStore
   }
 
-  async findByEmail(email) {
-    assertEmail(email)
+  async findOffer(duration, price, gift) {
+    BadRequest.assert(duration, 'No duration for offer payload given')
+    BadRequest.assert(price, 'No price for offer payload given')
+    BadRequest.assert(gift, 'No gift for offer payload given')
 
-    return this.offerStore
-      .getByEmail(email)
-      .then(NotFound.makeAssert(`Offer with email "${email}" not found`))
+    const offer = {
+      monthly_price_ttc: Number(price),
+      is_gift: gift === 'true',
+      time_limited: Number(duration) !== 0,
+      duration: Number(duration)
+    }
+    const offerStored = await this.offerStore.getOfferFromParams(offer)
+    NotFound.assert(offerStored, `Offer not found`)
+
+    return { offer: offerStored }
   }
 
-  async create(body) {
-    BadRequest.assert(body.offer, 'No offer payload given')
-    const offer = body.offer
-    BadRequest.assert(offer.email, 'email is required')
-
-    const offerTest = await this.offerStore.getByEmail(offer.email)
-    Conflict.assert(
-      !offerTest,
-      `Offer with email "${offer.email}" already found`
-    )
-
-    const picked = pickProps(offer)
-    return this.offerStore.create(picked)
-  }
-
-  async update(email, data) {
-    assertEmail(email)
-
-    const offer = data.offer
-    BadRequest.assert(offer, 'No offer payload given')
-
-    await this.findByEmail(email)
-
-    const picked = pickProps(offer)
-    return this.offerStore.update(email, picked)
+  async findAll() {
+    return this.offerStore.getAll()
   }
 }

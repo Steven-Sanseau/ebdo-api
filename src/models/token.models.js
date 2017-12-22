@@ -2,23 +2,42 @@ import { Client } from './client.models'
 
 export default (sequelize, DataTypes) => {
   const Token = sequelize.define('Token', {
-    client_id: {
+    token_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      autoIncrement: true,
+      primaryKey: true
     },
-    token: {
+    token_type: {
       type: DataTypes.STRING
     },
-    stripe_id: {
+    stripe_token_id: {
       type: DataTypes.STRING
     },
-    bic: {
+    stripe_customer_id: {
       type: DataTypes.STRING
     },
-    iban: {
+    stripe_card_id: {
+      type: DataTypes.STRING
+    },
+    slimpay_rum_id: {
+      type: DataTypes.STRING
+    },
+    slimpay_token_id: {
+      type: DataTypes.STRING
+    },
+    slimpay_rum_code: {
       type: DataTypes.STRING
     }
   })
+
+  Token.associate = models => {
+    Token.belongsTo(models.Client, { foreignKey: 'client_id' })
+
+    Token.hasOne(models.Checkout, {
+      targetKey: 'checkout_id',
+      foreignKey: 'token_id'
+    })
+  }
 
   return Token
 }

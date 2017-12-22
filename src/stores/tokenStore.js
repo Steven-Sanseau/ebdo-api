@@ -1,23 +1,22 @@
-export default function createOfferStore(logger, OfferModel) {
+export default function createOfferStore(logger, TokenModel) {
   return {
-    async getByEmail(email) {
-      const offer = await OfferModel.findOne({
-        where: { email: email }
+    async getByIdAndClientId(id, clientId) {
+      const token = await TokenModel.findOne({
+        where: { token_id: id, client_id: clientId }
       })
-      return offer
+      return token
+    },
+
+    async getByStripeTokenId(stripeTokenId) {
+      const token = await TokenModel.findOne({
+        where: { stripe_token_id: stripeTokenId }
+      })
+      return token
     },
 
     async create(data) {
-      const offer = await OfferModel.build(data).save()
-      return offer
-    },
-
-    async update(email, data) {
-      const offer = await OfferModel.update(data, {
-        where: { email: email },
-        returning: true
-      })
-      return offer
+      const token = await TokenModel.build(data).save()
+      return token
     }
   }
 }

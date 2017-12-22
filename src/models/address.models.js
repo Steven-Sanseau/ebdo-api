@@ -1,22 +1,11 @@
 import { Client } from './client.models'
 
 export default (sequelize, DataTypes) => {
-  const Adress = sequelize.define('Adress', {
-    adress_id: {
+  const Address = sequelize.define('Address', {
+    address_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
-    },
-    client_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    civility: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn: ['M', 'MME']
-      }
     },
     last_name: {
       type: DataTypes.STRING,
@@ -32,7 +21,7 @@ export default (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
-    adress: {
+    address: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -45,6 +34,9 @@ export default (sequelize, DataTypes) => {
       validate: {
         notEmpty: true
       }
+    },
+    phone: {
+      type: DataTypes.STRING
     },
     postal_code: {
       type: DataTypes.STRING,
@@ -62,12 +54,27 @@ export default (sequelize, DataTypes) => {
     },
     company: {
       type: DataTypes.STRING
+    },
+    type_address: {
+      type: DataTypes.STRING
     }
   })
 
-  Adress.associate = models => {
-    Adress.belongsTo(models.Client)
+  Address.associate = models => {
+    Address.belongsTo(models.Client, { foreignKey: 'client_id' })
+
+    Address.hasOne(models.Checkout, {
+      as: 'invoice_address',
+      foreignKey: 'invoice_address_id',
+      targetKey: 'checkout_id'
+    })
+
+    Address.hasOne(models.Checkout, {
+      as: 'delivery_address',
+      foreignKey: 'delivery_address_id',
+      targetKey: 'checkout_id'
+    })
   }
 
-  return Adress
+  return Address
 }

@@ -5,7 +5,7 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    abboweb_client_id: {
+    aboweb_client_id: {
       type: DataTypes.INTEGER
     },
     email: {
@@ -31,18 +31,27 @@ export default (sequelize, DataTypes) => {
       validate: {
         notEmpty: true
       }
+    },
+    login_code: {
+      type: DataTypes.INTEGER
+    },
+    login_code_created_at: {
+      type: DataTypes.DATE
     }
   })
 
   Client.associate = models => {
-    Client.hasMany(models.Adress, {
-      foreignKey: 'fk_adress_clients',
-      targetKey: 'client_id'
+    Client.hasMany(models.Address, {
+      targetKey: 'address_id',
+      foreignKey: 'client_id'
     })
-
     Client.hasMany(models.Checkout, {
-      foreignKey: 'fk_client_id',
-      targetKey: 'client_id'
+      targetKey: 'checkout_id',
+      foreignKey: 'client_id'
+    })
+    Client.hasMany(models.Token, {
+      targetKey: 'token_id',
+      foreignKey: 'client_id'
     })
   }
 

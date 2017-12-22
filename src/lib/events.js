@@ -1,5 +1,5 @@
 import Producer from 'sqs-producer'
-import env from '../lib/env'
+import { env } from './events'
 
 const producer = Producer.create({
   region: env.AWS_AREA,

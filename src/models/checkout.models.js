@@ -8,31 +8,44 @@ export default (sequelize, DataTypes) => {
     checkout_step: {
       type: DataTypes.INTEGER
     },
-    client_id: {
+    aboweb_client_id: {
       type: DataTypes.INTEGER
     },
-    cookie_id: {
-      type: DataTypes.STRING
-    },
-    adress_id: {
-      type: DataTypes.ARRAY(DataTypes.STRING)
-    },
-    token_id: {
-      type: DataTypes.STRING
-    },
-    offer_id: {
-      type: DataTypes.STRING
+    aboweb_subscribe_id: {
+      type: DataTypes.INTEGER
     },
     payment_method: {
-      type: DataTypes.ENUM('CB', 'SEPA')
+      type: DataTypes.INTEGER
+    },
+    is_gift: {
+      type: DataTypes.BOOLEAN
     },
     status: {
+      type: DataTypes.STRING
+    },
+    cgv_accepted: {
+      type: DataTypes.BOOLEAN
+    },
+    source: {
       type: DataTypes.STRING
     }
   })
 
   Checkout.associate = models => {
-    Checkout.belongsTo(models.Client)
+    Checkout.belongsTo(models.Client, { foreignKey: 'client_id' })
+
+    Checkout.belongsTo(models.Token, { foreignKey: 'token_id' })
+
+    Checkout.belongsTo(models.Address, {
+      as: 'invoice_address',
+      foreignKey: 'invoice_address_id'
+    })
+    Checkout.belongsTo(models.Address, {
+      as: 'delivery_address',
+      foreignKey: 'delivery_address_id'
+    })
+
+    Checkout.belongsTo(models.Offer, { foreignKey: 'offer_id' })
   }
 
   return Checkout

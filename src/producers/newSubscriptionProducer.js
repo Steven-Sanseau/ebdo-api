@@ -4,16 +4,16 @@ import { env } from '../lib/env'
 import uniqid from 'uniqid'
 
 const producer = Producer.create({
-  queueUrl: 'https://sqs.eu-west-2.amazonaws.com/606145181943/new-client',
+  queueUrl: 'https://sqs.eu-west-1.amazonaws.com/606145181943/new-subscription',
   region: env.AWS_AREA,
   accessKeyId: env.AWS_KEY_ID,
   secretAccessKey: env.AWS_ACCESS_KEY
 })
 
-export default async function newClientProducer(message) {
+export default async function newSubscriptionProducer(message) {
   const params = {
     body: JSON.stringify(message),
-    id: uniqid('producer-newClient-')
+    id: uniqid('producer-newSubscription-')
   }
 
   return producer.send(params, err => {

@@ -26,7 +26,8 @@ export function configureContainer() {
     resolutionMode: ResolutionMode.CLASSIC
   }
 
-  const AdressModel = db.Adress
+  const AddressModel = db.Address
+  const ChargeModel = db.Charge
   const CheckoutModel = db.Checkout
   const ClientModel = db.Client
   const NewsletterModel = db.Newsletter
@@ -46,7 +47,8 @@ export function configureContainer() {
       // Our logger is already constructed,
       // so provide it as-is to anyone who wants it.
       logger,
-      AdressModel,
+      AddressModel,
+      ChargeModel,
       CheckoutModel,
       ClientModel,
       NewsletterModel,
