@@ -12,13 +12,13 @@ const pickProps = data =>
     'civility',
     'country',
     'phone',
-    'client_id',
     'type_address'
   ])
 
 export default class AddressService {
-  constructor(addressStore) {
+  constructor(addressStore, clientStore) {
     this.addressStore = addressStore
+    this.clientStore = clientStore
   }
 
   async findById(id) {
@@ -40,9 +40,16 @@ export default class AddressService {
     BadRequest.assert(address.first_name, 'First Name is required')
     BadRequest.assert(address.last_name, 'Last Name is required')
     BadRequest.assert(address.country, 'Country is required')
+    BadRequest.assert(address.client_id, 'Client id is required')
+
+    const client = await this.clientStore.getById(address.client_id)
+    NotFound.assert(client, `client "${address.client_id}" not found`)
 
     const picked = pickProps(address)
-    return this.addressStore.create(picked)
+    const addressStored = await this.addressStore.create(picked)
+
+    addressStored.setClient(client)
+    return { adress: addressStored }
   }
 
   async update(id, data) {

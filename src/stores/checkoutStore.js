@@ -17,11 +17,6 @@ export default function createCheckoutStore(CheckoutModel) {
       return checkout
     },
 
-    async build(data) {
-      const checkout = await CheckoutModel.build(data)
-      return checkout
-    },
-
     async update(id, data) {
       const checkout = await CheckoutModel.update(data, {
         where: { checkout_id: id },

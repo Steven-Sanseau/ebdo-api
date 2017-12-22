@@ -47,7 +47,7 @@ export default class CheckoutService {
     BadRequest.assert(pickedCheckout.offer_id, 'offer_id is required')
 
     const client = await this.clientStore.getById(pickedCheckout.client_id)
-    Conflict.assert(
+    NotFound.assert(
       client,
       `Checkout with client "${pickedCheckout.client_id}" not found`
     )
@@ -56,7 +56,7 @@ export default class CheckoutService {
       pickedCheckout.address_invoice_id,
       pickedCheckout.client_id
     )
-    Conflict.assert(
+    NotFound.assert(
       adressInvoice,
       `Checkout with adress invoice "${
         pickedCheckout.address_invoice_id
@@ -67,7 +67,7 @@ export default class CheckoutService {
       pickedCheckout.address_delivery_id,
       pickedCheckout.client_id
     )
-    Conflict.assert(
+    NotFound.assert(
       adressDelivery,
       `Checkout with adress delivery "${
         pickedCheckout.address_delivery_id
@@ -78,13 +78,13 @@ export default class CheckoutService {
       pickedCheckout.token_id,
       pickedCheckout.client_id
     )
-    Conflict.assert(
+    NotFound.assert(
       token,
       `Checkout with token "${pickedCheckout.token_id}" not found`
     )
 
     const offer = await this.offerStore.getById(pickedCheckout.offer_id)
-    Conflict.assert(
+    NotFound.assert(
       offer,
       `Checkout with offer "${pickedCheckout.offer_id}" not found`
     )

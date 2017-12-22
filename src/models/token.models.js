@@ -7,10 +7,6 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    client_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     token_type: {
       type: DataTypes.STRING
     },
@@ -38,8 +34,8 @@ export default (sequelize, DataTypes) => {
     Token.belongsTo(models.Client, { foreignKey: 'client_id' })
 
     Token.hasOne(models.Checkout, {
-      foreignKey: 'checkout_id',
-      targetKey: 'checkout_id'
+      targetKey: 'checkout_id',
+      foreignKey: 'token_id'
     })
   }
 

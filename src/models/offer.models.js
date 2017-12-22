@@ -41,7 +41,10 @@ export default (sequelize, DataTypes) => {
   })
 
   Offer.associate = models => {
-    Offer.hasMany(models.Checkout)
+    Offer.hasMany(models.Checkout, {
+      targetKey: 'checkout_id',
+      foreignKey: 'offer_id'
+    })
   }
 
   return Offer

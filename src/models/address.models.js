@@ -7,10 +7,6 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    client_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     last_name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -67,8 +63,17 @@ export default (sequelize, DataTypes) => {
   Address.associate = models => {
     Address.belongsTo(models.Client, { foreignKey: 'client_id' })
 
-    Address.hasOne(models.Checkout, { as: 'invoice_address' })
-    Address.hasOne(models.Checkout, { as: 'delivery_address' })
+    Address.hasOne(models.Checkout, {
+      as: 'invoice_address',
+      foreignKey: 'invoice_address_id',
+      targetKey: 'checkout_id'
+    })
+
+    Address.hasOne(models.Checkout, {
+      as: 'delivery_address',
+      foreignKey: 'delivery_address_id',
+      targetKey: 'checkout_id'
+    })
   }
 
   return Address

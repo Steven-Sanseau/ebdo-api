@@ -4,8 +4,8 @@ import stripe from '../lib/stripe'
 
 const pickProps = data =>
   pick(data, [
-    'client_id',
     'token_type',
+    'client_id',
     'stripe_token_id',
     'stripe_customer_id',
     'stripe_card_id',
@@ -45,14 +45,16 @@ export default class TokenService {
       `Token with id "${tokenPicked.stripe_token_id}" already found`
     )
 
-    const clientTest = await this.clientStore.getById(clientPicked.client_id)
+    const clientObject = await this.clientStore.getById(clientPicked.client_id)
     Conflict.assert(
-      clientTest,
+      clientObject,
       `Client with id "${clientPicked.client_id}" not found`
     )
-    tokenPicked.client_id = clientPicked.client_id
 
-    return this.tokenStore.create(tokenPicked)
+    const tokenStored = await this.tokenStore.create(tokenPicked)
+    tokenStored.setClient(clientObject)
+
+    return { token: tokenStored }
   }
 
   async createStripeCustomer(token) {

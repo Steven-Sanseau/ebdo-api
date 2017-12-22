@@ -43,15 +43,15 @@ export default (sequelize, DataTypes) => {
   Client.associate = models => {
     Client.hasMany(models.Address, {
       targetKey: 'address_id',
-      foreignKey: 'address_id'
+      foreignKey: 'client_id'
     })
     Client.hasMany(models.Checkout, {
       targetKey: 'checkout_id',
-      foreignKey: 'checkout_id'
+      foreignKey: 'client_id'
     })
     Client.hasMany(models.Token, {
       targetKey: 'token_id',
-      foreignKey: 'token_id'
+      foreignKey: 'client_id'
     })
   }
 
