@@ -36,8 +36,14 @@ export default (sequelize, DataTypes) => {
 
     Checkout.belongsTo(models.Token, { foreignKey: 'token_id' })
 
-    Checkout.belongsTo(models.Address, { as: 'invoice_address' })
-    Checkout.belongsTo(models.Address, { as: 'delivery_address' })
+    Checkout.belongsTo(models.Address, {
+      as: 'invoice_address',
+      foreignKey: 'invoice_address_id'
+    })
+    Checkout.belongsTo(models.Address, {
+      as: 'delivery_address',
+      foreignKey: 'delivery_address_id'
+    })
 
     Checkout.belongsTo(models.Offer, { foreignKey: 'offer_id' })
   }

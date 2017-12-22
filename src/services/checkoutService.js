@@ -1,6 +1,7 @@
-import { NotFound, BadRequest, Conflict } from 'fejl'
+import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
 import newSubscriptionProducer from '../producers/newSubscriptionProducer'
+import stripe from '../lib/stripe'
 
 const assertEmail = BadRequest.makeAssert('No email given')
 const pickProps = data =>
@@ -96,8 +97,40 @@ export default class CheckoutService {
     checkoutStored.setDelivery_address(adressDelivery)
     checkoutStored.setInvoice_address(adressInvoice)
 
-    return checkoutStored
+    if (offer.time_limited) {
+      try {
+        const chargeStripe = await this.chargeCard(
+          token.stripe_customer_id,
+          offer.price_ttc,
+          checkoutStored.checkout_id,
+          offer.description
+        )
+        checkoutStored.status = 'paid'
+
+        newSubscriptionProducer({
+          offer,
+          checkoutStored,
+          client,
+          adressInvoice,
+          adressDelivery
+        })
+      } catch (err) {
+        checkoutStored.status = 'card declined'
+        PaymentError.assert(!err, err.message)
+      }
+    }
+    const checkoutreturn = await checkoutStored.save()
+    return { checkout: checkoutreturn }
   }
 
-  async makeStripeCharge() {}
+  async chargeCard(customerId, amount, checkoutId, description) {
+    const stripeCharge = await stripe.charges.create({
+      amount: amount,
+      currency: 'eur',
+      description: description,
+      customer: customerId,
+      metadata: { order_id: checkoutId }
+    })
+    return stripeCharge
+  }
 }
