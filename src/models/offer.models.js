@@ -40,5 +40,9 @@ export default (sequelize, DataTypes) => {
     }
   })
 
+  Offer.associate = models => {
+    Offer.hasMany(models.Checkout)
+  }
+
   return Offer
 }

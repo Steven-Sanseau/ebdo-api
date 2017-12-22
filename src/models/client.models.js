@@ -40,7 +40,20 @@ export default (sequelize, DataTypes) => {
     }
   })
 
-  Client.associate = models => {}
+  Client.associate = models => {
+    Client.hasMany(models.Address, {
+      targetKey: 'address_id',
+      foreignKey: 'address_id'
+    })
+    Client.hasMany(models.Checkout, {
+      targetKey: 'checkout_id',
+      foreignKey: 'checkout_id'
+    })
+    Client.hasMany(models.Token, {
+      targetKey: 'token_id',
+      foreignKey: 'token_id'
+    })
+  }
 
   return Client
 }

@@ -15,8 +15,8 @@ module.exports = {
         duration: 12,
         shipping_cost: 0,
         is_gift: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        created_at: new Date(),
+        updated_at: new Date()
       }
     ])
   },

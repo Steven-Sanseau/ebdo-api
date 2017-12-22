@@ -6,7 +6,7 @@ export default function createAddressStore(logger, AddressModel) {
     },
 
     async getByIdAndClientId(id, clientId) {
-      const address = await AddressModel.findOne.findOne({
+      const address = await AddressModel.findOne({
         where: { address_id: id, client_id: clientId }
       })
       return address

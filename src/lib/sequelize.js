@@ -23,8 +23,8 @@ const sequelize = new Sequelize(
     host: env.POSTGRESHOST,
     dialectOptions: sslObj,
     define: {
-      // paranoid: true, //TODO migration prod et staging
-      // underscored: true, //TODO migration prod et staging
+      paranoid: true, //TODO migration prod et staging
+      underscored: true, //TODO migration prod et staging
       freezeTableName: true
     }
   }

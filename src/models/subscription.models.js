@@ -34,12 +34,7 @@ export default (sequelize, DataTypes) => {
     }
   })
 
-  Subscription.associate = models => {
-    Subscription.hasOne(models.Address, {
-      foreignKey: 'fk_address_sub',
-      targetKey: 'address_id'
-    })
-  }
+  Subscription.associate = models => {}
 
   return Subscription
 }

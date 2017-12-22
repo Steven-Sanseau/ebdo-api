@@ -35,7 +35,12 @@ export default (sequelize, DataTypes) => {
   })
 
   Token.associate = models => {
-    Token.belongsTo(models.Client, { targetKey: 'client_id' })
+    Token.belongsTo(models.Client, { foreignKey: 'client_id' })
+
+    Token.hasOne(models.Checkout, {
+      foreignKey: 'checkout_id',
+      targetKey: 'checkout_id'
+    })
   }
 
   return Token

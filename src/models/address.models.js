@@ -65,7 +65,10 @@ export default (sequelize, DataTypes) => {
   })
 
   Address.associate = models => {
-    Address.belongsTo(models.Client, { targetKey: 'client_id' })
+    Address.belongsTo(models.Client, { foreignKey: 'client_id' })
+
+    Address.hasOne(models.Checkout, { as: 'invoice_address' })
+    Address.hasOne(models.Checkout, { as: 'delivery_address' })
   }
 
   return Address

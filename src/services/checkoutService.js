@@ -24,15 +24,27 @@ export default class CheckoutService {
     tokenStore,
     offerStore
   ) {
+    this.clientStore = clientStore
     this.addressStore = addressStore
+    this.tokenStore = tokenStore
+    this.offerStore = offerStore
     this.checkoutStore = checkoutStore
   }
 
   async create(body) {
-    BadRequest.assert(body.client, 'No client payload given')
-    const pickedCheckout = pickProps(body.client)
-    pickedCheckout.email = _.toLower(pickedCheckout.email.trim())
-    BadRequest.assert(pickedCheckout.email, 'email is required')
+    BadRequest.assert(body.checkout, 'No checkout payload given')
+    const pickedCheckout = pickProps(body.checkout)
+    BadRequest.assert(pickedCheckout.client_id, 'client_id is required')
+    BadRequest.assert(
+      pickedCheckout.address_invoice_id,
+      'address_invoice_id is required'
+    )
+    BadRequest.assert(
+      pickedCheckout.address_delivery_id,
+      'address_delivery_id is required'
+    )
+    BadRequest.assert(pickedCheckout.token_id, 'token_id is required')
+    BadRequest.assert(pickedCheckout.offer_id, 'offer_id is required')
 
     const client = await this.clientStore.getById(pickedCheckout.client_id)
     Conflict.assert(
@@ -52,7 +64,7 @@ export default class CheckoutService {
     )
 
     const adressDelivery = await this.addressStore.getByIdAndClientId(
-      pickedCheckout.address_invoice_id,
+      pickedCheckout.address_delivery_id,
       pickedCheckout.client_id
     )
     Conflict.assert(
@@ -63,7 +75,7 @@ export default class CheckoutService {
     )
 
     const token = await this.tokenStore.getByIdAndClientId(
-      pickedCheckout.address_invoice_id,
+      pickedCheckout.token_id,
       pickedCheckout.client_id
     )
     Conflict.assert(
@@ -78,7 +90,11 @@ export default class CheckoutService {
     )
 
     const checkoutStored = await this.checkoutStore.create(pickedCheckout)
-    const producer = await newClientProducer({ pickedCheckout })
+    checkoutStored.setClient(client)
+    checkoutStored.setOffer(offer)
+    checkoutStored.setToken(token)
+    checkoutStored.setDelivery_address(adressDelivery)
+    checkoutStored.setInvoice_address(adressInvoice)
 
     return checkoutStored
   }
