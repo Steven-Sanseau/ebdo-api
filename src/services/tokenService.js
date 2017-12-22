@@ -7,7 +7,6 @@ const pickProps = data =>
     'token_type',
     'client_id',
     'stripe_token_id',
-    'stripe_customer_id',
     'stripe_card_id',
     'slimpay_rum_id',
     'slimpay_token_id',
@@ -54,46 +53,36 @@ export default class TokenService {
     const tokenStored = await this.tokenStore.create(tokenPicked)
     tokenStored.setClient(clientObject)
 
-    return { token: tokenStored }
+    const getCustomerStripeId = await this.createStripeCustomer(
+      tokenStored.stripe_token_id,
+      clientObject
+    )
+
+    tokenStored.stripe_customer_id = getCustomerStripeId
+    const tokensaved = await tokenStored.save()
+    return {
+      token: pick(tokensaved, [
+        'token_id',
+        'token_type',
+        'client_id',
+        'stripe_token_id',
+        'stripe_card_id',
+        'slimpay_rum_id',
+        'slimpay_token_id',
+        'slimpay_rum_code'
+      ])
+    }
   }
 
-  async createStripeCustomer(token) {
+  async createStripeCustomer(token, client) {
     const stripeResponse = await stripe.customers
       .create({
-        email: 'steven.sanseau@gmail.com',
+        email: client.email,
         source: token
       })
       .then(function(customer) {
-        // YOUR CODE: Save the customer ID and other info in a database for later.
-        console.log('customeer', customer)
-        // stripe.charges.create({
-        //   amount: 1000,
-        //   currency: 'eur',
-        //   customer: customer.id
-        // })
-        // stripe.charges.create({
-        //   amount: 1500,
-        //   currency: 'eur',
-        //   customer: customer.id
-        // })
-        // stripe.charges.create({
-        //   amount: 2000,
-        //   currency: 'eur',
-        //   customer: customer.id
-        // })
-      })
-      .then(function(charge) {
-        console.log('customeer', charge)
+        return customer.id
       })
     return stripeResponse
-  }
-
-  async chargeCard(customerId) {
-    const stripeCharge = await stripe.charges.create({
-      amount: 1500,
-      currency: 'eur',
-      customer: customerId
-    })
-    return stripeCharge
   }
 }

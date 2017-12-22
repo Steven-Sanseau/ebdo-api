@@ -1,6 +1,7 @@
-import { NotFound, BadRequest, Conflict } from 'fejl'
+import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
 import newSubscriptionProducer from '../producers/newSubscriptionProducer'
+import stripe from '../lib/stripe'
 
 const assertEmail = BadRequest.makeAssert('No email given')
 const pickProps = data =>
@@ -22,13 +23,15 @@ export default class CheckoutService {
     clientStore,
     addressStore,
     tokenStore,
-    offerStore
+    offerStore,
+    chargeStore
   ) {
     this.clientStore = clientStore
     this.addressStore = addressStore
     this.tokenStore = tokenStore
     this.offerStore = offerStore
     this.checkoutStore = checkoutStore
+    this.chargeStore = chargeStore
   }
 
   async create(body) {
@@ -96,8 +99,48 @@ export default class CheckoutService {
     checkoutStored.setDelivery_address(adressDelivery)
     checkoutStored.setInvoice_address(adressInvoice)
 
-    return checkoutStored
+    if (offer.time_limited) {
+      try {
+        const chargeStripe = await this.chargeCard(
+          token,
+          offer,
+          checkoutStored,
+          client
+        )
+        checkoutStored.status = 'paid'
+
+        const producer = await newSubscriptionProducer({
+          offer,
+          checkoutStored,
+          client,
+          adressInvoice,
+          adressDelivery
+        })
+      } catch (err) {
+        checkoutStored.status = 'card declined'
+        PaymentError.assert(!err, err.message)
+      }
+    }
+    const checkoutreturn = await checkoutStored.save()
+    return { checkout: checkoutreturn }
   }
 
-  async makeStripeCharge() {}
+  async chargeCard(token, offer, checkout, client) {
+    const stripeCharge = await stripe.charges.create({
+      amount: offer.price_ttc,
+      currency: 'eur',
+      description: offer.description,
+      customer: token.stripe_customer_id,
+      metadata: { order_id: checkout.checkout_id }
+    })
+
+    const chargeStored = await this.chargeStore.create({
+      stripe_charge_return: stripeCharge
+    })
+    chargeStored.setToken(token)
+    chargeStored.setClient(client)
+    chargeStored.setCheckout(checkout)
+
+    return stripeCharge
+  }
 }
