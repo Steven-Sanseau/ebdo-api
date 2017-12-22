@@ -26,17 +26,19 @@ export default class ClientService {
   async findByEmail(email) {
     assertEmail(email)
 
-    return this.clientStore
-      .getByEmail(email)
-      .then(NotFound.makeAssert(`Client with email "${email}" not found`))
+    const client = await this.clientStore.getByEmail(email)
+    NotFound.assert(client, `Client with email "${email}" not found`)
+
+    return { client }
   }
 
   async findById(id) {
     BadRequest.assert(id, 'No id payload given')
 
-    return this.clientStore
-      .getById(id)
-      .then(NotFound.makeAssert(`Client with id "${id}" not found`))
+    const client = await this.clientStore.getById(id)
+    NotFound.assert(client, `Client with id "${id}" not found`)
+
+    return { client }
   }
 
   async create(body) {
@@ -53,9 +55,9 @@ export default class ClientService {
 
     pickedClient.type_client = 0
     const clientStored = await this.clientStore.create(pickedClient)
-    const producer = await newClientProducer({ pickedClient })
+    // const producer = await newClientProducer({ pickedClient })
 
-    return clientStored
+    return { client: clientStored }
   }
 
   async update(id, data) {
@@ -69,7 +71,7 @@ export default class ClientService {
 
     return this.clientStore
       .update(id, pickedClient)
-      .then(res => ({ updated: true, address: res[1][0] }))
+      .then(res => ({ updated: true, client: res[1][0] }))
       .catch(err =>
         Conflict.assert(
           err,

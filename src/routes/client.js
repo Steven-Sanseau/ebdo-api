@@ -1,7 +1,6 @@
 import { createController } from 'awilix-koa'
 
 const api = clientService => ({
-  // findClient: async ctx => ctx.ok(await clientService.find(ctx.query)),
   countClient: async ctx => ctx.ok(await clientService.countClient()),
   getClient: async ctx =>
     ctx.ok(await clientService.findByEmail(ctx.params.email)),
@@ -9,8 +8,6 @@ const api = clientService => ({
     ctx.created(await clientService.create(ctx.request.body)),
   updateClient: async ctx =>
     ctx.ok(await clientService.update(ctx.params.id, ctx.request.body))
-  // removeClient: async ctx =>
-  //   ctx.noContent(await clientService.remove(ctx.params.id))
 })
 
 export default createController(api)

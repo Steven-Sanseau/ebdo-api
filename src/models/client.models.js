@@ -31,18 +31,27 @@ export default (sequelize, DataTypes) => {
       validate: {
         notEmpty: true
       }
+    },
+    login_code: {
+      type: DataTypes.INTEGER
+    },
+    login_code_created_at: {
+      type: DataTypes.DATE
     }
   })
 
   Client.associate = models => {
     Client.hasMany(models.Address, {
-      foreignKey: 'fk_address_clients',
-      targetKey: 'client_id'
+      targetKey: 'address_id',
+      foreignKey: 'client_id'
     })
-
     Client.hasMany(models.Checkout, {
-      foreignKey: 'fk_client_id',
-      targetKey: 'client_id'
+      targetKey: 'checkout_id',
+      foreignKey: 'client_id'
+    })
+    Client.hasMany(models.Token, {
+      targetKey: 'token_id',
+      foreignKey: 'client_id'
     })
   }
 

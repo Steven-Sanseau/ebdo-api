@@ -33,12 +33,19 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     shipping_cost: {
-      type: DataTypes.INTEGER
+      type: DataTypes.FLOAT
     },
     is_gift: {
       type: DataTypes.BOOLEAN
     }
   })
+
+  Offer.associate = models => {
+    Offer.hasMany(models.Checkout, {
+      targetKey: 'checkout_id',
+      foreignKey: 'offer_id'
+    })
+  }
 
   return Offer
 }

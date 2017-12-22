@@ -11,7 +11,6 @@ let sslObj = {}
 if (env.NODE_ENV !== 'developpment') {
   sslObj = { ssl: true }
 }
-console.log(env.POSTGRESHOST)
 
 // connect to postgres db
 const sequelize = new Sequelize(
@@ -22,7 +21,12 @@ const sequelize = new Sequelize(
     dialect: 'postgres',
     port: env.POSTGRESPORT,
     host: env.POSTGRESHOST,
-    dialectOptions: sslObj
+    dialectOptions: sslObj,
+    define: {
+      paranoid: true,
+      underscored: true,
+      freezeTableName: true
+    }
   }
 )
 

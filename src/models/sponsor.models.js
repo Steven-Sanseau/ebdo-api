@@ -9,11 +9,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     code: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
+      type: DataTypes.STRING
     },
     checkout_id: {
       type: DataTypes.INTEGER

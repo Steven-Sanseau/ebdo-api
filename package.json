@@ -13,8 +13,7 @@
     "heroku-postbuild": "npm run build && npm run migrate",
     "dev": "nodemon src/bin/server.js",
     "debug-brk": "npm run debug -- --break",
-    "test":
-      "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
+    "test": "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
     "test-watch": "npm run test -- --watch",
     "lint": "eslint src/ test/",
     "lint-watch": "esw -w src/ test/",
@@ -41,12 +40,14 @@
     "eslint-watch": "^3.1.3",
     "fejl": "^1.0.2",
     "glob": "^7.1.2",
+    "jsonwebtoken": "^8.1.0",
     "kcors": "2",
     "keyblade": "^0.3.2",
     "koa": "^2.4.1",
     "koa-bodyparser": "^4.2.0",
     "koa-compress": "^2.0.0",
     "koa-convert": "^1.2.0",
+    "koa-jwt": "^3.3.0",
     "koa-respond": "^1.0.1",
     "koa-router": "^7.3.0",
     "lodash": "^4.17.4",
@@ -67,6 +68,7 @@
     "soap": "^0.23.0",
     "source-map-support": "^0.5.0",
     "sqs-producer": "^1.6.2",
+    "stripe": "^5.4.0",
     "supertest": "^3.0.0",
     "uniqid": "^4.1.1",
     "yenv": "^1.0.6"
@@ -104,7 +106,12 @@
   "nyc": {
     "sourceMap": false,
     "instrument": false,
-    "reporter": ["text", "lcov"],
-    "include": ["src/**/*.js"]
+    "reporter": [
+      "text",
+      "lcov"
+    ],
+    "include": [
+      "src/**/*.js"
+    ]
   }
 }

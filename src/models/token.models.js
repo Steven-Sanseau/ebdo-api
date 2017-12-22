@@ -7,20 +7,36 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    client_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    token_stripe: {
+    token_type: {
       type: DataTypes.STRING
     },
-    rum_slimpay: {
+    stripe_token_id: {
+      type: DataTypes.STRING
+    },
+    stripe_customer_id: {
+      type: DataTypes.STRING
+    },
+    stripe_card_id: {
+      type: DataTypes.STRING
+    },
+    slimpay_rum_id: {
+      type: DataTypes.STRING
+    },
+    slimpay_token_id: {
+      type: DataTypes.STRING
+    },
+    slimpay_rum_code: {
       type: DataTypes.STRING
     }
   })
 
   Token.associate = models => {
-    Token.belongsTo(models.Client, { targetKey: 'client_id' })
+    Token.belongsTo(models.Client, { foreignKey: 'client_id' })
+
+    Token.hasOne(models.Checkout, {
+      targetKey: 'checkout_id',
+      foreignKey: 'token_id'
+    })
   }
 
   return Token
