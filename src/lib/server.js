@@ -1,5 +1,6 @@
 import * as http from 'http'
 import Koa from 'koa'
+import Raven from 'raven'
 import cors from '@koa/cors'
 import respond from 'koa-respond'
 import bodyParser from 'koa-bodyparser'
@@ -42,6 +43,16 @@ export async function createServer() {
 
     // Default handler when nothing stopped the chain.
     .use(notFoundHandler)
+
+  Raven.config(
+    'https://ae19852592fa42c89e58a2cc5db34af4:ea7447c3da524654915567af11dfdcc3@sentry.io/262965'
+  ).install()
+
+  app.on('error', function(err) {
+    Raven.captureException(err, function(err, eventId) {
+      console.log('Reported error ' + eventId)
+    })
+  })
 
   // Creates a http server ready to listen.
   const server = http.createServer(app.callback())

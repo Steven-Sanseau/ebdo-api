@@ -13,7 +13,7 @@ const api = clientService => ({
 export default createController(api)
   .prefix('/v1/client')
   // .get('', 'findClient')
-  .get('/count', 'countClient')
+  .get('/count', 'countCliente')
   .get('/:email', 'getClient')
   .post('', 'createClient')
   .patch('/:id', 'updateClient')
