@@ -26,30 +26,33 @@ export default class AddressService {
     const idParsed = parseInt(id)
     BadRequest.assert(Number.isInteger(idParsed), 'id must be a number')
 
-    return this.addressStore
-      .getById(idParsed)
-      .then(NotFound.makeAssert(`Address with id "${id}" not found`))
+    const address = this.addressStore.getById(idParsed)
+    NotFound.assert(address, `Address with id "${id}" not found`)
+
+    return { address }
   }
 
   async create(body) {
     BadRequest.assert(body.address, 'No address payload given')
     const address = body.address
+    const client = body.client
     BadRequest.assert(address.address, 'address is required')
     BadRequest.assert(address.city, 'city is required')
     BadRequest.assert(address.postal_code, 'Postal Code is required')
     BadRequest.assert(address.first_name, 'First Name is required')
     BadRequest.assert(address.last_name, 'Last Name is required')
     BadRequest.assert(address.country, 'Country is required')
-    BadRequest.assert(address.client_id, 'Client id is required')
+    BadRequest.assert(client.client_id, 'Client id is required')
 
-    const client = await this.clientStore.getById(address.client_id)
-    NotFound.assert(client, `client "${address.client_id}" not found`)
+    const clientStored = await this.clientStore.getById(client.client_id)
+    NotFound.assert(clientStored, `client "${client.client_id}" not found`)
 
     const picked = pickProps(address)
     const addressStored = await this.addressStore.create(picked)
 
-    addressStored.setClient(client)
-    return { adress: addressStored }
+    addressStored.setClient(clientStored)
+
+    return { address: addressStored }
   }
 
   async update(id, data) {

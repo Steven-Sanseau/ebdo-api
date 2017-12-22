@@ -23,8 +23,8 @@ const sequelize = new Sequelize(
     host: env.POSTGRESHOST,
     dialectOptions: sslObj,
     define: {
-      paranoid: true, //TODO migration prod et staging
-      underscored: true, //TODO migration prod et staging
+      paranoid: true,
+      underscored: true,
       freezeTableName: true
     }
   }
@@ -48,7 +48,7 @@ Object.keys(db).forEach(function(modelName) {
     db[modelName].associate(db)
   }
 })
-sequelize.sync()
+
 // assign the sequelize variables to the db object and returning the db.
 export default _.extend(
   {

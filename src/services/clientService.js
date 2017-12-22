@@ -26,17 +26,19 @@ export default class ClientService {
   async findByEmail(email) {
     assertEmail(email)
 
-    return this.clientStore
-      .getByEmail(email)
-      .then(NotFound.makeAssert(`Client with email "${email}" not found`))
+    const client = await this.clientStore.getByEmail(email)
+    NotFound.assert(client, `Client with email "${email}" not found`)
+
+    return { client }
   }
 
   async findById(id) {
     BadRequest.assert(id, 'No id payload given')
 
-    return this.clientStore
-      .getById(id)
-      .then(NotFound.makeAssert(`Client with id "${id}" not found`))
+    const client = await this.clientStore.getById(id)
+    NotFound.assert(client, `Client with id "${id}" not found`)
+
+    return { client }
   }
 
   async create(body) {
