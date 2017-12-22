@@ -48,7 +48,8 @@ Object.keys(db).forEach(function(modelName) {
     db[modelName].associate(db)
   }
 })
-sequelize.sync()
+// DEVHACK
+// sequelize.sync()
 // assign the sequelize variables to the db object and returning the db.
 export default _.extend(
   {

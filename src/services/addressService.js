@@ -29,7 +29,7 @@ export default class AddressService {
     const address = this.addressStore.getById(idParsed)
     NotFound.assert(address, `Address with id "${id}" not found`)
 
-    return { address }
+    return address
   }
 
   async create(body) {
@@ -65,8 +65,8 @@ export default class AddressService {
 
     const picked = pickProps(address)
 
-    return this.addressStore.update(id, picked).then(res => {
-      return { updated: true, address: res[1][0] }
-    })
+    const addressUpdated = await this.addressStore.update(id, picked)
+
+    return { updated: true, address: addressUpdated[1][0] }
   }
 }
