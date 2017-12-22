@@ -6,7 +6,7 @@ import { logger } from '../lib/logger'
 import { env } from './env'
 
 const db = {}
-let sslObj = {}
+let sslObj = { logging: console.log }
 
 if (env.NODE_ENV !== 'developpment') {
   sslObj = { ssl: true }
