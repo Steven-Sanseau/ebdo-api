@@ -17,6 +17,14 @@ export default function createOfferStore(logger, TokenModel) {
     async create(data) {
       const token = await TokenModel.build(data).save()
       return token
+    },
+
+    async update(id, data) {
+      const token = await TokenModel.update(data, {
+        where: { token_id: id },
+        returning: true
+      })
+      return token
     }
   }
 }

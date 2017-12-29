@@ -4,7 +4,9 @@ import { env } from '../lib/env'
 import uniqid from 'uniqid'
 
 const producer = Producer.create({
-  queueUrl: 'https://sqs.eu-west-2.amazonaws.com/606145181943/new-client',
+  queueUrl: `https://sqs.${env.AWS_AREA}.${
+    env.AWS_URL_BASE
+  }/${AWS_URL_NEW_CLIENT}`,
   region: env.AWS_AREA,
   accessKeyId: env.AWS_KEY_ID,
   secretAccessKey: env.AWS_ACCESS_KEY

@@ -1,5 +1,6 @@
 import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
+import newClientProducer from '../producers/newClientProducer'
 import newSubscriptionProducer from '../producers/newSubscriptionProducer'
 import stripe from '../lib/stripe'
 
@@ -55,27 +56,29 @@ export default class CheckoutService {
       `Checkout with client "${pickedCheckout.client_id}" not found`
     )
 
-    const adressInvoice = await this.addressStore.getByIdAndClientId(
+    const addressInvoice = await this.addressStore.getByIdAndClientId(
       pickedCheckout.address_invoice_id,
       pickedCheckout.client_id
     )
     NotFound.assert(
-      adressInvoice,
-      `Checkout with adress invoice "${
+      addressInvoice,
+      `Checkout with address invoice "${
         pickedCheckout.address_invoice_id
       }" not found`
     )
 
-    const adressDelivery = await this.addressStore.getByIdAndClientId(
+    const addressDelivery = await this.addressStore.getByIdAndClientId(
       pickedCheckout.address_delivery_id,
       pickedCheckout.client_id
     )
     NotFound.assert(
-      adressDelivery,
-      `Checkout with adress delivery "${
+      addressDelivery,
+      `Checkout with address delivery "${
         pickedCheckout.address_delivery_id
       }" not found`
     )
+
+    newClientProducer({ client, addressDelivery, addressInvoice })
 
     const token = await this.tokenStore.getByIdAndClientId(
       pickedCheckout.token_id,
@@ -96,8 +99,9 @@ export default class CheckoutService {
     checkoutStored.setClient(client)
     checkoutStored.setOffer(offer)
     checkoutStored.setToken(token)
-    checkoutStored.setDelivery_address(adressDelivery)
-    checkoutStored.setInvoice_address(adressInvoice)
+    checkoutStored.setDelivery_address(addressDelivery)
+    checkoutStored.setInvoice_address(addressInvoice)
+    checkoutStored.status = 'created'
 
     if (offer.time_limited) {
       try {
@@ -113,11 +117,11 @@ export default class CheckoutService {
           offer,
           checkoutStored,
           client,
-          adressInvoice,
-          adressDelivery
+          addressInvoice,
+          addressDelivery
         })
       } catch (err) {
-        checkoutStored.status = 'card declined'
+        checkoutStored.status = 'declined'
         PaymentError.assert(!err, err.message)
       }
     }
@@ -127,7 +131,7 @@ export default class CheckoutService {
 
   async chargeCard(token, offer, checkout, client) {
     const stripeCharge = await stripe.charges.create({
-      amount: offer.price_ttc,
+      amount: this.calculAmount(offer),
       currency: 'eur',
       description: offer.description,
       customer: token.stripe_customer_id,
@@ -142,5 +146,9 @@ export default class CheckoutService {
     chargeStored.setCheckout(checkout)
 
     return stripeCharge
+  }
+
+  calculAmount(offer) {
+    return offer.price_ttc
   }
 }

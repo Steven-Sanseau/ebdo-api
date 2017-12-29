@@ -60,10 +60,7 @@ export default class LoginService {
     NotFound.assert(user, 'Invalid code')
 
     return {
-      token: Jwt.sign(
-        { email: user.email, date: new Date() },
-        env.JWT_PRIVATE_KEY
-      )
+      token: Jwt.sign({ email: user.email }, env.JWT_PRIVATE_KEY)
     }
   }
 }

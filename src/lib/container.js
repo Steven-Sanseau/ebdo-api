@@ -33,6 +33,7 @@ export function configureContainer() {
   const NewsletterModel = db.Newsletter
   const OfferModel = db.Offer
   const SponsorModel = db.Sponsor
+
   const TokenModel = db.Token
 
   return createContainer(opts)

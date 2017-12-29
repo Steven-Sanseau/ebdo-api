@@ -1,5 +1,3 @@
-import { Client } from './client.models'
-
 export default (sequelize, DataTypes) => {
   const Token = sequelize.define('Token', {
     token_id: {
@@ -19,6 +17,24 @@ export default (sequelize, DataTypes) => {
     stripe_card_id: {
       type: DataTypes.STRING
     },
+    stripe_card_country: {
+      type: DataTypes.STRING
+    },
+    stripe_card_brand: {
+      type: DataTypes.STRING
+    },
+    stripe_card_cvc_check: {
+      type: DataTypes.STRING
+    },
+    stripe_card_exp_month: {
+      type: DataTypes.INTEGER
+    },
+    stripe_card_exp_year: {
+      type: DataTypes.INTEGER
+    },
+    stripe_card_last4: {
+      type: DataTypes.STRING
+    },
     slimpay_rum_id: {
       type: DataTypes.STRING
     },
@@ -34,8 +50,8 @@ export default (sequelize, DataTypes) => {
     Token.belongsTo(models.Client, { foreignKey: 'client_id' })
 
     Token.hasOne(models.Checkout, {
-      targetKey: 'checkout_id',
-      foreignKey: 'token_id'
+      targetKey: 'token_id',
+      foreignKey: 'checkout_id'
     })
   }
 

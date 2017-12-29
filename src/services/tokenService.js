@@ -51,37 +51,65 @@ export default class TokenService {
     )
 
     const tokenStored = await this.tokenStore.create(tokenPicked)
+
     tokenStored.setClient(clientObject)
+    let tokenSaved = {}
 
-    const getCustomerStripeId = await this.createStripeCustomer(
-      tokenStored.stripe_token_id,
-      clientObject
-    )
+    try {
+      tokenSaved = await this.createStripeCustomer(
+        this,
+        tokenStored,
+        clientObject
+      )
+    } catch (err) {
+      BadRequest.assert(!err, err.message)
+    }
 
-    tokenStored.stripe_customer_id = getCustomerStripeId
-    const tokensaved = await tokenStored.save()
     return {
-      token: pick(tokensaved, [
+      token: pick(tokenSaved, [
         'token_id',
         'token_type',
-        'client_id',
-        'stripe_token_id',
-        'stripe_card_id',
         'slimpay_rum_id',
         'slimpay_token_id',
-        'slimpay_rum_code'
+        'slimpay_rum_code',
+        'stripe_card_last4',
+        'stripe_card_exp_month',
+        'stripe_card_cvc_check',
+        'stripe_card_brand',
+        'stripe_card_country',
+        'stripe_card_exp_year'
       ])
     }
   }
 
-  async createStripeCustomer(token, client) {
+  async createStripeCustomer(t, tokenStored, client) {
     const stripeResponse = await stripe.customers
       .create({
         email: client.email,
-        source: token
+        source: tokenStored.stripe_token_id
       })
-      .then(function(customer) {
-        return customer.id
+      .then(async function(customer) {
+        BadRequest.assert(customer, 'Stripe return empty customer object')
+        BadRequest.assert(customer.sources, 'Stripe return empty source object')
+        BadRequest.assert(
+          customer.sources.data[0],
+          'Stripe return empty card object'
+        )
+
+        const sourceStripe = customer.sources.data[0]
+
+        tokenStored.stripe_card_id = sourceStripe.id
+        tokenStored.stripe_customer_id = customer.id
+        tokenStored.stripe_card_country = sourceStripe.country
+        tokenStored.stripe_card_brand = sourceStripe.brand
+        tokenStored.stripe_card_cvc_check = sourceStripe.cvc_check
+        tokenStored.stripe_card_exp_month = sourceStripe.exp_month
+        tokenStored.stripe_card_exp_year = sourceStripe.exp_year
+        tokenStored.stripe_card_last4 = sourceStripe.last4
+
+        const sourceStored = await tokenStored.save()
+
+        return sourceStored
       })
     return stripeResponse
   }
