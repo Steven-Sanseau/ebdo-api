@@ -50,8 +50,8 @@ export default (sequelize, DataTypes) => {
     Token.belongsTo(models.Client, { foreignKey: 'client_id' })
 
     Token.hasOne(models.Checkout, {
-      targetKey: 'token_id',
-      foreignKey: 'checkout_id'
+      targetKey: 'checkout_id',
+      foreignKey: 'token_id'
     })
   }
 
