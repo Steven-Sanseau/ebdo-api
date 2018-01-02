@@ -1,7 +1,7 @@
 import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
 import newClientProducer from '../producers/newClientProducer'
-import newSubscriptionProducer from '../producers/newSubscriptionProducer'
+import newSubscriptionDDCB from '../producers/newSubscriptionDDCB'
 import stripe from '../lib/stripe'
 
 const assertEmail = BadRequest.makeAssert('No email given')
@@ -119,6 +119,12 @@ export default class CheckoutService {
           client,
           addressInvoice,
           addressDelivery
+        })
+
+        const producer = await newSubscriptionDDCB({
+          offer: offer,
+          checkout: checkoutStored,
+          client: client
         })
       } catch (err) {
         checkoutStored.status = 'declined'

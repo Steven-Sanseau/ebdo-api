@@ -44,6 +44,12 @@ export default (sequelize, DataTypes) => {
     slimpay_token_id: {
       type: DataTypes.STRING
     },
+    slimpay_bic: {
+      type: DataTypes.STRING
+    },
+    slimpay_iban: {
+      type: DataTypes.STRING
+    },
     slimpay_rum_code: {
       type: DataTypes.STRING
     }
