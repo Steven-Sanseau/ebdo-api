@@ -1,6 +1,5 @@
 import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
-import newClientProducer from '../producers/newClientProducer'
 import newSubscriptionDDCB from '../producers/newSubscriptionDDCB'
 import stripe from '../lib/stripe'
 
@@ -33,6 +32,15 @@ export default class CheckoutService {
     this.offerStore = offerStore
     this.checkoutStore = checkoutStore
     this.chargeStore = chargeStore
+  }
+
+  async findById(id) {
+    BadRequest.assert(id, 'No id payload given')
+
+    const checkout = await this.checkoutStore.getById(id)
+    NotFound.assert(checkout, `Checkout with id "${id}" not found`)
+
+    return { checkout }
   }
 
   async create(body) {
@@ -113,14 +121,6 @@ export default class CheckoutService {
         )
         checkoutStored.status = 'paid'
 
-        const producer = await newSubscriptionProducer({
-          offer,
-          checkoutStored,
-          client,
-          addressInvoice,
-          addressDelivery
-        })
-
         const producer = await newSubscriptionDDCB({
           offer: offer,
           checkout: checkoutStored,
@@ -156,5 +156,24 @@ export default class CheckoutService {
 
   calculAmount(offer) {
     return offer.price_ttc
+  }
+
+  async update(id, data) {
+    BadRequest.assert(id, 'No id checkout payload given')
+
+    const pickedCheckout = _.pick(data.checkout, ['aboweb_subscribe_id'])
+    BadRequest.assert(pickedCheckout, 'No checkout payload given')
+
+    await this.findById(id)
+
+    return this.checkoutStore
+      .update(id, pickedCheckout)
+      .then(res => ({ updated: true, checkout: res[1][0] }))
+      .catch(err =>
+        Conflict.assert(
+          err,
+          `Checkout with id "${err.errors[0].message}" is unavailable to update`
+        )
+      )
   }
 }
