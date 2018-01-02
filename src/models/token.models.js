@@ -8,6 +8,9 @@ export default (sequelize, DataTypes) => {
     token_type: {
       type: DataTypes.STRING
     },
+    aboweb_id: {
+      type: DataTypes.STRING
+    },
     stripe_token_id: {
       type: DataTypes.STRING
     },

@@ -1,6 +1,7 @@
 import { NotFound, BadRequest, Conflict } from 'fejl'
 import { pick } from 'lodash'
 import stripe from '../lib/stripe'
+import newCardProducer from '../producers/newCardStripeProducer'
 
 const pickProps = data =>
   pick(data, [
@@ -17,6 +18,15 @@ export default class TokenService {
   constructor(tokenStore, clientStore) {
     this.tokenStore = tokenStore
     this.clientStore = clientStore
+  }
+
+  async findById(id) {
+    BadRequest.assert(id, 'No id payload given')
+
+    const token = await this.tokenStore.getById(id)
+    NotFound.assert(token, `Token with id "${id}" not found`)
+
+    return { token }
   }
 
   async create(body) {
@@ -61,6 +71,10 @@ export default class TokenService {
         tokenStored,
         clientObject
       )
+
+      const producer = await newSubscriptionProducer({
+        token: tokenSaved
+      })
     } catch (err) {
       BadRequest.assert(!err, err.message)
     }
@@ -112,5 +126,24 @@ export default class TokenService {
         return sourceStored
       })
     return stripeResponse
+  }
+
+  async update(id, data) {
+    BadRequest.assert(id, 'No id token payload given')
+
+    const pickedToken = pick(data.token, ['aboweb_id'])
+    BadRequest.assert(pickedToken, 'No token payload given')
+
+    await this.findById(id)
+
+    return this.tokenStore
+      .update(id, pickedToken)
+      .then(res => ({ updated: true, token: res[1][0] }))
+      .catch(err =>
+        Conflict.assert(
+          err,
+          `Token with id "${err.errors[0].message}" already found`
+        )
+      )
   }
 }
