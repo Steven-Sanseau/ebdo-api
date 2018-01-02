@@ -72,7 +72,7 @@ export default class TokenService {
         clientObject
       )
 
-      const producer = await newSubscriptionProducer({
+      const producer = await newCardProducer({
         token: tokenSaved
       })
     } catch (err) {
