@@ -22,15 +22,9 @@ export default (sequelize, DataTypes) => {
     },
     first_name: {
       type: DataTypes.STRING,
-      validate: {
-        notEmpty: true
-      }
     },
     last_name: {
-      type: DataTypes.STRING,
-      validate: {
-        notEmpty: true
-      }
+      type: DataTypes.STRING
     },
     login_code: {
       type: DataTypes.INTEGER

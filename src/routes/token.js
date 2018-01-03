@@ -7,7 +7,10 @@ const api = tokenService => ({
     ctx.ok(await tokenService.updateAboweb(ctx.params.id, ctx.request.body)),
   getIframe: async ctx =>
     ctx.ok(
-      await tokenService.getIframeSlimpay(ctx.params.client, ctx.params.address)
+      await tokenService.createTokenSlimpay(
+        ctx.params.client,
+        ctx.params.address
+      )
     )
 })
 

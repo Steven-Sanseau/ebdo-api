@@ -48,19 +48,12 @@ export default class AddressService {
     const clientStored = await this.clientStore.getById(client.client_id)
     NotFound.assert(clientStored, `client "${client.client_id}" not found`)
 
-    const picked = pickProps(address)
-    const addressStored = await this.addressStore.create(picked)
-
-    addressStored.setClient(clientStored)
+    const pickedAddress = pickProps(address)
+    pickedAddress.client_id = clientStored.client_id
+    const addressStored = await this.addressStore.create(pickedAddress)
 
     //SEND ABOWEB client info
     if (addressStored.type_address === 'invoice') {
-      const clientStored = await this.clientStore.getById(client.client_id)
-      NotFound.assert(
-        clientStored,
-        `Checkout with client "${client.client_id}" not found`
-      )
-
       const producer = await newClientProducer({
         client: clientStored,
         addressInvoice: addressStored
