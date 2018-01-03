@@ -207,32 +207,25 @@ export default class TokenService {
       started: true
     }
 
-    slimpay.signMandate(askMandatSlimpay).then(function(result) {
-      console.log(
-        result.body._links[
-          'https://api.slimpay.net/alps#extended-user-approval'
-        ]
-      )
-      console.log(result.body)
-      slimpay.getIframe(result.traversal).then(r => {
-        console.log(r)
+    slimpay.signMandate(askMandatSlimpay).then(function(signMandate) {
+      slimpay.getIframe(signMandate.traversal).then(iframeResult => {
+        console.log('iframe', iframeResult)
       })
     })
-    console.log('mandataaaa', mandate)
 
-    slimpay
-      .getOrders('e55e538a-f055-11e7-ac9f-000000000000')
-      .then(function(result) {
-        if (result.body.state === 'closed.completed') {
-          slimpay.getMandate(result.traversal).then(r => {
-            console.log('mandate', r)
-            slimpay.getBankAccount(r.traversal).then(r => {
-              console.log('bank', r)
-            })
-          })
-        } else {
-          console.log(result)
-        }
-      })
+    // slimpay
+    //   .getOrders('e55e538a-f055-11e7-ac9f-000000000000')
+    //   .then(function(result) {
+    //     if (result.body.state === 'closed.completed') {
+    //       slimpay.getMandate(result.traversal).then(r => {
+    //         console.log('mandate', r)
+    //         slimpay.getBankAccount(r.traversal).then(r => {
+    //           console.log('bank', r)
+    //         })
+    //       })
+    //     } else {
+    //       console.log(result)
+    //     }
+    //   })
   }
 }
