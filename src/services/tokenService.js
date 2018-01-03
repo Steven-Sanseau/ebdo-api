@@ -166,7 +166,7 @@ export default class TokenService {
       )
   }
 
-  async getIframeSlimpay(clientId, addressId) {
+  async createTokenSlimpay(clientId, addressId) {
     BadRequest.assert(clientId, 'No client payload given')
     BadRequest.assert(addressId, 'No address payload given')
 
@@ -188,14 +188,12 @@ export default class TokenService {
           type: 'signMandate',
           mandate: {
             signatory: {
-              honorificPrefix: '',
               familyName: addressObject.last_name,
               givenName: addressObject.first_name,
               telephone: addressObject.phone,
               email: clientObject.email,
               billingAddress: {
-                street1: addressObject.address_pre,
-                street2: addressObject.address,
+                street1: addressObject.address,
                 postalCode: addressObject.postal_code,
                 city: addressObject.city,
                 country: addressObject.country
@@ -207,25 +205,51 @@ export default class TokenService {
       started: true
     }
 
-    slimpay.signMandate(askMandatSlimpay).then(function(signMandate) {
-      slimpay.getIframe(signMandate.traversal).then(iframeResult => {
-        console.log('iframe', iframeResult)
-      })
-    })
+    const token = { token_type: 'slimpay' }
+    const tokenStored = await this.tokenStore.create(token)
+    tokenStored.setClient(clientObject)
 
-    // slimpay
-    //   .getOrders('e55e538a-f055-11e7-ac9f-000000000000')
-    //   .then(function(result) {
-    //     if (result.body.state === 'closed.completed') {
-    //       slimpay.getMandate(result.traversal).then(r => {
-    //         console.log('mandate', r)
-    //         slimpay.getBankAccount(r.traversal).then(r => {
-    //           console.log('bank', r)
-    //         })
-    //       })
-    //     } else {
-    //       console.log(result)
-    //     }
-    //   })
+    try {
+      const iframe = await slimpay
+        .signMandate(askMandatSlimpay)
+        .then(async signMandate => {
+          BadRequest.assert(!signMandate.code, signMandate.message)
+          const dataToken = signMandate.body
+          tokenStored.slimpay_token_id = dataToken.id
+
+          return slimpay.getIframe(signMandate.traversal).then(iframeResult => {
+            if (iframeResult.body && iframeResult.body.content) {
+              return iframeResult.body.content
+            }
+          })
+        })
+      const tokenSaved = await tokenStored.save()
+      NotFound.assert(tokenSaved, 'Token slimpay unavailable')
+      NotFound.assert(iframe, 'Slimpay iframe unavailable')
+
+      return { token: tokenSaved, iframe }
+    } catch (err) {
+      NotFound.assert(err, err.message)
+    }
   }
+
+  // BadRequest.assert(
+  //   tokenStored.slimpay_token_id,
+  //   'Error with slimpay generate token id'
+  // )
+
+  // slimpay.getOrders(mandateId).then(function(result) {
+  //   if (result.body.state === 'closed.completed') {
+  //     slimpay.getMandate(result.traversal).then(r => {
+  //       console.log('mandate', r)
+  //       slimpay.getBankAccount(r.traversal).then(r => {
+  //         console.log('bank', r)
+  //       })
+  //     })
+  //   } else {
+  //     console.log(result)
+  //   }
+  // })
+
+  // return tokenStored
 }

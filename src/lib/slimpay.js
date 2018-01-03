@@ -346,7 +346,7 @@ const slimpay = new SlimPay()
 const user = env.SLIMPAY_USER_KEY
 const password = env.SLIMPAY_SECRET_KEY
 const creditor = env.SLIMPAY_CREDITOR_KEY
-console.log(creditor)
+
 const config = {
   user: user,
   password: password
