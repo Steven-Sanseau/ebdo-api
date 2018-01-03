@@ -1,6 +1,8 @@
 import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
 import newSubscriptionDDCB from '../producers/newSubscriptionDDCB'
+import newSubscriptionADLCB from '../producers/newSubscriptionADLCB'
+import newSubscriptionADLSEPA from '../producers/newSubscriptionADLSEPA'
 import stripe from '../lib/stripe'
 
 const assertEmail = BadRequest.makeAssert('No email given')
@@ -111,7 +113,8 @@ export default class CheckoutService {
     checkoutStored.setInvoice_address(addressInvoice)
     checkoutStored.status = 'created'
 
-    if (offer.time_limited) {
+    // OFFRE À Durée Déterminée && Stripe CB Payment
+    if (offer.time_limited && offer.payment_method === 2) {
       try {
         const chargeStripe = await this.chargeCard(
           token,
@@ -119,6 +122,7 @@ export default class CheckoutService {
           checkoutStored,
           client
         )
+        console.log('chargeStripe', chargeStripe)
         checkoutStored.status = 'paid'
 
         const producer = await newSubscriptionDDCB({
@@ -131,6 +135,34 @@ export default class CheckoutService {
         PaymentError.assert(!err, err.message)
       }
     }
+
+    // OFFRE À Durée Libre && Stripe CB Token
+    if (!offer.time_limited && offer.payment_method === 2) {
+      try {
+        const producer = await newSubscriptionADLCB({
+          offer: offer,
+          checkout: checkoutStored,
+          client: client
+        })
+        checkoutStored.status = 'aboweb-transfered'
+      } catch (err) {
+        checkoutStored.status = 'error/aboweb-error'
+        PaymentError.assert(!err, err.message)
+      }
+    }
+
+    // OFFRE À Durée Libre && SLIMPAY token
+    if (!offer.time_limited && offer.payment_method === 1) {
+      try {
+        const producer = await newSubscriptionADLSEPA({
+          offer: offer,
+          checkout: checkoutStored,
+          client: client
+        })
+        checkoutStored.status = 'aboweb-transfered'
+      } catch (err) {}
+    }
+
     const checkoutreturn = await checkoutStored.save()
     return { checkout: checkoutreturn }
   }
@@ -163,9 +195,14 @@ export default class CheckoutService {
 
     const pickedCheckout = _.pick(data.checkout, ['aboweb_subscribe_id'])
     BadRequest.assert(pickedCheckout, 'No checkout payload given')
+    BadRequest.assert(
+      pickedCheckout.aboweb_subscribe_id,
+      'No aboweb payload given'
+    )
 
     await this.findById(id)
 
+    pickedCheckout.status = 'paid/aboweb-transfered'
     return this.checkoutStore
       .update(id, pickedCheckout)
       .then(res => ({ updated: true, checkout: res[1][0] }))

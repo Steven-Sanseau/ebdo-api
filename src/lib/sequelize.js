@@ -2,7 +2,7 @@ import Sequelize from 'sequelize'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import { logger } from '../lib/logger'
+import { logger } from './logger'
 import { env } from './env'
 
 const db = {}
@@ -49,7 +49,7 @@ Object.keys(db).forEach(function(modelName) {
   }
 })
 // DEVHACK
-sequelize.sync()
+// sequelize.sync()
 // assign the sequelize variables to the db object and returning the db.
 export default _.extend(
   {
