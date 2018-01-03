@@ -181,7 +181,7 @@ export default class TokenService {
         reference: creditor
       },
       subscriber: {
-        reference: client.client_id
+        reference: clientObject.client_id
       },
       items: [
         {
@@ -207,19 +207,17 @@ export default class TokenService {
       started: true
     }
 
-    const mandate = await slimpay
-      .signMandate(askMandatSlimpay)
-      .then(function(result) {
-        console.log(
-          result.body._links[
-            'https://api.slimpay.net/alps#extended-user-approval'
-          ]
-        )
-        console.log(result.body)
-        slimpay.getIframe(result.traversal).then(r => {
-          console.log(r)
-        })
+    slimpay.signMandate(askMandatSlimpay).then(function(result) {
+      console.log(
+        result.body._links[
+          'https://api.slimpay.net/alps#extended-user-approval'
+        ]
+      )
+      console.log(result.body)
+      slimpay.getIframe(result.traversal).then(r => {
+        console.log(r)
       })
+    })
     console.log('mandataaaa', mandate)
 
     slimpay

@@ -19,6 +19,6 @@ export default async function newSubscriptionDDCB(message) {
   }
 
   return producer.send(params, err => {
-    logger.error(err)
+    logger.message(err)
   })
 }
