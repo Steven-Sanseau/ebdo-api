@@ -8,13 +8,14 @@
   },
   "scripts": {
     "start": "node dist/bin/server.js",
+    "start-consumer": "node dist/bin/consumer.js",
     "build": "rimraf dist && cross-env babel src -d dist -s",
     "server": "babel-node dist/bin/server.js",
     "heroku-postbuild": "npm run build && npm run migrate",
     "dev": "nodemon src/bin/server.js",
+    "dev-consumer": "babel-node src/bin/consumer.js",
     "debug-brk": "npm run debug -- --break",
-    "test":
-      "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
+    "test": "mocha --require test/_helpers test/**/*.spec.js --compilers js:babel-register -R dot --timeout 5000",
     "test-watch": "npm run test -- --watch",
     "lint": "eslint src/ test/",
     "lint-watch": "esw -w src/ test/",
@@ -28,6 +29,7 @@
     "app-module-path": "^2.2.0",
     "awilix": "^2.1.0",
     "awilix-koa": "^1.0.2",
+    "aws-sdk": "^2.163.0",
     "bluebird": "^2.10.0",
     "bristol": "^0.3.3",
     "chai": "^4.1.2",
@@ -63,6 +65,7 @@
     "pg": "^7.4.0",
     "raven": "^2.3.0",
     "request": "^2.62.0",
+    "request-promise-native": "^1.0.5",
     "rimraf": "^2.6.2",
     "sequelize": "^4.28.6",
     "sequelize-cli": "^3.2.0",
@@ -70,6 +73,7 @@
     "sinon-chai": "^2.14.0",
     "soap": "^0.23.0",
     "source-map-support": "^0.5.0",
+    "sqs-consumer": "^3.8.0",
     "sqs-producer": "^1.6.2",
     "stripe": "^5.4.0",
     "supertest": "^3.0.0",
@@ -108,7 +112,12 @@
   "nyc": {
     "sourceMap": false,
     "instrument": false,
-    "reporter": ["text", "lcov"],
-    "include": ["src/**/*.js"]
+    "reporter": [
+      "text",
+      "lcov"
+    ],
+    "include": [
+      "src/**/*.js"
+    ]
   }
 }

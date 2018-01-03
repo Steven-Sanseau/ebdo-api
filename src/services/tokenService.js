@@ -163,6 +163,7 @@ export default class TokenService {
   }
 
   async slimpay() {
+    // TODO Move to env config
     const user = 'hbt78zpdfr5l8'
     const password = '6$LXc3rI#YCtHgIjEcJeX%bpB1Y9zYO~At#B'
     const creditor = 'hbt78zpdfr5l8'
