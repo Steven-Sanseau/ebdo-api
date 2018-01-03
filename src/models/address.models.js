@@ -7,17 +7,9 @@ export default (sequelize, DataTypes) => {
     },
     last_name: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
     },
     first_name: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
     },
     address: {
       type: DataTypes.STRING,
@@ -65,7 +57,7 @@ export default (sequelize, DataTypes) => {
   })
 
   Address.associate = models => {
-    Address.belongsTo(models.Client, { foreignKey: 'client_id' })
+    Address.belongsTo(models.Client, { foreignKey: {name: 'client_id', allowNull: false } })
 
     Address.hasOne(models.Checkout, {
       as: 'invoice_address',
