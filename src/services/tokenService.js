@@ -1,8 +1,11 @@
 import { NotFound, BadRequest, Conflict } from 'fejl'
-import { pick } from 'lodash'
+import { pick, find } from 'lodash'
 import stripe from '../lib/stripe'
+import { env } from '../lib/env'
 import newCardProducer from '../producers/newCardStripeProducer'
 import slimpay from '../lib/slimpay'
+
+const creditor = env.SLIMPAY_CREDITOR_KEY
 
 const pickProps = data =>
   pick(data, [
@@ -17,10 +20,11 @@ const pickProps = data =>
   ])
 
 export default class TokenService {
-  constructor(tokenStore, clientStore, offerStore) {
+  constructor(tokenStore, clientStore, offerStore, addressStore) {
     this.tokenStore = tokenStore
     this.offerStore = offerStore
     this.clientStore = clientStore
+    this.addressStore = addressStore
   }
 
   async findById(id) {
@@ -162,49 +166,51 @@ export default class TokenService {
       )
   }
 
-  async slimpay() {
-    const user = 'hbt78zpdfr5l8'
-    const password = '6$LXc3rI#YCtHgIjEcJeX%bpB1Y9zYO~At#B'
-    const creditor = 'hbt78zpdfr5l8'
+  async getIframeSlimpay(body) {
+    BadRequest.assert(body, 'No token request Slimpay given')
 
-    const config = {
-      user: user,
-      password: password
-    }
+    const pickedClient = pick(data.client, ['client_id'])
+    const pickedAddress = pick(data.address, ['address_id'])
+    BadRequest.assert(pickedClient, 'No client payload given')
+    BadRequest.assert(pickedAddress, 'No address payload given')
 
-    slimpay.config(config)
-    slimpay.setCreditor(creditor)
+    const clientObject = await this.clientStore.getById(pickedClient.client_id)
+    Conflict.assert(
+      clientObject,
+      `Client with id "${pickedClient.client_id}" not found`
+    )
 
-    slimpay.setEnv('development') // Optional.
-    // must be one of 'development' or 'production'.
-    // defaults to 'development'
-    slimpay.init()
+    const addressObject = await this.addressStore.getById(
+      pickedAddress.address_id
+    )
+    Conflict.assert(
+      addressObject,
+      `Address with id "${pickedAddress.address_id}" not found`
+    )
 
-    // const links = await slimpay.getLinks()
-    // console.log('links geted', links)
-    const orderRepresentation = {
+    const askMandatSlimpay = {
       creditor: {
-        reference: 'democreditor'
+        reference: creditor
       },
       subscriber: {
-        reference: 'subscriber666'
+        reference: client.client_id
       },
       items: [
         {
           type: 'signMandate',
           mandate: {
             signatory: {
-              honorificPrefix: 'Mr',
-              familyName: 'Doe',
-              givenName: 'John',
-              telephone: '+33666666666',
-              email: 'email@example.com',
+              honorificPrefix: '',
+              familyName: addressObject.last_name,
+              givenName: addressObject.first_name,
+              telephone: addressObject.phone,
+              email: clientObject.email,
               billingAddress: {
-                street1: '666 the number of',
-                street2: 'The BEAST',
-                postalCode: '66666',
-                city: 'Paris',
-                country: 'FR'
+                street1: addressObject.address_pre,
+                street2: addressObject.address,
+                postalCode: addressObject.postal_code,
+                city: addressObject.city,
+                country: addressObject.country
               }
             }
           }
@@ -213,8 +219,30 @@ export default class TokenService {
       started: true
     }
 
-    slimpay.signMandate(orderRepresentation).then(function(result) {
-      console.log(result)
+    slimpay.signMandate(askMandatSlimpay).then(function(result) {
+      console.log(
+        result.body._links[
+          'https://api.slimpay.net/alps#extended-user-approval'
+        ]
+      )
+      console.log(result.body)
+      slimpay.getIframe(result.traversal).then(r => {
+        console.log(r)
+      })
     })
+    slimpay
+      .getOrders('e55e538a-f055-11e7-ac9f-000000000000')
+      .then(function(result) {
+        if (result.body.state === 'closed.completed') {
+          slimpay.getMandate(result.traversal).then(r => {
+            console.log('mandate', r)
+            slimpay.getBankAccount(r.traversal).then(r => {
+              console.log('bank', r)
+            })
+          })
+        } else {
+          console.log(result)
+        }
+      })
   }
 }
