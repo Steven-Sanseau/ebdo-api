@@ -6,7 +6,7 @@ import { logger } from './logger'
 import { env } from './env'
 
 const db = {}
-let sslObj = { logging: console.log }
+let sslObj = {}
 
 if (env.NODE_ENV !== 'developpment') {
   sslObj = { ssl: true }
@@ -22,6 +22,7 @@ const sequelize = new Sequelize(
     port: env.POSTGRESPORT,
     host: env.POSTGRESHOST,
     dialectOptions: sslObj,
+    logging: env.NODE_ENV !== 'developpment',
     define: {
       paranoid: true,
       underscored: true,
