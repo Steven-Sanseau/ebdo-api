@@ -11,12 +11,14 @@ const pickProps = data =>
     'stripe_card_id',
     'slimpay_rum_id',
     'slimpay_token_id',
-    'slimpay_rum_code'
+    'slimpay_rum_code',
+    'offer_id'
   ])
 
 export default class TokenService {
-  constructor(tokenStore, clientStore) {
+  constructor(tokenStore, clientStore, offerStore) {
     this.tokenStore = tokenStore
+    this.offerStore = offerStore
     this.clientStore = clientStore
   }
 
@@ -35,11 +37,14 @@ export default class TokenService {
 
     const token = body.token
     const client = body.client
+    const offer = body.offer
     const clientPicked = pickProps(client)
     const tokenPicked = pickProps(token)
+    const offerPicked = pickProps(offer)
 
     BadRequest.assert(clientPicked.client_id, 'client id is required')
     BadRequest.assert(tokenPicked, 'token object is required')
+    BadRequest.assert(offerPicked, 'offer object is required')
     BadRequest.assert(tokenPicked.token_type, 'token type is required')
     BadRequest.assert(
       tokenPicked.token_type === 'stripe' && tokenPicked.stripe_token_id,
@@ -60,6 +65,12 @@ export default class TokenService {
       `Client with id "${clientPicked.client_id}" not found`
     )
 
+    const offerObject = await this.offerStore.getById(offerPicked.offer_id)
+    Conflict.assert(
+      offerObject,
+      `Offer with id "${offerPicked.offer_id}" not found`
+    )
+
     const tokenStored = await this.tokenStore.create(tokenPicked)
 
     tokenStored.setClient(clientObject)
@@ -72,9 +83,12 @@ export default class TokenService {
         clientObject
       )
 
-      const producer = await newCardProducer({
-        token: tokenSaved
-      })
+      //Durée libre && stripe payment
+      if (!offerObject.time_limited && offerObject.payment_method === 2) {
+        const producer = await newCardProducer({
+          token: tokenSaved
+        })
+      }
     } catch (err) {
       BadRequest.assert(!err, err.message)
     }
@@ -128,7 +142,7 @@ export default class TokenService {
     return stripeResponse
   }
 
-  async update(id, data) {
+  async updateAboweb(id, data) {
     BadRequest.assert(id, 'No id token payload given')
 
     const pickedToken = pick(data.token, ['aboweb_id'])

@@ -1,5 +1,6 @@
 import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
+import newClientProducer from '../producers/newClientProducer'
 import newSubscriptionDDCB from '../producers/newSubscriptionDDCB'
 import newSubscriptionADLCB from '../producers/newSubscriptionADLCB'
 import newSubscriptionADLSEPA from '../producers/newSubscriptionADLSEPA'
@@ -87,8 +88,6 @@ export default class CheckoutService {
         pickedCheckout.address_delivery_id
       }" not found`
     )
-
-    newClientProducer({ client, addressDelivery, addressInvoice })
 
     const token = await this.tokenStore.getByIdAndClientId(
       pickedCheckout.token_id,
@@ -190,7 +189,7 @@ export default class CheckoutService {
     return offer.price_ttc
   }
 
-  async update(id, data) {
+  async updateAboweb(id, data) {
     BadRequest.assert(id, 'No id checkout payload given')
 
     const pickedCheckout = _.pick(data.checkout, ['aboweb_subscribe_id'])

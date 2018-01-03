@@ -4,7 +4,7 @@ import { env } from '../lib/env'
 import uniqid from 'uniqid'
 
 const producer = Producer.create({
-  queueUrl: `https://sqs.${env.AWS_AREA}.${env.AWS_URL_BASE}/${
+  queueUrl: `https://sqs.${env.AWS_AREA}.${env.AWS_URL_BASE}${
     env.AWS_URL_NEW_SUBSCRIPTION_ADL_CB
   }`,
   region: env.AWS_AREA,

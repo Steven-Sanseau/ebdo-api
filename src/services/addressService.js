@@ -1,5 +1,6 @@
 import { NotFound, BadRequest, Conflict } from 'fejl'
 import { pick } from 'lodash'
+import newClientProducer from '../producers/newClientProducer'
 
 const assertId = BadRequest.makeAssert('No id given')
 const pickProps = data =>
@@ -52,6 +53,20 @@ export default class AddressService {
 
     addressStored.setClient(clientStored)
 
+    //SEND ABOWEB client info
+    if (addressStored.type_address === 'invoice') {
+      const clientStored = await this.clientStore.getById(client.client_id)
+      NotFound.assert(
+        clientStored,
+        `Checkout with client "${client.client_id}" not found`
+      )
+
+      const producer = await newClientProducer({
+        client: clientStored,
+        addressInvoice: addressStored
+      })
+    }
+
     return { address: addressStored }
   }
 
@@ -65,8 +80,25 @@ export default class AddressService {
 
     const picked = pickProps(address)
 
-    const addressUpdated = await this.addressStore.update(id, picked)
+    let addressUpdated = await this.addressStore.update(id, picked)
 
-    return { updated: true, address: addressUpdated[1][0] }
+    addressUpdated = addressUpdated[1][0]
+    //SEND ABOWEB client info
+    if (addressUpdated.type_address === 'invoice') {
+      const clientStored = await this.clientStore.getById(
+        addressUpdated.client_id
+      )
+      NotFound.assert(
+        clientStored,
+        `Checkout with client "${addressUpdated.client_id}" not found`
+      )
+
+      const producer = await newClientProducer({
+        client: clientStored,
+        addressInvoice: addressUpdated
+      })
+    }
+
+    return { updated: true, address: addressUpdated }
   }
 }

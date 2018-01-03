@@ -60,7 +60,7 @@ export default class ClientService {
     return { client: clientStored }
   }
 
-  async update(id, data) {
+  async updateAboweb(id, data) {
     BadRequest.assert(id, 'No id client payload given')
 
     const pickedClient = pickProps(data.client)
