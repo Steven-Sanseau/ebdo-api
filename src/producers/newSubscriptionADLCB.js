@@ -19,6 +19,6 @@ export default async function newSubscriptionADLCB(message) {
   }
 
   return producer.send(params, err => {
-    logger.message(err)
+    logger.debug(err)
   })
 }
