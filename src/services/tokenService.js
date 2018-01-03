@@ -2,6 +2,7 @@ import { NotFound, BadRequest, Conflict } from 'fejl'
 import { pick } from 'lodash'
 import stripe from '../lib/stripe'
 import newCardProducer from '../producers/newCardStripeProducer'
+import slimpay from '../lib/slimpay'
 
 const pickProps = data =>
   pick(data, [
@@ -159,5 +160,61 @@ export default class TokenService {
           `Token with id "${err.errors[0].message}" already found`
         )
       )
+  }
+
+  async slimpay() {
+    const user = 'hbt78zpdfr5l8'
+    const password = '6$LXc3rI#YCtHgIjEcJeX%bpB1Y9zYO~At#B'
+    const creditor = 'hbt78zpdfr5l8'
+
+    const config = {
+      user: user,
+      password: password
+    }
+
+    slimpay.config(config)
+    slimpay.setCreditor(creditor)
+
+    slimpay.setEnv('development') // Optional.
+    // must be one of 'development' or 'production'.
+    // defaults to 'development'
+    slimpay.init()
+
+    // const links = await slimpay.getLinks()
+    // console.log('links geted', links)
+    const orderRepresentation = {
+      creditor: {
+        reference: 'democreditor'
+      },
+      subscriber: {
+        reference: 'subscriber666'
+      },
+      items: [
+        {
+          type: 'signMandate',
+          mandate: {
+            signatory: {
+              honorificPrefix: 'Mr',
+              familyName: 'Doe',
+              givenName: 'John',
+              telephone: '+33666666666',
+              email: 'email@example.com',
+              billingAddress: {
+                street1: '666 the number of',
+                street2: 'The BEAST',
+                postalCode: '66666',
+                city: 'Paris',
+                country: 'FR'
+              }
+            }
+          }
+        }
+      ],
+      started: true
+    }
+
+    slimpay.signMandate(orderRepresentation).then(function(result) {
+      console.log(result)
+    })
   }
 }

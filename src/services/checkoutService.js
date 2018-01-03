@@ -141,11 +141,12 @@ export default class CheckoutService {
         const producer = await newSubscriptionADLCB({
           offer: offer,
           checkout: checkoutStored,
-          client: client
+          client: client,
+          token: token
         })
-        checkoutStored.status = 'aboweb-transfered'
+        checkoutStored.status = 'waiting/aboweb-transfer'
       } catch (err) {
-        checkoutStored.status = 'error/aboweb-error'
+        checkoutStored.status = 'declined/aboweb-error'
         PaymentError.assert(!err, err.message)
       }
     }
@@ -156,10 +157,14 @@ export default class CheckoutService {
         const producer = await newSubscriptionADLSEPA({
           offer: offer,
           checkout: checkoutStored,
-          client: client
+          client: client,
+          token: token
         })
-        checkoutStored.status = 'aboweb-transfered'
-      } catch (err) {}
+        checkoutStored.status = 'waiting/aboweb-transfer'
+      } catch (err) {
+        checkoutStored.status = 'declined/aboweb-error'
+        PaymentError.assert(!err, err.message)
+      }
     }
 
     const checkoutreturn = await checkoutStored.save()
@@ -199,9 +204,17 @@ export default class CheckoutService {
       'No aboweb payload given'
     )
 
-    await this.findById(id)
+    const checkout = await this.findById(id)
 
-    pickedCheckout.status = 'paid/aboweb-transfered'
+    const offer = await this.offerStore.getById(checkout.offer_id)
+    NotFound.assert(
+      offer,
+      `Checkout with offer "${checkout.offer_id}" not found`
+    )
+    if (offer.time_limited && offer.payment_method === 2) {
+      pickedCheckout.status = 'paid/aboweb-transfered'
+    }
+
     return this.checkoutStore
       .update(id, pickedCheckout)
       .then(res => ({ updated: true, checkout: res[1][0] }))
