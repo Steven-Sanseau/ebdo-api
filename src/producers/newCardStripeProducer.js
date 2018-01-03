@@ -19,8 +19,8 @@ export default async function newCardProducer(message) {
     body: JSON.stringify(message),
     id: uniqid('producer-newCard-')
   }
-  console.log('URL', urlQueue)
+
   return producer.send(params, err => {
-    logger.error(err)
+    logger.message(err)
   })
 }

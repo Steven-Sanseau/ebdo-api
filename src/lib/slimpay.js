@@ -1,8 +1,9 @@
 import Promise from 'bluebird'
 import request from 'request'
+import { env } from './env'
 
-var traverson = require('traverson')
-var JsonHalAdapter = require('traverson-hal')
+import traverson from 'traverson'
+import JsonHalAdapter from 'traverson-hal'
 traverson.registerMediaType(JsonHalAdapter.mediaType, JsonHalAdapter)
 
 var pRequest = function(options) {
@@ -20,7 +21,7 @@ function controleResult(err, res, traversal, resolve, reject) {
   } else {
     var body = JSON.parse(res.body)
     if (body.code) {
-      reject(result)
+      resolve(body)
     } else {
       resolve({ body, traversal })
     }
@@ -51,8 +52,7 @@ class SlimPay {
 
   setEnv(env) {
     if (env === 'production') this.env = env
-    else if (env === 'development') this.env = env
-    else throw new Error('env must be one of "production" or "development"')
+    else this.env = env
   }
 
   init() {
@@ -163,14 +163,11 @@ class SlimPay {
 
   signMandate(item) {
     return this.getLinks().then(links => {
-      console.log('body', links)
       return new Promise((resolve, reject) => {
-        console.log(item)
         links.traversal
           .continue()
-          .follow(`${this.endPoint}alps#create-orders`)
+          .follow(`https://api.slimpay.net/alps#create-orders`)
           .post(item, (err, res, traversal) => {
-            console.log(res)
             return controleResult(err, res, traversal, resolve, reject)
           })
       })
@@ -186,7 +183,7 @@ class SlimPay {
       return new Promise((resolve, reject) => {
         links.traversal
           .continue()
-          .follow(`${this.endPoint}alps#get-orders`)
+          .follow(`https://api.slimpay.net/alps#get-orders`)
           .withTemplateParameters(templateParameters)
           .get((err, res, traversal) => {
             return controleResult(err, res, traversal, resolve, reject)
@@ -199,7 +196,7 @@ class SlimPay {
     return new Promise((resolve, reject) => {
       return traversal
         .continue()
-        .follow(`${this.endPoint}alps#get-mandate`)
+        .follow(`https://api.slimpay.net/alps#get-mandate`)
         .get((err, res, traversal) => {
           return controleResult(err, res, traversal, resolve, reject)
         })
@@ -210,7 +207,7 @@ class SlimPay {
     return new Promise((resolve, reject) => {
       return traversal
         .continue()
-        .follow(`${this.endPoint}alps#get-creditor`)
+        .follow(`https://api.slimpay.net/alps#get-creditor`)
         .get((err, res, traversal) => {
           return controleResult(err, res, traversal, resolve, reject)
         })
@@ -221,7 +218,30 @@ class SlimPay {
     return new Promise((resolve, reject) => {
       return traversal
         .continue()
-        .follow(`${this.endPoint}alps#get-subscriber`)
+        .follow(`https://api.slimpay.net/alps#get-subscriber`)
+        .get((err, res, traversal) => {
+          return controleResult(err, res, traversal, resolve, reject)
+        })
+    })
+  }
+
+  getIframe(traversal) {
+    return new Promise((resolve, reject) => {
+      return traversal
+        .continue()
+        .follow(`https://api.slimpay.net/alps#extended-user-approval`)
+        .withTemplateParameters({ mode: 'iframeembedded' })
+        .get((err, res, traversal) => {
+          return controleResult(err, res, traversal, resolve, reject)
+        })
+    })
+  }
+
+  getBankAccount(traversal) {
+    return new Promise((resolve, reject) => {
+      return traversal
+        .continue()
+        .follow(`https://api.slimpay.net/alps#get-bank-account`)
         .get((err, res, traversal) => {
           return controleResult(err, res, traversal, resolve, reject)
         })
@@ -322,4 +342,19 @@ class SlimPay {
   }
 }
 
-export default new SlimPay()
+const slimpay = new SlimPay()
+const user = env.SLIMPAY_USER_KEY
+const password = env.SLIMPAY_SECRET_KEY
+const creditor = env.SLIMPAY_CREDITOR_KEY
+console.log(creditor)
+const config = {
+  user: user,
+  password: password
+}
+
+slimpay.config(config)
+slimpay.setCreditor(creditor)
+slimpay.setEnv(env.NODE_ENV)
+slimpay.init()
+
+export default slimpay
