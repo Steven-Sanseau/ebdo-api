@@ -5,7 +5,7 @@ module.exports = {
     queryInterface.bulkInsert('Offer', [
       {
         name: 'abo-duree-determinee-3-month-5-euro-france-cb',
-        aboweb_id: 'EB-1500-12-DD-1-FR',
+        aboweb_id: 'EB-3125-1-DD-0',
         price_ttc: 1500,
         monthly_price_ttc: 5,
         description:

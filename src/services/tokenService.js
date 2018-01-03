@@ -1,7 +1,11 @@
 import { NotFound, BadRequest, Conflict } from 'fejl'
-import { pick } from 'lodash'
+import { pick, find } from 'lodash'
 import stripe from '../lib/stripe'
+import { env } from '../lib/env'
 import newCardProducer from '../producers/newCardStripeProducer'
+import slimpay from '../lib/slimpay'
+
+const creditor = env.SLIMPAY_CREDITOR_KEY
 
 const pickProps = data =>
   pick(data, [
@@ -11,13 +15,16 @@ const pickProps = data =>
     'stripe_card_id',
     'slimpay_rum_id',
     'slimpay_token_id',
-    'slimpay_rum_code'
+    'slimpay_rum_code',
+    'offer_id'
   ])
 
 export default class TokenService {
-  constructor(tokenStore, clientStore) {
+  constructor(tokenStore, clientStore, offerStore, addressStore) {
     this.tokenStore = tokenStore
+    this.offerStore = offerStore
     this.clientStore = clientStore
+    this.addressStore = addressStore
   }
 
   async findById(id) {
@@ -35,11 +42,14 @@ export default class TokenService {
 
     const token = body.token
     const client = body.client
+    const offer = body.offer
     const clientPicked = pickProps(client)
     const tokenPicked = pickProps(token)
+    const offerPicked = pickProps(offer)
 
     BadRequest.assert(clientPicked.client_id, 'client id is required')
     BadRequest.assert(tokenPicked, 'token object is required')
+    BadRequest.assert(offerPicked, 'offer object is required')
     BadRequest.assert(tokenPicked.token_type, 'token type is required')
     BadRequest.assert(
       tokenPicked.token_type === 'stripe' && tokenPicked.stripe_token_id,
@@ -60,6 +70,12 @@ export default class TokenService {
       `Client with id "${clientPicked.client_id}" not found`
     )
 
+    const offerObject = await this.offerStore.getById(offerPicked.offer_id)
+    Conflict.assert(
+      offerObject,
+      `Offer with id "${offerPicked.offer_id}" not found`
+    )
+
     const tokenStored = await this.tokenStore.create(tokenPicked)
 
     tokenStored.setClient(clientObject)
@@ -72,9 +88,12 @@ export default class TokenService {
         clientObject
       )
 
-      const producer = await newCardProducer({
-        token: tokenSaved
-      })
+      //Durée libre && stripe payment
+      if (!offerObject.time_limited && offerObject.payment_method === 2) {
+        const producer = await newCardProducer({
+          token: tokenSaved
+        })
+      }
     } catch (err) {
       BadRequest.assert(!err, err.message)
     }
@@ -128,7 +147,7 @@ export default class TokenService {
     return stripeResponse
   }
 
-  async update(id, data) {
+  async updateAboweb(id, data) {
     BadRequest.assert(id, 'No id token payload given')
 
     const pickedToken = pick(data.token, ['aboweb_id'])
@@ -145,5 +164,75 @@ export default class TokenService {
           `Token with id "${err.errors[0].message}" already found`
         )
       )
+  }
+
+  async getIframeSlimpay(clientId, addressId) {
+    BadRequest.assert(clientId, 'No client payload given')
+    BadRequest.assert(addressId, 'No address payload given')
+
+    const clientObject = await this.clientStore.getById(clientId)
+    Conflict.assert(clientObject, `Client with id "${clientId}" not found`)
+
+    const addressObject = await this.addressStore.getById(addressId)
+    Conflict.assert(addressObject, `Address with id "${addressId}" not found`)
+
+    const askMandatSlimpay = {
+      creditor: {
+        reference: creditor
+      },
+      subscriber: {
+        reference: clientObject.client_id
+      },
+      items: [
+        {
+          type: 'signMandate',
+          mandate: {
+            signatory: {
+              honorificPrefix: '',
+              familyName: addressObject.last_name,
+              givenName: addressObject.first_name,
+              telephone: addressObject.phone,
+              email: clientObject.email,
+              billingAddress: {
+                street1: addressObject.address_pre,
+                street2: addressObject.address,
+                postalCode: addressObject.postal_code,
+                city: addressObject.city,
+                country: addressObject.country
+              }
+            }
+          }
+        }
+      ],
+      started: true
+    }
+
+    slimpay.signMandate(askMandatSlimpay).then(function(result) {
+      console.log(
+        result.body._links[
+          'https://api.slimpay.net/alps#extended-user-approval'
+        ]
+      )
+      console.log(result.body)
+      slimpay.getIframe(result.traversal).then(r => {
+        console.log(r)
+      })
+    })
+    console.log('mandataaaa', mandate)
+
+    slimpay
+      .getOrders('e55e538a-f055-11e7-ac9f-000000000000')
+      .then(function(result) {
+        if (result.body.state === 'closed.completed') {
+          slimpay.getMandate(result.traversal).then(r => {
+            console.log('mandate', r)
+            slimpay.getBankAccount(r.traversal).then(r => {
+              console.log('bank', r)
+            })
+          })
+        } else {
+          console.log(result)
+        }
+      })
   }
 }
