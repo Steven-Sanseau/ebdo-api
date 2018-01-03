@@ -21,6 +21,6 @@ export default async function newCardProducer(message) {
   }
 
   return producer.send(params, err => {
-    logger.message(err)
+    logger.debug(err)
   })
 }

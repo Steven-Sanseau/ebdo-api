@@ -21,6 +21,6 @@ export default async function newClientProducer(message) {
   }
 
   return producer.send(params, err => {
-    logger.message(err)
+    logger.debug(err)
   })
 }
