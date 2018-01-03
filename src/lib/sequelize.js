@@ -2,7 +2,7 @@ import Sequelize from 'sequelize'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import { logger } from '../lib/logger'
+import { logger } from './logger'
 import { env } from './env'
 
 const db = {}

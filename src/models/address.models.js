@@ -1,5 +1,3 @@
-import { Client } from './client.models'
-
 export default (sequelize, DataTypes) => {
   const Address = sequelize.define('Address', {
     address_id: {
@@ -27,6 +25,12 @@ export default (sequelize, DataTypes) => {
       validate: {
         notEmpty: true
       }
+    },
+    address_post: {
+      type: DataTypes.STRING
+    },
+    address_pre: {
+      type: DataTypes.STRING
     },
     city: {
       type: DataTypes.STRING,
@@ -65,13 +69,13 @@ export default (sequelize, DataTypes) => {
 
     Address.hasOne(models.Checkout, {
       as: 'invoice_address',
-      foreignKey: 'invoice_address_id',
+      foreignKey: 'address_id',
       targetKey: 'checkout_id'
     })
 
     Address.hasOne(models.Checkout, {
       as: 'delivery_address',
-      foreignKey: 'delivery_address_id',
+      foreignKey: 'address_id',
       targetKey: 'checkout_id'
     })
   }

@@ -10,16 +10,20 @@ export default class OfferService {
     this.offerStore = offerStore
   }
 
-  async findOffer(duration, price, gift) {
+  async findOffer(duration, price, gift, country, payment) {
     BadRequest.assert(duration, 'No duration for offer payload given')
     BadRequest.assert(price, 'No price for offer payload given')
     BadRequest.assert(gift, 'No gift for offer payload given')
+    BadRequest.assert(country, 'No country for offer payload given')
+    BadRequest.assert(payment, 'No payment for offer payload given')
 
     const offer = {
       monthly_price_ttc: Number(price),
       is_gift: gift === 'true',
       time_limited: Number(duration) !== 0,
-      duration: Number(duration)
+      duration: Number(duration),
+      country_shipping: String(country).toUpperCase(),
+      payment_method: Number(payment)
     }
     const offerStored = await this.offerStore.getOfferFromParams(offer)
     NotFound.assert(offerStored, `Offer not found`)

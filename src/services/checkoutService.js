@@ -1,6 +1,8 @@
 import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
-import newSubscriptionProducer from '../producers/newSubscriptionProducer'
+import newSubscriptionDDCB from '../producers/newSubscriptionDDCB'
+import newSubscriptionADLCB from '../producers/newSubscriptionADLCB'
+import newSubscriptionADLSEPA from '../producers/newSubscriptionADLSEPA'
 import stripe from '../lib/stripe'
 
 const assertEmail = BadRequest.makeAssert('No email given')
@@ -34,6 +36,15 @@ export default class CheckoutService {
     this.chargeStore = chargeStore
   }
 
+  async findById(id) {
+    BadRequest.assert(id, 'No id payload given')
+
+    const checkout = await this.checkoutStore.getById(id)
+    NotFound.assert(checkout, `Checkout with id "${id}" not found`)
+
+    return { checkout }
+  }
+
   async create(body) {
     BadRequest.assert(body.checkout, 'No checkout payload given')
     const pickedCheckout = pickProps(body.checkout)
@@ -55,27 +66,29 @@ export default class CheckoutService {
       `Checkout with client "${pickedCheckout.client_id}" not found`
     )
 
-    const adressInvoice = await this.addressStore.getByIdAndClientId(
+    const addressInvoice = await this.addressStore.getByIdAndClientId(
       pickedCheckout.address_invoice_id,
       pickedCheckout.client_id
     )
     NotFound.assert(
-      adressInvoice,
-      `Checkout with adress invoice "${
+      addressInvoice,
+      `Checkout with address invoice "${
         pickedCheckout.address_invoice_id
       }" not found`
     )
 
-    const adressDelivery = await this.addressStore.getByIdAndClientId(
+    const addressDelivery = await this.addressStore.getByIdAndClientId(
       pickedCheckout.address_delivery_id,
       pickedCheckout.client_id
     )
     NotFound.assert(
-      adressDelivery,
-      `Checkout with adress delivery "${
+      addressDelivery,
+      `Checkout with address delivery "${
         pickedCheckout.address_delivery_id
       }" not found`
     )
+
+    newClientProducer({ client, addressDelivery, addressInvoice })
 
     const token = await this.tokenStore.getByIdAndClientId(
       pickedCheckout.token_id,
@@ -96,10 +109,12 @@ export default class CheckoutService {
     checkoutStored.setClient(client)
     checkoutStored.setOffer(offer)
     checkoutStored.setToken(token)
-    checkoutStored.setDelivery_address(adressDelivery)
-    checkoutStored.setInvoice_address(adressInvoice)
+    checkoutStored.setDelivery_address(addressDelivery)
+    checkoutStored.setInvoice_address(addressInvoice)
+    checkoutStored.status = 'created'
 
-    if (offer.time_limited) {
+    // OFFRE À Durée Déterminée && Stripe CB Payment
+    if (offer.time_limited && offer.payment_method === 2) {
       try {
         const chargeStripe = await this.chargeCard(
           token,
@@ -107,27 +122,54 @@ export default class CheckoutService {
           checkoutStored,
           client
         )
+        console.log('chargeStripe', chargeStripe)
         checkoutStored.status = 'paid'
 
-        const producer = await newSubscriptionProducer({
-          offer,
-          checkoutStored,
-          client,
-          adressInvoice,
-          adressDelivery
+        const producer = await newSubscriptionDDCB({
+          offer: offer,
+          checkout: checkoutStored,
+          client: client
         })
       } catch (err) {
-        checkoutStored.status = 'card declined'
+        checkoutStored.status = 'declined'
         PaymentError.assert(!err, err.message)
       }
     }
+
+    // OFFRE À Durée Libre && Stripe CB Token
+    if (!offer.time_limited && offer.payment_method === 2) {
+      try {
+        const producer = await newSubscriptionADLCB({
+          offer: offer,
+          checkout: checkoutStored,
+          client: client
+        })
+        checkoutStored.status = 'aboweb-transfered'
+      } catch (err) {
+        checkoutStored.status = 'error/aboweb-error'
+        PaymentError.assert(!err, err.message)
+      }
+    }
+
+    // OFFRE À Durée Libre && SLIMPAY token
+    if (!offer.time_limited && offer.payment_method === 1) {
+      try {
+        const producer = await newSubscriptionADLSEPA({
+          offer: offer,
+          checkout: checkoutStored,
+          client: client
+        })
+        checkoutStored.status = 'aboweb-transfered'
+      } catch (err) {}
+    }
+
     const checkoutreturn = await checkoutStored.save()
     return { checkout: checkoutreturn }
   }
 
   async chargeCard(token, offer, checkout, client) {
     const stripeCharge = await stripe.charges.create({
-      amount: offer.price_ttc,
+      amount: this.calculAmount(offer),
       currency: 'eur',
       description: offer.description,
       customer: token.stripe_customer_id,
@@ -142,5 +184,33 @@ export default class CheckoutService {
     chargeStored.setCheckout(checkout)
 
     return stripeCharge
+  }
+
+  calculAmount(offer) {
+    return offer.price_ttc
+  }
+
+  async update(id, data) {
+    BadRequest.assert(id, 'No id checkout payload given')
+
+    const pickedCheckout = _.pick(data.checkout, ['aboweb_subscribe_id'])
+    BadRequest.assert(pickedCheckout, 'No checkout payload given')
+    BadRequest.assert(
+      pickedCheckout.aboweb_subscribe_id,
+      'No aboweb payload given'
+    )
+
+    await this.findById(id)
+
+    pickedCheckout.status = 'paid/aboweb-transfered'
+    return this.checkoutStore
+      .update(id, pickedCheckout)
+      .then(res => ({ updated: true, checkout: res[1][0] }))
+      .catch(err =>
+        Conflict.assert(
+          err,
+          `Checkout with id "${err.errors[0].message}" is unavailable to update`
+        )
+      )
   }
 }

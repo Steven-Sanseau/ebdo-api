@@ -3,21 +3,23 @@ import { logger } from '../lib/logger'
 import { env } from '../lib/env'
 import uniqid from 'uniqid'
 
+const urlQueue = `https://sqs.${env.AWS_AREA}.${env.AWS_URL_BASE}${
+  env.AWS_URL_NEW_CARD_STRIPE
+}`
+
 const producer = Producer.create({
-  queueUrl: `https://sqs.${env.AWS_AREA}.${env.AWS_URL_BASE}/${
-    env.AWS_URL_NEW_SUBSCRIBE
-  }`,
+  queueUrl: urlQueue,
   region: env.AWS_AREA,
   accessKeyId: env.AWS_KEY_ID,
   secretAccessKey: env.AWS_ACCESS_KEY
 })
 
-export default async function newSubscriptionProducer(message) {
+export default async function newCardProducer(message) {
   const params = {
     body: JSON.stringify(message),
-    id: uniqid('producer-newSubscription-')
+    id: uniqid('producer-newCard-')
   }
-
+  console.log('URL', urlQueue)
   return producer.send(params, err => {
     logger.error(err)
   })

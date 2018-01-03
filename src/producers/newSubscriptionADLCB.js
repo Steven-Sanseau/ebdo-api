@@ -5,17 +5,17 @@ import uniqid from 'uniqid'
 
 const producer = Producer.create({
   queueUrl: `https://sqs.${env.AWS_AREA}.${env.AWS_URL_BASE}/${
-    env.AWS_URL_NEW_SUBSCRIBE
+    env.AWS_URL_NEW_SUBSCRIPTION_ADL_CB
   }`,
   region: env.AWS_AREA,
   accessKeyId: env.AWS_KEY_ID,
   secretAccessKey: env.AWS_ACCESS_KEY
 })
 
-export default async function newSubscriptionProducer(message) {
+export default async function newSubscriptionADLCB(message) {
   const params = {
     body: JSON.stringify(message),
-    id: uniqid('producer-newSubscription-')
+    id: uniqid('producer-newSubscription-adl-cb-')
   }
 
   return producer.send(params, err => {
