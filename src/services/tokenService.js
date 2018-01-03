@@ -209,28 +209,24 @@ export default class TokenService {
     const tokenStored = await this.tokenStore.create(token)
     tokenStored.setClient(clientObject)
 
-    try {
-      const iframe = await slimpay
-        .signMandate(askMandatSlimpay)
-        .then(async signMandate => {
-          BadRequest.assert(!signMandate.code, signMandate.message)
-          const dataToken = signMandate.body
-          tokenStored.slimpay_token_id = dataToken.id
+    const iframe = await slimpay
+      .signMandate(askMandatSlimpay)
+      .then(async signMandate => {
+        BadRequest.assert(!signMandate.code, signMandate.message)
+        const dataToken = signMandate.body
+        tokenStored.slimpay_token_id = dataToken.id
 
-          return slimpay.getIframe(signMandate.traversal).then(iframeResult => {
-            if (iframeResult.body && iframeResult.body.content) {
-              return iframeResult.body.content
-            }
-          })
+        return slimpay.getIframe(signMandate.traversal).then(iframeResult => {
+          if (iframeResult.body && iframeResult.body.content) {
+            return iframeResult.body.content
+          }
         })
-      const tokenSaved = await tokenStored.save()
-      NotFound.assert(tokenSaved, 'Token slimpay unavailable')
-      NotFound.assert(iframe, 'Slimpay iframe unavailable')
+      })
+    const tokenSaved = await tokenStored.save()
+    NotFound.assert(tokenSaved, 'Token slimpay unavailable')
+    NotFound.assert(iframe, 'Slimpay iframe unavailable')
 
-      return { token: tokenSaved, iframe }
-    } catch (err) {
-      NotFound.assert(err, err.message)
-    }
+    return { token: tokenSaved, iframe }
   }
 
   // BadRequest.assert(
