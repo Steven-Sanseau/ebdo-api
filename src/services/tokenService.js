@@ -166,27 +166,15 @@ export default class TokenService {
       )
   }
 
-  async getIframeSlimpay(body) {
-    BadRequest.assert(body, 'No token request Slimpay given')
+  async getIframeSlimpay(clientId, addressId) {
+    BadRequest.assert(clientId, 'No client payload given')
+    BadRequest.assert(addressId, 'No address payload given')
 
-    const pickedClient = pick(data.client, ['client_id'])
-    const pickedAddress = pick(data.address, ['address_id'])
-    BadRequest.assert(pickedClient, 'No client payload given')
-    BadRequest.assert(pickedAddress, 'No address payload given')
+    const clientObject = await this.clientStore.getById(clientId)
+    Conflict.assert(clientObject, `Client with id "${clientId}" not found`)
 
-    const clientObject = await this.clientStore.getById(pickedClient.client_id)
-    Conflict.assert(
-      clientObject,
-      `Client with id "${pickedClient.client_id}" not found`
-    )
-
-    const addressObject = await this.addressStore.getById(
-      pickedAddress.address_id
-    )
-    Conflict.assert(
-      addressObject,
-      `Address with id "${pickedAddress.address_id}" not found`
-    )
+    const addressObject = await this.addressStore.getById(addressId)
+    Conflict.assert(addressObject, `Address with id "${addressId}" not found`)
 
     const askMandatSlimpay = {
       creditor: {
@@ -219,17 +207,21 @@ export default class TokenService {
       started: true
     }
 
-    slimpay.signMandate(askMandatSlimpay).then(function(result) {
-      console.log(
-        result.body._links[
-          'https://api.slimpay.net/alps#extended-user-approval'
-        ]
-      )
-      console.log(result.body)
-      slimpay.getIframe(result.traversal).then(r => {
-        console.log(r)
+    const mandate = await slimpay
+      .signMandate(askMandatSlimpay)
+      .then(function(result) {
+        console.log(
+          result.body._links[
+            'https://api.slimpay.net/alps#extended-user-approval'
+          ]
+        )
+        console.log(result.body)
+        slimpay.getIframe(result.traversal).then(r => {
+          console.log(r)
+        })
       })
-    })
+    console.log('mandataaaa', mandate)
+
     slimpay
       .getOrders('e55e538a-f055-11e7-ac9f-000000000000')
       .then(function(result) {

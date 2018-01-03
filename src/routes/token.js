@@ -6,7 +6,9 @@ const api = tokenService => ({
   updateAbowebConsumerToken: async ctx =>
     ctx.ok(await tokenService.updateAboweb(ctx.params.id, ctx.request.body)),
   getIframe: async ctx =>
-    ctx.ok(await tokenService.getIframeSlimpay(ctx.request.body))
+    ctx.ok(
+      await tokenService.getIframeSlimpay(ctx.params.client, ctx.params.address)
+    )
 })
 
 export default createController(api)

@@ -19,7 +19,7 @@ export default async function newClientProducer(message) {
     body: JSON.stringify(message),
     id: uniqid('producer-newClient-')
   }
-  console.log('URL', urlQueue)
+
   return producer.send(params, err => {
     logger.error(err)
   })
