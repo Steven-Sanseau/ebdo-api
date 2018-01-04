@@ -5,36 +5,37 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    client_id: {
+    aboweb_subscription_id: {
       type: DataTypes.INTEGER
     },
-    aboweb_id: {
+    aboweb_client_id: {
       type: DataTypes.INTEGER
     },
-    checkout_id: {
+    firstNumberDelivered: {
       type: DataTypes.INTEGER
     },
-    offer_id: {
+    lastNumberDelivered: {
       type: DataTypes.INTEGER
     },
-    token_id: {
+    isInvoiced: {
+      type: DataTypes.BOOLEAN,
+    },
+    isSuspended: {
+      type: DataTypes.BOOLEAN
+    },
+    isResubscription: {
+      type: DataTypes.BOOLEAN
+    },
+    freeSubscription: {
+      type: DataTypes.BOOLEAN
+    },
+    numberOfCopy: {
       type: DataTypes.INTEGER
     },
-    address_delivery_id: {
-      type: DataTypes.INTEGER
-    },
-    address_invoice_id: {
-      type: DataTypes.INTEGER
-    },
-    voucher_id: {
-      type: DataTypes.INTEGER
-    },
-    duration: {
-      type: DataTypes.INTEGER
+    order_number: {
+      type: DataTypes.STRING,
     }
   })
-
-  Subscription.associate = models => {}
 
   return Subscription
 }
