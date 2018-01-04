@@ -24,7 +24,7 @@ const clientCreateConsumer = Consumer.create({
       const addressInvoice = message.addressInvoice
 
       let args = {}
-      const soapClient = await (new AbowebService()).createSoapClient(url);
+      const soapClient = await new AbowebService().createSoapClient(url)
 
       soapClient.findClientByEmail({ email: client.email }, function(
         errClientEmail,

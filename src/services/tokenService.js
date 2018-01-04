@@ -75,7 +75,7 @@ export default class TokenService {
       offerObject,
       `Offer with id "${offerPicked.offer_id}" not found`
     )
-
+    console.log(offerObject)
     const tokenStored = await this.tokenStore.create(tokenPicked)
 
     tokenStored.setClient(clientObject)

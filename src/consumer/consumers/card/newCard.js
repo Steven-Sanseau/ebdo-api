@@ -1,9 +1,8 @@
 import Consumer from 'sqs-consumer'
 import AWS from 'aws-sdk'
-import soap from 'soap'
-import crypto from 'crypto'
 import { patchToken } from '../../api/token'
 import { env } from '../../../lib/env'
+import AbowebService from '../../../services/abowebService'
 
 AWS.config.update({
   accessKeyId: env.AWS_KEY_ID || '',
@@ -15,7 +14,7 @@ const newCardConsumer = Consumer.create({
   queueUrl: `https://sqs.${env.AWS_AREA}.${env.AWS_URL_BASE}${
     env.AWS_URL_NEW_CARD_STRIPE
   }`,
-  handleMessage: (bodyMessage, done) => {
+  handleMessage: async (bodyMessage, done) => {
     try {
       const message = JSON.parse(bodyMessage.Body)
       console.log('message received newCardConsumer')
@@ -24,43 +23,51 @@ const newCardConsumer = Consumer.create({
       const token = message.token
 
       let args = {
-        createCarteBancaire: {
-          prestataire: 2,
-          cbCode: token.stripe_customer_id,
-          token: token.stripe_card_id,
-          dateVal: `${token.stripe_card_exp_month}${
-            token.stripe_card_exp_year
-          }`,
-          lastNumbers: token.stripe_card_last4
-        }
+        prestataire: '2',
+        cbCode: String(token.stripe_customer_id),
+        token: String(token.stripe_card_id),
+        dateVal: String(
+          token.stripe_card_exp_month + String(token.stripe_card_exp_year)
+        ).substring(2),
+        lastNumbers: String(token.stripe_card_last4)
       }
+      // <prestataire>2</prestataire>
+      //
+      //    <cbCode>STR03</cbCode>
+      //
+      //    <token>TEST_TOKEN01</token>
+      //
+      //    <dateVal>1911</dateVal>
+      //
+      //    <lastNumbers>1664</lastNumbers>
+      // let args = {
+      //   prestataire: 2,
+      //   cbCode: 'STR03',
+      //   token: 'TEST_TOKEN01',
+      //   dateVal: '1911',
+      //   lastNumbers: '1664'
+      // }
+      console.log('card args', args)
 
-      soap.createClient(url, function(err, soapClient) {
-        const sha1 = crypto.createHash('sha1')
+      const soapClient = await new AbowebService().createSoapClient(url)
 
-        const wsSecurity = new soap.WSSecurity(
-          env.ABO_WEB_LOGIN,
-          sha1.update(env.ABO_WEB_KEY).digest('base64')
-        )
-        soapClient.setSecurity(wsSecurity)
+      soapClient.createCarteBancaire(args, function(err, result) {
+        if (err) {
+          console.log('create new client card to aboweb failed', err.body)
+          return null
+        }
 
-        soapClient.createCarteBancaire(args, function(err, result) {
-          if (err) {
-            console.log('create new client card to aboweb failed', err.body)
+        console.log('result', result)
+        const codeCard = result.result
+
+        return patchToken(token, codeCard)
+          .then(function(parsedBody) {
+            return done()
+          })
+          .catch(function(err) {
+            console.log('post ebdo api new card aboweb id failed', err)
             return null
-          }
-
-          const codeCard = result.codeCard
-
-          return patchToken(token, codeCard)
-            .then(function(parsedBody) {
-              return done()
-            })
-            .catch(function(err) {
-              console.log('post ebdo api new card aboweb id failed', err)
-              return null
-            })
-        })
+          })
       })
     } catch (err) {
       console.log(err)

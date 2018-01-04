@@ -29,6 +29,9 @@ const subscriptionADLCBCreateConsumer = Consumer.create({
       let args = {
         clientTampon: {
           codeClient: client.aboweb_client_id,
+          nom: client.last_name,
+          email: client.email,
+          prenom: client.first_name,
           nePasModifierClient: 1,
           noCommandeBoutique: checkout.checkout_id,
           refCarteBancaire: token.aboweb_id
@@ -56,19 +59,21 @@ const subscriptionADLCBCreateConsumer = Consumer.create({
         soapClient.setSecurity(wsSecurity)
 
         soapClient.ABM_CREATION_FICHIER_ABM(args, function(err, result) {
+          if (result.return.result) {
+            const codeCheckout = result.return.refAction
+
+            return patchCheckout(checkout, codeCheckout)
+              .then(function(parsedBody) {
+                done()
+              })
+              .catch(function(err) {
+                console.log('post failed', err)
+              })
+          }
+
           if (err) {
             console.log('aboweb failed', err)
           }
-
-          const codeCheckout = result.codeCheckout
-
-          return patchCheckout(checkout, codeCheckout)
-            .then(function(parsedBody) {
-              done()
-            })
-            .catch(function(err) {
-              console.log('post failed', err)
-            })
         })
       })
     } catch (err) {

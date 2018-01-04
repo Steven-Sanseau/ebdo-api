@@ -57,21 +57,21 @@ const subscriptionDDCBCreateConsumer = Consumer.create({
         soapClient.setSecurity(wsSecurity)
 
         soapClient.ABM_CREATION_FICHIER_ABM(args, function(err, result) {
-          if (result.return.result) {
-            const codeCheckout = result.return.refAction
-
-            return patchCheckout(checkout, codeCheckout)
-              .then(function(parsedBody) {
-                done()
-              })
-              .catch(function(err) {
-                console.log('post failed', err)
-              })
-          }
-
           if (err) {
             console.log('aboweb failed', err)
           }
+
+          const codeCheckout = result.return.refAction
+
+          return patchCheckout(checkout, codeCheckout)
+            .then(function(parsedBody) {
+              if (parsedBody.updated) {
+                done()
+              }
+            })
+            .catch(function(err) {
+              console.log('post failed', err)
+            })
         })
       })
     } catch (err) {
