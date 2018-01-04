@@ -204,13 +204,12 @@ export default class CheckoutService {
       'No aboweb payload given'
     )
 
-    const checkout = await this.findById(id)
+    const checkoutObject = await this.findById(id)
 
-    const offer = await this.offerStore.getById(checkout.offer_id)
-    NotFound.assert(
-      offer,
-      `Checkout with offer "${checkout.offer_id}" not found`
+    const offer = await this.offerStore.getById(
+      checkoutObject.checkout.offer_id
     )
+    NotFound.assert(offer, `Offer with "${JSON.stringify(offer)}" not found`)
     if (offer.time_limited && offer.payment_method === 2) {
       pickedCheckout.status = 'paid/aboweb-transfered'
     }

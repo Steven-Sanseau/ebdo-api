@@ -229,23 +229,25 @@ export default class TokenService {
     return { token: tokenSaved, iframe }
   }
 
-  // BadRequest.assert(
-  //   tokenStored.slimpay_token_id,
-  //   'Error with slimpay generate token id'
-  // )
+  async validTokenSlimpay(tokenId) {
+    BadRequest.assert(
+      tokenStored.slimpay_token_id,
+      'Error with slimpay generate token id'
+    )
 
-  // slimpay.getOrders(mandateId).then(function(result) {
-  //   if (result.body.state === 'closed.completed') {
-  //     slimpay.getMandate(result.traversal).then(r => {
-  //       console.log('mandate', r)
-  //       slimpay.getBankAccount(r.traversal).then(r => {
-  //         console.log('bank', r)
-  //       })
-  //     })
-  //   } else {
-  //     console.log(result)
-  //   }
-  // })
+    slimpay.getOrders(mandateId).then(function(result) {
+      if (result.body.state === 'closed.completed') {
+        slimpay.getMandate(result.traversal).then(r => {
+          console.log('mandate', r)
+          slimpay.getBankAccount(r.traversal).then(r => {
+            console.log('bank', r)
+          })
+        })
+      } else {
+        console.log(result)
+      }
+    })
 
-  // return tokenStored
+    return tokenStored
+  }
 }
