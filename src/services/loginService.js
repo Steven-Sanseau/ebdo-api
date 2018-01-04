@@ -30,9 +30,7 @@ export default class LoginService {
       login_code_created_at: new Date()
     })
 
-    const emailSend = await this.sendMailCodeLogin(code, email)
-
-    return emailSend
+    return await this.sendMailCodeLogin(code, email)
   }
 
   async sendMailCodeLogin(code, email) {
@@ -47,12 +45,11 @@ export default class LoginService {
       homeLink: 'https://ebdo-subscribe-front-staging.herokuapp.com'
     }
 
-    const send = await Emailer.sendMail(template_path, template_data, {
+    return await Emailer.sendMail(template_path, template_data, {
       to: email,
       from: 'contact@ebdo-lejournal.com',
       subject: 'Votre code temporaire de connexion à Ebdo'
     })
-    return send
   }
 
   async getJwt(email, code) {
@@ -60,7 +57,13 @@ export default class LoginService {
     NotFound.assert(user, 'Invalid code')
 
     return {
-      token: Jwt.sign({ email: user.email, first_name: user.first_name, last_name: user.last_name }, env.JWT_PRIVATE_KEY)
+      token: Jwt.sign({
+        client_id: user.client_id,
+        aboweb_client_id: user.aboweb_client_id,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name
+      }, env.JWT_PRIVATE_KEY)
     }
   }
 }
