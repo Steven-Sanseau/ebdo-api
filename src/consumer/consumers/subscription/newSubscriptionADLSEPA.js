@@ -57,15 +57,17 @@ const subscriptionADLSEPACreateConsumer = Consumer.create({
           console.log('aboweb failed', err)
         }
 
-        const codeCheckout = result.codeCheckout
+        if (result.return.result) {
+          const codeCheckout = result.return.refAction
 
-        return patchCheckout(checkout, codeCheckout)
-          .then(function(parsedBody) {
-            done()
-          })
-          .catch(function(err) {
-            console.log('post failed', err)
-          })
+          return patchCheckout(checkout, codeCheckout)
+            .then(function(parsedBody) {
+              done()
+            })
+            .catch(function(err) {
+              console.log('post failed', err)
+            })
+        }
       })
     } catch (err) {
       console.log(err)

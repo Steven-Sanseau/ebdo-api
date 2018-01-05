@@ -49,6 +49,7 @@ export default class CheckoutService {
 
   async create(body) {
     BadRequest.assert(body.checkout, 'No checkout payload given')
+    console.log(body)
     const pickedCheckout = pickProps(body.checkout)
     BadRequest.assert(pickedCheckout.client_id, 'client_id is required')
     BadRequest.assert(
