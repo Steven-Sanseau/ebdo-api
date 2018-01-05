@@ -31,6 +31,9 @@ const subscriptionADLSEPACreateConsumer = Consumer.create({
           codeClient: client.aboweb_client_id,
           nePasModifierClient: 1,
           noCommandeBoutique: checkout.checkout_id,
+          nom: client.last_name,
+          email: client.email,
+          prenom: client.first_name,
           iban: token.slimpay_iban,
           bic: token.slimpay_bic
         },

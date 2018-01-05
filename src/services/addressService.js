@@ -53,6 +53,10 @@ export default class AddressService {
     pickedAddress.client_id = clientStored.client_id
     const addressStored = await this.addressStore.create(pickedAddress)
 
+    clientStored.first_name = addressUpdated.first_name
+    clientStored.last_name = addressUpdated.last_name
+    const clientUpdated = await clientStored.save()
+
     //SEND ABOWEB client info
     if (addressStored.type_address === 'invoice') {
       const producer = await newClientProducer({
@@ -61,7 +65,7 @@ export default class AddressService {
       })
     }
 
-    return { address: addressStored }
+    return { address: addressStored, client: clientUpdated }
   }
 
   async update(id, data) {
@@ -86,6 +90,9 @@ export default class AddressService {
         clientStored,
         `Checkout with client "${addressUpdated.client_id}" not found`
       )
+      clientStored.first_name = addressUpdated.first_name
+      clientStored.last_name = addressUpdated.last_name
+      const clientUpdated = await clientStored.save()
 
       const producer = await newClientProducer({
         client: clientStored,
@@ -93,7 +100,7 @@ export default class AddressService {
       })
     }
 
-    return { updated: true, address: addressUpdated }
+    return { updated: true, address: addressUpdated, client: clientUpdated }
   }
 
   async updateAboweb(id, data) {
