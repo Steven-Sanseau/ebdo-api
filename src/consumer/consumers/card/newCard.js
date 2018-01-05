@@ -40,7 +40,6 @@ const newCardConsumer = Consumer.create({
           return null
         }
 
-        console.log('result', result)
         const codeCard = result.result
 
         return patchToken(token, codeCard)
