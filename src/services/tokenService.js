@@ -216,12 +216,12 @@ export default class TokenService {
         const dataToken = signMandate.body
         tokenStored.slimpay_token_id = dataToken.id
 
-        return dataToken._links['https://api.slimpay.net/alps#user-approval']
-        // return slimpay.getIframe(signMandate.traversal).then(iframeResult => {
-        //   if (iframeResult.body && iframeResult.body.content) {
-        //     return iframeResult.body.content
-        //   }
-        // })
+        // return dataToken._links['https://api.slimpay.net/alps#user-approval']
+        return slimpay.getIframe(signMandate.traversal).then(iframeResult => {
+          if (iframeResult.body && iframeResult.body.content) {
+            return iframeResult.body.content
+          }
+        })
       })
     const tokenSaved = await tokenStored.save()
     NotFound.assert(tokenSaved, 'Token slimpay unavailable')
@@ -235,19 +235,33 @@ export default class TokenService {
     const tokenObject = await this.tokenStore.getById(tokenId)
     NotFound.assert(tokenObject, `Token with id "${tokenId}" not found`)
 
-    slimpay.getOrders(mandateId).then(function(result) {
-      if (result.body.state === 'closed.completed') {
-        slimpay.getMandate(result.traversal).then(r => {
-          console.log('mandate', r)
-          slimpay.getBankAccount(r.traversal).then(r => {
-            console.log('bank', r)
+    const slimpayObj = await slimpay
+      .getOrders(tokenObject.slimpay_token_id)
+      .then(async result => {
+        if (result.body.state === 'closed.completed') {
+          return slimpay.getMandate(result.traversal).then(mandateObject => {
+            return slimpay
+              .getBankAccount(mandateObject.traversal)
+              .then(bankObject => {
+                return {
+                  bic: bankObject.body.bic,
+                  iban: bankObject.body.iban,
+                  rum: mandateObject.body.rum
+                }
+              })
           })
-        })
-      } else {
-        console.log(result)
-      }
-    })
+        }
+        return { status: result.body.state }
+      })
 
-    return tokenStored
+    NotFound.assert(!slimpayObj.status, 'Mandate not completed')
+
+    tokenObject.slimpay_iban = slimpayObj.iban
+    tokenObject.slimpay_bic = slimpayObj.bic
+    tokenObject.slimpay_rum_id = slimpayObj.rum
+
+    const tokenReturnSaved = await tokenObject.save()
+
+    return { token: tokenReturnSaved }
   }
 }
