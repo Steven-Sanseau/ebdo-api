@@ -23,6 +23,7 @@ const subscriptionDDCBCreateConsumer = Consumer.create({
       const client = message.client
       const checkout = message.checkout
       const offer = message.offer
+      const isDiffAddress = message.isDiffAddress
 
       let args = {
         clientTampon: {
@@ -39,7 +40,7 @@ const subscriptionDDCBCreateConsumer = Consumer.create({
             quantite: 1,
             modePaiement: 2,
             montantTtc: offer.price_ttc,
-            typeAdresseLiv: 0
+            typeAdresseLiv: isDiffAddress ? 1 : 0
           }
         ],
         refEditeur: env.ABO_WEB_REF_EDITEUR,

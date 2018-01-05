@@ -90,7 +90,14 @@ export default class CheckoutService {
       }" not found`
     )
 
-    if (addressDelivery.address_equal && addressInvoice.address_equal) {
+    const useDiffAddressDelivery =
+      addressDelivery.address_equal && addressInvoice.address_equal
+
+    if (useDiffAddressDelivery) {
+      const producerAddressDelivery = await newAddressProducer({
+        client: client,
+        addressDelivery
+      })
     }
 
     const token = await this.tokenStore.getByIdAndClientId(
@@ -123,16 +130,17 @@ export default class CheckoutService {
           token,
           offer,
           checkoutStored,
-          client
+          client,
+          useDiffAddressDelivery
         )
-        console.log('chargeStripe', chargeStripe)
+
         checkoutStored.status = 'paid'
 
         const producer = await newSubscriptionDDCB({
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          addressDelivery
+          isDiffAddress: addressDelivery
         })
       } catch (err) {
         checkoutStored.status = 'declined'
@@ -147,7 +155,8 @@ export default class CheckoutService {
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          token: token
+          token: token,
+          isDiffAddress: useDiffAddressDelivery
         })
         checkoutStored.status = 'waiting/aboweb-transfer'
       } catch (err) {
@@ -163,7 +172,8 @@ export default class CheckoutService {
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          token: token
+          token: token,
+          isDiffAddress: useDiffAddressDelivery
         })
         checkoutStored.status = 'waiting/aboweb-transfer'
       } catch (err) {

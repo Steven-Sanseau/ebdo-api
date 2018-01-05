@@ -20,12 +20,11 @@ const newAddressConsumer = Consumer.create({
       console.log('message received newCardConsumer')
 
       const url = `${env.ABO_WEB_URL}AdresseService?wsdl`
-      const addressDelivery = message.address
+      const addressDelivery = message.addressDelivery
       const client = message.client
 
       let args = {
         adresse: {
-          codeClient: client.aboweb_id,
           typeAdresse: 1,
           codeClient: client.aboweb_id,
           nom: addressDelivery.last_name || null,

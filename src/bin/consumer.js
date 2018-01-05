@@ -6,6 +6,7 @@ Raven.config(
 
 import clientCreateConsumer from '../consumer/consumers/client/newClient'
 import newCardConsumer from '../consumer/consumers/card/newCard'
+import newAddressConsumer from '../consumer/consumers/address/newAddress'
 import subscriptionDDCBCreateConsumer from '../consumer/consumers/subscription/newSubscriptionDDCB'
 import subscriptionADLCBCreateConsumer from '../consumer/consumers/subscription/newSubscriptionADLCB'
 import subscriptionADLSEPACreateConsumer from '../consumer/consumers/subscription/newSubscriptionADLSEPA'
@@ -22,6 +23,12 @@ try {
     console.log(err.message)
   })
   newCardConsumer.start()
+
+  //newAddressConsumer
+  newAddressConsumer.on('error', err => {
+    console.log(err.message)
+  })
+  newAddressConsumer.start()
 
   //subscriptionDDCBCreateConsumer
   subscriptionDDCBCreateConsumer.on('error', err => {
