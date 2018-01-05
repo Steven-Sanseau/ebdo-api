@@ -63,7 +63,6 @@ export default class CheckoutService {
       pickedCheckout.address_delivery_id,
       'address_delivery_id is required'
     )
-    BadRequest.assert(pickedCheckout.token_id, 'token_id is required')
     BadRequest.assert(pickedCheckout.offer_id, 'offer_id is required')
 
     const client = await this.clientStore.getById(pickedCheckout.client_id)
@@ -104,31 +103,54 @@ export default class CheckoutService {
       })
     }
 
-    const token = await this.tokenStore.getByIdAndClientId(
-      pickedCheckout.token_id,
-      pickedCheckout.client_id
-    )
-    NotFound.assert(
-      token,
-      `Checkout with token "${pickedCheckout.token_id}" not found`
-    )
-
     const offer = await this.offerStore.getById(pickedCheckout.offer_id)
     NotFound.assert(
       offer,
       `Checkout with offer "${pickedCheckout.offer_id}" not found`
     )
 
+    let token = null;
+
+    if (!offer.is_free_gift && !offer.is_free) {
+      BadRequest.assert(pickedCheckout.token_id, 'token_id is required')
+      token = await this.tokenStore.getByIdAndClientId(
+        pickedCheckout.token_id,
+        pickedCheckout.client_id
+      )
+      NotFound.assert(
+        token,
+        `Checkout with token "${pickedCheckout.token_id}" not found`
+      )
+    }
+
     const checkoutStored = await this.checkoutStore.create(pickedCheckout)
     checkoutStored.setClient(client)
     checkoutStored.setOffer(offer)
-    checkoutStored.setToken(token)
+    if (!token) {
+      checkoutStored.setToken(token)
+    }
     checkoutStored.setDelivery_address(addressDelivery)
     checkoutStored.setInvoice_address(addressInvoice)
     checkoutStored.status = 'created'
 
+    // OFFRE ESSAI GRATUIT
+    if (offer.time_limited && offer.payment_method === 2 && offer.is_free_gift && offer.is_free) {
+      try {
+        checkoutStored.status = 'created'
+
+        const producer = await newSubscriptionDDCB({
+          offer: offer,
+          checkout: checkoutStored,
+          client: client,
+        })
+      } catch (err) {
+        checkoutStored.status = 'declined'
+        PaymentError.assert(!err, err.message)
+      }
+    }
+
     // OFFRE À Durée Déterminée && Stripe CB Payment
-    if (offer.time_limited && offer.payment_method === 2) {
+    if (offer.time_limited && offer.payment_method === 2 && !offer.is_free_gift && !offer.is_free) {
       try {
         const chargeStripe = await this.chargeCard(
           token,
@@ -143,7 +165,6 @@ export default class CheckoutService {
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          isDiffAddress: !useSameAddressDelivery
         })
       } catch (err) {
         checkoutStored.status = 'declined'
@@ -152,14 +173,13 @@ export default class CheckoutService {
     }
 
     // OFFRE À Durée Libre && Stripe CB Token
-    if (!offer.time_limited && offer.payment_method === 2) {
+    if (!offer.time_limited && offer.payment_method === 2 && !offer.is_free_gift && !offer.is_free) {
       try {
         const producer = await newSubscriptionADLCB({
           offer: offer,
           checkout: checkoutStored,
           client: client,
           token: token,
-          isDiffAddress: !useSameAddressDelivery
         })
         checkoutStored.status = 'finished'
       } catch (err) {
@@ -169,14 +189,13 @@ export default class CheckoutService {
     }
 
     // OFFRE À Durée Libre && SLIMPAY token
-    if (!offer.time_limited && offer.payment_method === 1) {
+    if (!offer.time_limited && offer.payment_method === 1 && !offer.is_free_gift && !offer.is_free) {
       try {
         const producer = await newSubscriptionADLSEPA({
           offer: offer,
           checkout: checkoutStored,
           client: client,
           token: token,
-          isDiffAddress: !useSameAddressDelivery
         })
         checkoutStored.status = 'finished'
       } catch (err) {

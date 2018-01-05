@@ -11,6 +11,9 @@ export default (sequelize, DataTypes) => {
     aboweb_client_id: {
       type: DataTypes.INTEGER
     },
+    aboweb_offer_id: {
+      type: DataTypes.STRING
+    },
     first_number_delivered: {
       type: DataTypes.INTEGER
     },
@@ -34,8 +37,29 @@ export default (sequelize, DataTypes) => {
     },
     order_number: {
       type: DataTypes.STRING
-    }
+    },
+    begin_at: {
+      type: DataTypes.DATE
+    },
+    end_at: {
+      type: DataTypes.DATE
+    },
+    invoiced_number: {
+      type: DataTypes.STRING
+    },
+    status: {
+      type: DataTypes.STRING
+    },
   })
+
+
+  Subscription.associate = models => {
+    Subscription.hasOne(models.Offer, {
+      targetKey: 'aboweb_offer_id',
+      foreignKey: 'aboweb_id',
+      constraints: false
+    })
+  }
 
   return Subscription
 }
