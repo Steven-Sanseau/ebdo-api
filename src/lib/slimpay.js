@@ -230,7 +230,7 @@ class SlimPay {
       return traversal
         .continue()
         .follow(`https://api.slimpay.net/alps#extended-user-approval`)
-        .withTemplateParameters({ mode: 'iframeembedded' })
+        .withTemplateParameters({ mode: 'iframepopin' })
         .get((err, res, traversal) => {
           return controleResult(err, res, traversal, resolve, reject)
         })

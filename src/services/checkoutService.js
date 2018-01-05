@@ -1,10 +1,14 @@
 import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
+import path from 'path'
 import newClientProducer from '../producers/newClientProducer'
+import newAddressProducer from '../producers/newAddressProducer'
 import newSubscriptionDDCB from '../producers/newSubscriptionDDCB'
 import newSubscriptionADLCB from '../producers/newSubscriptionADLCB'
 import newSubscriptionADLSEPA from '../producers/newSubscriptionADLSEPA'
+
 import stripe from '../lib/stripe'
+import Emailer from '../lib/emailer'
 
 const assertEmail = BadRequest.makeAssert('No email given')
 const pickProps = data =>
@@ -48,6 +52,7 @@ export default class CheckoutService {
 
   async create(body) {
     BadRequest.assert(body.checkout, 'No checkout payload given')
+    console.log(body)
     const pickedCheckout = pickProps(body.checkout)
     BadRequest.assert(pickedCheckout.client_id, 'client_id is required')
     BadRequest.assert(
@@ -89,6 +94,16 @@ export default class CheckoutService {
       }" not found`
     )
 
+    const useSameAddressDelivery =
+      addressDelivery.address_equal && addressInvoice.address_equal
+
+    if (!useSameAddressDelivery) {
+      const producerAddressDelivery = await newAddressProducer({
+        client: client,
+        addressDelivery
+      })
+    }
+
     const token = await this.tokenStore.getByIdAndClientId(
       pickedCheckout.token_id,
       pickedCheckout.client_id
@@ -121,13 +136,14 @@ export default class CheckoutService {
           checkoutStored,
           client
         )
-        console.log('chargeStripe', chargeStripe)
+
         checkoutStored.status = 'paid'
 
         const producer = await newSubscriptionDDCB({
           offer: offer,
           checkout: checkoutStored,
-          client: client
+          client: client,
+          isDiffAddress: !useSameAddressDelivery
         })
       } catch (err) {
         checkoutStored.status = 'declined'
@@ -142,11 +158,12 @@ export default class CheckoutService {
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          token: token
+          token: token,
+          isDiffAddress: !useSameAddressDelivery
         })
-        checkoutStored.status = 'waiting/aboweb-transfer'
+        checkoutStored.status = 'finished'
       } catch (err) {
-        checkoutStored.status = 'declined/aboweb-error'
+        checkoutStored.status = 'finished/aboweb-error'
         PaymentError.assert(!err, err.message)
       }
     }
@@ -158,14 +175,21 @@ export default class CheckoutService {
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          token: token
+          token: token,
+          isDiffAddress: !useSameAddressDelivery
         })
-        checkoutStored.status = 'waiting/aboweb-transfer'
+        checkoutStored.status = 'finished'
       } catch (err) {
-        checkoutStored.status = 'declined/aboweb-error'
+        checkoutStored.status = 'finished/aboweb-error'
         PaymentError.assert(!err, err.message)
       }
     }
+
+    const emailSuccess = await this.sendMailSuccessSuscribe(
+      client,
+      offer,
+      checkoutStored
+    )
 
     const checkoutreturn = await checkoutStored.save()
     return { checkout: checkoutreturn }
@@ -194,6 +218,25 @@ export default class CheckoutService {
     return offer.price_ttc
   }
 
+  async sendMailSuccessSuscribe(client, offer, checkout) {
+    const template_path = path.resolve(
+      './src/emails/subscribe_resume.mjml.mustache'
+    )
+    const template_data = {
+      ctatext: 'ME CONNECTER SUR EBDO',
+      ctalink: 'https://ebdo-lejournal.com',
+      offre: offer.description,
+      passwordLessText: 'resume suscbribe less explications etc.....',
+      homeLink: 'https://ebdo-subscribe-front-staging.herokuapp.com'
+    }
+
+    return await Emailer.sendMail(template_path, template_data, {
+      to: client.email,
+      from: 'contact@ebdo-lejournal.com',
+      subject: 'Merci de votre engagement a nos côtés'
+    })
+  }
+
   async updateAboweb(id, data) {
     BadRequest.assert(id, 'No id checkout payload given')
 
@@ -204,15 +247,16 @@ export default class CheckoutService {
       'No aboweb payload given'
     )
 
-    const checkout = await this.findById(id)
+    const checkoutObject = await this.findById(id)
 
-    const offer = await this.offerStore.getById(checkout.offer_id)
-    NotFound.assert(
-      offer,
-      `Checkout with offer "${checkout.offer_id}" not found`
+    const offer = await this.offerStore.getById(
+      checkoutObject.checkout.offer_id
     )
+    NotFound.assert(offer, `Offer with "${JSON.stringify(offer)}" not found`)
     if (offer.time_limited && offer.payment_method === 2) {
       pickedCheckout.status = 'paid/aboweb-transfered'
+    } else {
+      pickedCheckout.status = 'finished/aboweb-transfered'
     }
 
     return this.checkoutStore

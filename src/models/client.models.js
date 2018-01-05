@@ -47,6 +47,11 @@ export default (sequelize, DataTypes) => {
       targetKey: 'token_id',
       foreignKey: 'client_id'
     })
+    Client.hasMany(models.Subscription, {
+      targetKey: 'aboweb_client_id',
+      foreignKey: 'aboweb_client_id',
+      constraints: false
+    })
   }
 
   return Client

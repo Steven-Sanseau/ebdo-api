@@ -22,7 +22,7 @@ const sequelize = new Sequelize(
     port: env.POSTGRESPORT,
     host: env.POSTGRESHOST,
     dialectOptions: sslObj,
-    logging: env.NODE_ENV !== 'developpment',
+    logging: console.log,
     define: {
       paranoid: true,
       underscored: true,

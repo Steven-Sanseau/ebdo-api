@@ -25,9 +25,10 @@ export default class ClientService {
 
   async findByEmail(email) {
     assertEmail(email)
+    const pickedEmail = _.toLower(email.trim())
 
-    const client = await this.clientStore.getByEmail(email)
-    NotFound.assert(client, `Client with email "${email}" not found`)
+    const client = await this.clientStore.getByEmail(pickedEmail)
+    NotFound.assert(client, `Client with email "${pickedEmail}" not found`)
 
     return { client }
   }
