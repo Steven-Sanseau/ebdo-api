@@ -216,11 +216,12 @@ export default class TokenService {
         const dataToken = signMandate.body
         tokenStored.slimpay_token_id = dataToken.id
 
-        return slimpay.getIframe(signMandate.traversal).then(iframeResult => {
-          if (iframeResult.body && iframeResult.body.content) {
-            return iframeResult.body.content
-          }
-        })
+        return dataToken._links['https://api.slimpay.net/alps#user-approval']
+        // return slimpay.getIframe(signMandate.traversal).then(iframeResult => {
+        //   if (iframeResult.body && iframeResult.body.content) {
+        //     return iframeResult.body.content
+        //   }
+        // })
       })
     const tokenSaved = await tokenStored.save()
     NotFound.assert(tokenSaved, 'Token slimpay unavailable')
@@ -230,10 +231,9 @@ export default class TokenService {
   }
 
   async validTokenSlimpay(tokenId) {
-    BadRequest.assert(
-      tokenStored.slimpay_token_id,
-      'Error with slimpay generate token id'
-    )
+    BadRequest.assert(tokenId, 'Token id empty')
+    const tokenObject = await this.tokenStore.getById(tokenId)
+    NotFound.assert(tokenObject, `Token with id "${tokenId}" not found`)
 
     slimpay.getOrders(mandateId).then(function(result) {
       if (result.body.state === 'closed.completed') {

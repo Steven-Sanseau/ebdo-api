@@ -1,11 +1,11 @@
 import soap from 'soap'
 import crypto from 'crypto'
 
-import {env} from "../lib/env";
+import { env } from '../lib/env'
 
-const ABOWEB_RESULTS_LIMIT = 50;
-const CRON_TYPE_SUBSCRIPTIONS = "syncSubscriptionsAboweb";
-const CRON_TYPE_CLIENTS = "syncClientsAboweb";
+const ABOWEB_RESULTS_LIMIT = 50
+const CRON_TYPE_SUBSCRIPTIONS = 'syncSubscriptionsAboweb'
+const CRON_TYPE_CLIENTS = 'syncClientsAboweb'
 
 export default class AbowebService {
   constructor(ClientModel, AddressModel, SubscriptionModel, CronModel) {
@@ -16,7 +16,7 @@ export default class AbowebService {
   }
 
   async createSoapClient(url) {
-    return soap.createClientAsync(url).then((soapClient) => {
+    return soap.createClientAsync(url).then(soapClient => {
       const sha1 = crypto.createHash('sha1')
       const wsSecurity = new soap.WSSecurity(
         env.ABO_WEB_LOGIN,
@@ -24,7 +24,7 @@ export default class AbowebService {
       )
       soapClient.setSecurity(wsSecurity)
 
-      return soapClient;
+      return soapClient
     })
   }
 
@@ -36,22 +36,28 @@ export default class AbowebService {
       try {
         const lastCronjob = await this.CronModel.findOne({
           where: { type: CRON_TYPE_SUBSCRIPTIONS },
-          order: [
-            ['created_at', 'DESC']
-          ]
+          order: [['created_at', 'DESC']]
         })
-        const lastModified = lastCronjob ? lastCronjob.created_at.toISOString() : new Date(0).toISOString();
-        const soapClient = await this.createSoapClient(`${env.ABO_WEB_URL}AbonnementService?wsdl`)
-        let subscriptions = ABOWEB_RESULTS_LIMIT;
-        let subscriptionsUpdated = 0;
-        let offset = 0;
+        const lastModified = lastCronjob
+          ? lastCronjob.created_at.toISOString()
+          : new Date(0).toISOString()
+        const soapClient = await this.createSoapClient(
+          `${env.ABO_WEB_URL}AbonnementService?wsdl`
+        )
+        let subscriptions = ABOWEB_RESULTS_LIMIT
+        let subscriptionsUpdated = 0
+        let offset = 0
 
         while (subscriptions >= ABOWEB_RESULTS_LIMIT) {
-          const response = await soapClient.getAbonnementsModifiedBetweenAsync({ date1: lastModified, date2: new Date().toISOString(), offset });
+          const response = await soapClient.getAbonnementsModifiedBetweenAsync({
+            date1: lastModified,
+            date2: new Date().toISOString(),
+            offset
+          })
           if (response) {
-            response.abonnement.forEach(async (abonnement) => {
-              await this.SubscriptionModel
-                .upsert({
+            response.abonnement.forEach(async abonnement => {
+              await this.SubscriptionModel.upsert(
+                {
                   aboweb_subscription_id: abonnement.refAbonnement,
                   aboweb_client_id: abonnement.codeClient,
                   firstNumberDelivered: abonnement.pns,
@@ -64,15 +70,17 @@ export default class AbowebService {
                   numberOfCopy: abonnement.nbExemplaires,
                   created_at: abonnement.creation,
                   updated_at: abonnement.modification
-                }, { aboweb_subscription_id: abonnement.refAbonnement })
+                },
+                { aboweb_subscription_id: abonnement.refAbonnement }
+              )
                 .then(() => subscriptionsUpdated++)
                 .catch(err => console.log(err, abonnement))
             })
 
-            offset += response.abonnement.length;
-            console.log(offset);
+            offset += response.abonnement.length
+            console.log(offset)
           } else {
-            subscriptions = 0;
+            subscriptions = 0
           }
         }
 
@@ -82,9 +90,9 @@ export default class AbowebService {
             subscriptionsUpdated: subscriptionsUpdated
           }
         }).save()
-        resolve();
+        resolve()
       } catch (e) {
-        reject(e);
+        reject(e)
       }
     })
   }
@@ -97,37 +105,46 @@ export default class AbowebService {
       try {
         const lastCronjob = await this.CronModel.findOne({
           where: { type: CRON_TYPE_CLIENTS },
-          order: [
-            ['created_at', 'DESC']
-          ]
+          order: [['created_at', 'DESC']]
         })
-        const lastModified = lastCronjob ? lastCronjob.created_at.toISOString() : null;
-        const soapClient = await this.createSoapClient(`${env.ABO_WEB_URL}ClientService?wsdl`)
-        let clients = ABOWEB_RESULTS_LIMIT;
-        let clientsUpdated = 0;
-        let offset = 0;
+        const lastModified = lastCronjob
+          ? lastCronjob.created_at.toISOString()
+          : null
+        const soapClient = await this.createSoapClient(
+          `${env.ABO_WEB_URL}ClientService?wsdl`
+        )
+        let clients = ABOWEB_RESULTS_LIMIT
+        let clientsUpdated = 0
+        let offset = 0
 
         while (clients >= ABOWEB_RESULTS_LIMIT) {
-          const response = await soapClient.getClientsModifiedBetweenAsync({ date1: lastModified, offset });
+          const response = await soapClient.getClientsModifiedBetweenAsync({
+            date1: lastModified,
+            offset
+          })
           if (response) {
-            response.client.forEach(async (client) => {
+            response.client.forEach(async client => {
               // Update client
-              await this.ClientModel
-                .upsert({
+              await this.ClientModel.upsert(
+                {
                   email: client.email,
                   first_name: client.prenom,
                   last_name: client.nom,
                   type_client: client.typeClient,
                   aboweb_client_id: client.codeClient
-                }, { aboweb_client_id: client.codeClient })
+                },
+                { aboweb_client_id: client.codeClient }
+              )
                 .then(() => clientsUpdated++)
                 .catch(err => console.log(err, client))
 
               // Update invoice address
-              const clientDb = await this.ClientModel.findOne({where: { aboweb_client_id: client.codeClient }})
+              const clientDb = await this.ClientModel.findOne({
+                where: { aboweb_client_id: client.codeClient }
+              })
               if (client.adresse2 && clientDb) {
-                this.AddressModel
-                  .upsert({
+                this.AddressModel.upsert(
+                  {
                     first_name: client.prenom,
                     last_name: client.nom,
                     address: client.adresse2,
@@ -135,16 +152,18 @@ export default class AbowebService {
                     postal_code: client.cp,
                     country: client.codeIsoPays,
                     client_id: clientDb.client_id,
-                    type_address: 'invoice'
-                  }, { client_id: clientDb.client_id, type_address: 'invoice' })
-                  .catch(err => console.log(err, client))
+                    type_address: 'invoice',
+                    address_equal: true
+                  },
+                  { client_id: clientDb.client_id, type_address: 'invoice' }
+                ).catch(err => console.log(err, client))
               }
             })
 
-            offset += response.client.length;
-            console.log(offset);
+            offset += response.client.length
+            console.log(offset)
           } else {
-            clients = 0;
+            clients = 0
           }
         }
 
@@ -154,9 +173,9 @@ export default class AbowebService {
             clientsUpdated: clientsUpdated
           }
         }).save()
-        resolve();
+        resolve()
       } catch (e) {
-        reject(e);
+        reject(e)
       }
     })
   }

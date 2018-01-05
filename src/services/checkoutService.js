@@ -1,6 +1,7 @@
 import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
 import newClientProducer from '../producers/newClientProducer'
+import newAddressProducer from '../producers/newAddressProducer'
 import newSubscriptionDDCB from '../producers/newSubscriptionDDCB'
 import newSubscriptionADLCB from '../producers/newSubscriptionADLCB'
 import newSubscriptionADLSEPA from '../producers/newSubscriptionADLSEPA'
@@ -89,6 +90,9 @@ export default class CheckoutService {
       }" not found`
     )
 
+    if (addressDelivery.address_equal && addressInvoice.address_equal) {
+    }
+
     const token = await this.tokenStore.getByIdAndClientId(
       pickedCheckout.token_id,
       pickedCheckout.client_id
@@ -127,7 +131,8 @@ export default class CheckoutService {
         const producer = await newSubscriptionDDCB({
           offer: offer,
           checkout: checkoutStored,
-          client: client
+          client: client,
+          addressDelivery
         })
       } catch (err) {
         checkoutStored.status = 'declined'

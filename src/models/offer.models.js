@@ -35,6 +35,12 @@ export default (sequelize, DataTypes) => {
     is_gift: {
       type: DataTypes.BOOLEAN
     },
+    is_free: {
+      type: DataTypes.BOOLEAN
+    },
+    is_free_gift: {
+      type: DataTypes.BOOLEAN
+    },
     payment_method: {
       type: DataTypes.INTEGER
     }

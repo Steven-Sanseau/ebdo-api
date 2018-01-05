@@ -13,7 +13,8 @@ const pickProps = data =>
     'civility',
     'country',
     'phone',
-    'type_address'
+    'type_address',
+    'address_equal'
   ])
 
 export default class AddressService {

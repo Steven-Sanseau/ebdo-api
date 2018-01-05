@@ -6,10 +6,10 @@ export default (sequelize, DataTypes) => {
       primaryKey: true
     },
     last_name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING
     },
     first_name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING
     },
     address: {
       type: DataTypes.STRING,
@@ -53,11 +53,16 @@ export default (sequelize, DataTypes) => {
     },
     type_address: {
       type: DataTypes.STRING
+    },
+    address_equal: {
+      type: DataTypes.BOOLEAN
     }
   })
 
   Address.associate = models => {
-    Address.belongsTo(models.Client, { foreignKey: {name: 'client_id', allowNull: false } })
+    Address.belongsTo(models.Client, {
+      foreignKey: { name: 'client_id', allowNull: false }
+    })
 
     Address.hasOne(models.Checkout, {
       as: 'invoice_address',
