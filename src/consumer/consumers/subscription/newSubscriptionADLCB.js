@@ -41,8 +41,9 @@ const subscriptionADLCBCreateConsumer = Consumer.create({
             codeTarif: offer.aboweb_id,
             quantite: 1,
             modePaiement: 6,
-            montantTtc: offer.price_ttc,
-            typeAdresseLiv: isDiffAddress ? 1 : 0
+            montantTtc: offer.price_ttc / 100,
+            typeAdresseLiv: isDiffAddress ? 1 : 0,
+            noCommandeBoutique: checkout.checkout_id
           }
         ],
         refEditeur: env.ABO_WEB_REF_EDITEUR,

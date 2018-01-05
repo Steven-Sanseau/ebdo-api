@@ -90,10 +90,10 @@ export default class CheckoutService {
       }" not found`
     )
 
-    const useDiffAddressDelivery =
+    const useSameAddressDelivery =
       addressDelivery.address_equal && addressInvoice.address_equal
 
-    if (useDiffAddressDelivery) {
+    if (!useSameAddressDelivery) {
       const producerAddressDelivery = await newAddressProducer({
         client: client,
         addressDelivery
@@ -130,8 +130,7 @@ export default class CheckoutService {
           token,
           offer,
           checkoutStored,
-          client,
-          useDiffAddressDelivery
+          client
         )
 
         checkoutStored.status = 'paid'
@@ -140,7 +139,7 @@ export default class CheckoutService {
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          isDiffAddress: addressDelivery
+          isDiffAddress: !useSameAddressDelivery
         })
       } catch (err) {
         checkoutStored.status = 'declined'
@@ -156,7 +155,7 @@ export default class CheckoutService {
           checkout: checkoutStored,
           client: client,
           token: token,
-          isDiffAddress: useDiffAddressDelivery
+          isDiffAddress: !useSameAddressDelivery
         })
         checkoutStored.status = 'finished'
       } catch (err) {
@@ -173,7 +172,7 @@ export default class CheckoutService {
           checkout: checkoutStored,
           client: client,
           token: token,
-          isDiffAddress: useDiffAddressDelivery
+          isDiffAddress: !useSameAddressDelivery
         })
         checkoutStored.status = 'finished'
       } catch (err) {

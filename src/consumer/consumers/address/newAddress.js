@@ -24,19 +24,19 @@ const newAddressConsumer = Consumer.create({
       const client = message.client
 
       let args = {
-        adresse: {
-          typeAdresse: 1,
-          codeClient: client.aboweb_id,
-          nom: addressDelivery.last_name || null,
-          prenom: addressDelivery.first_name || null,
-          societe: addressDelivery.company || null,
-          adresse1: addressDelivery.address_pre || null,
-          adresse2: addressDelivery.address || null,
-          adresse3: addressDelivery.address_post || null,
-          cp: addressDelivery.postal_code || null,
-          ville: addressDelivery.city || null,
-          codeIsoPays: addressDelivery.country || null
-        }
+        // adresse: {
+        typeAdresse: 1,
+        codeClient: client.aboweb_id,
+        nom: addressDelivery.last_name || null,
+        prenom: addressDelivery.first_name || null,
+        societe: addressDelivery.company || null,
+        adresse1: addressDelivery.address_pre || null,
+        adresse2: addressDelivery.address || null,
+        adresse3: addressDelivery.address_post || null,
+        cp: addressDelivery.postal_code || null,
+        ville: addressDelivery.city || null,
+        codeIsoPays: addressDelivery.country || null
+        // }
       }
 
       const soapClient = await new AbowebService().createSoapClient(url)

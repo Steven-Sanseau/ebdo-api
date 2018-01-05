@@ -53,8 +53,8 @@ export default class AddressService {
     pickedAddress.client_id = clientStored.client_id
     const addressStored = await this.addressStore.create(pickedAddress)
 
-    clientStored.first_name = addressUpdated.first_name
-    clientStored.last_name = addressUpdated.last_name
+    clientStored.first_name = addressStored.first_name
+    clientStored.last_name = addressStored.last_name
     const clientUpdated = await clientStored.save()
 
     //SEND ABOWEB client info
@@ -95,12 +95,13 @@ export default class AddressService {
       const clientUpdated = await clientStored.save()
 
       const producer = await newClientProducer({
-        client: clientStored,
+        client: clientUpdated,
         addressInvoice: addressUpdated
       })
+      return { updated: true, address: addressUpdated, client: clientUpdated }
     }
 
-    return { updated: true, address: addressUpdated, client: clientUpdated }
+    return { updated: true, address: addressUpdated }
   }
 
   async updateAboweb(id, data) {
