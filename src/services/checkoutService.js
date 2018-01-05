@@ -1,11 +1,14 @@
 import { NotFound, BadRequest, Conflict, PaymentError } from 'fejl'
 import _ from 'lodash'
+import path from 'path'
 import newClientProducer from '../producers/newClientProducer'
 import newAddressProducer from '../producers/newAddressProducer'
 import newSubscriptionDDCB from '../producers/newSubscriptionDDCB'
 import newSubscriptionADLCB from '../producers/newSubscriptionADLCB'
 import newSubscriptionADLSEPA from '../producers/newSubscriptionADLSEPA'
+
 import stripe from '../lib/stripe'
+import Emailer from '../lib/emailer'
 
 const assertEmail = BadRequest.makeAssert('No email given')
 const pickProps = data =>
@@ -182,6 +185,12 @@ export default class CheckoutService {
       }
     }
 
+    const emailSuccess = await this.sendMailSuccessSuscribe(
+      client,
+      offer,
+      checkoutStored
+    )
+
     const checkoutreturn = await checkoutStored.save()
     return { checkout: checkoutreturn }
   }
@@ -207,6 +216,25 @@ export default class CheckoutService {
 
   calculAmount(offer) {
     return offer.price_ttc
+  }
+
+  async sendMailSuccessSuscribe(client, offer, checkout) {
+    const template_path = path.resolve(
+      './src/emails/subscribe_resume.mjml.mustache'
+    )
+    const template_data = {
+      ctatext: 'ME CONNECTER SUR EBDO',
+      ctalink: 'https://ebdo-lejournal.com',
+      offre: offer.description,
+      passwordLessText: 'resume suscbribe less explications etc.....',
+      homeLink: 'https://ebdo-subscribe-front-staging.herokuapp.com'
+    }
+
+    return await Emailer.sendMail(template_path, template_data, {
+      to: client.email,
+      from: 'contact@ebdo-lejournal.com',
+      subject: 'Merci de votre engagement a nos côtés'
+    })
   }
 
   async updateAboweb(id, data) {
