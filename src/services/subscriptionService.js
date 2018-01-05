@@ -7,9 +7,7 @@ export default class Subscription {
   }
 
   async findSubscriptionsForClient(abowebClientId) {
-    BadRequest.assert(abowebClientId, 'No abowebClientId given')
-
-    const subscriptions = await this.subscriptionStore.getByAbowebClientId(abowebClientId);
+    const subscriptions = abowebClientId ? await this.subscriptionStore.getByAbowebClientId(abowebClientId) : [];
     return { subscriptions: subscriptions || [] }
   }
 }
