@@ -95,4 +95,26 @@ export default class AddressService {
 
     return { updated: true, address: addressUpdated }
   }
+
+  async updateAboweb(id, data) {
+    BadRequest.assert(id, 'No id address payload given')
+
+    const pickedAddress = _.pick(data.address, ['aboweb_address_id'])
+    BadRequest.assert(
+      pickedAddress.aboweb_address_id,
+      'No aboweb id payload given'
+    )
+
+    const addressObject = await this.findById(id)
+
+    return this.addressStore
+      .update(id, pickedAddress)
+      .then(res => ({ updated: true, address: res[1][0] }))
+      .catch(err =>
+        Conflict.assert(
+          err,
+          `Address "${err.errors[0].message}" is unavailable to update`
+        )
+      )
+  }
 }

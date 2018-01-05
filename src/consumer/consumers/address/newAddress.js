@@ -17,7 +17,7 @@ const newAddressConsumer = Consumer.create({
   handleMessage: async (bodyMessage, done) => {
     try {
       const message = JSON.parse(bodyMessage.Body)
-      console.log('message received newCardConsumer')
+      console.log('message received newAddressConsumer')
 
       const url = `${env.ABO_WEB_URL}AdresseService?wsdl`
       const addressDelivery = message.addressDelivery

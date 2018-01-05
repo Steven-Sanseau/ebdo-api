@@ -56,6 +56,9 @@ export default (sequelize, DataTypes) => {
     },
     address_equal: {
       type: DataTypes.BOOLEAN
+    },
+    aboweb_address_id: {
+      type: DataTypes.STRING
     }
   })
 

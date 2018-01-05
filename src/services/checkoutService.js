@@ -158,9 +158,9 @@ export default class CheckoutService {
           token: token,
           isDiffAddress: useDiffAddressDelivery
         })
-        checkoutStored.status = 'waiting/aboweb-transfer'
+        checkoutStored.status = 'finished'
       } catch (err) {
-        checkoutStored.status = 'declined/aboweb-error'
+        checkoutStored.status = 'finished/aboweb-error'
         PaymentError.assert(!err, err.message)
       }
     }
@@ -175,9 +175,9 @@ export default class CheckoutService {
           token: token,
           isDiffAddress: useDiffAddressDelivery
         })
-        checkoutStored.status = 'waiting/aboweb-transfer'
+        checkoutStored.status = 'finished'
       } catch (err) {
-        checkoutStored.status = 'declined/aboweb-error'
+        checkoutStored.status = 'finished/aboweb-error'
         PaymentError.assert(!err, err.message)
       }
     }
@@ -227,6 +227,8 @@ export default class CheckoutService {
     NotFound.assert(offer, `Offer with "${JSON.stringify(offer)}" not found`)
     if (offer.time_limited && offer.payment_method === 2) {
       pickedCheckout.status = 'paid/aboweb-transfered'
+    } else {
+      pickedCheckout.status = 'finished/aboweb-transfered'
     }
 
     return this.checkoutStore
