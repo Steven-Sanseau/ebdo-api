@@ -4,6 +4,24 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     queryInterface.bulkInsert('Offer', [
       {
+        // NUM GRATUIT 0€
+        name: 'abo-duree-determinee-0-euro-france-gratuit',
+        aboweb_id: 'F-EB-GRABW-000-1-DD',
+        price_ttc: 0,
+        monthly_price_ttc: 0,
+        description: 'Offre essai envoi 1 numéro gratuit une fois',
+        time_limited: true,
+        duration: 1,
+        shipping_cost: 0,
+        is_gift: false,
+        is_free: true,
+        is_free_gift: true,
+        country_shipping: 'FR',
+        payment_method: 0,
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
         // ADL 5€
         name: 'abo-duree-libre-5-euro-france-cb',
         aboweb_id: 'F-EB-500-4-DL-CB',

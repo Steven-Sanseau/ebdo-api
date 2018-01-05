@@ -1,10 +1,10 @@
 import { NotFound, BadRequest, Conflict } from 'fejl'
-import { pick } from 'lodash'
+import _ from 'lodash'
 import newClientProducer from '../producers/newClientProducer'
 
 const assertId = BadRequest.makeAssert('No id given')
 const pickProps = data =>
-  pick(data, [
+  _.pick(data, [
     'last_name',
     'first_name',
     'postal_code',
