@@ -11,29 +11,29 @@ export default (sequelize, DataTypes) => {
     aboweb_client_id: {
       type: DataTypes.INTEGER
     },
-    firstNumberDelivered: {
+    first_number_delivered: {
       type: DataTypes.INTEGER
     },
-    lastNumberDelivered: {
+    last_number_delivered: {
       type: DataTypes.INTEGER
     },
-    isInvoiced: {
-      type: DataTypes.BOOLEAN,
-    },
-    isSuspended: {
+    is_invoiced: {
       type: DataTypes.BOOLEAN
     },
-    isResubscription: {
+    is_suspended: {
       type: DataTypes.BOOLEAN
     },
-    freeSubscription: {
+    is_resubscription: {
       type: DataTypes.BOOLEAN
     },
-    numberOfCopy: {
+    free_subscription: {
+      type: DataTypes.BOOLEAN
+    },
+    number_of_copy: {
       type: DataTypes.INTEGER
     },
     order_number: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING
     }
   })
 
