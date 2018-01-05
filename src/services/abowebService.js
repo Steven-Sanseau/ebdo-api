@@ -60,6 +60,7 @@ export default class AbowebService {
                 {
                   aboweb_subscription_id: abonnement.refAbonnement,
                   aboweb_client_id: abonnement.codeClient,
+                  aboweb_offer_id: abonnement.codeTarifFormule,
                   first_number_delivered: abonnement.pns,
                   last_number_delivered: abonnement.dns,
                   is_invoiced: abonnement.facture,
@@ -68,6 +69,10 @@ export default class AbowebService {
                   order_number: abonnement.noCommande,
                   free_subscription: abonnement.aboGratuit,
                   number_of_copy: abonnement.nbExemplaires,
+                  begin_at: abonnement.dateDebut,
+                  end_at: abonnement.dateFin,
+                  invoiced_number: abonnement.noFacture,
+                  status: abonnement.etat,
                   created_at: abonnement.creation,
                   updated_at: abonnement.modification
                 },
