@@ -62,7 +62,7 @@ module.exports = {
       {
         name: 'abo-duree-libre-5-euro-belgique-sepa',
         aboweb_id: 'F-EB-ETR1-900-4-DL-P',
-        price_ttc: 500,
+        price_ttc: 900,
         monthly_price_ttc: 5,
         description:
           'Abonnement personnel à durée libre, 4 numéro par mois pour 5€ par mois paiement par SEPA, livraison en belgique',
