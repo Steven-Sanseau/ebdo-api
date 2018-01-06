@@ -40,7 +40,7 @@ const subscriptionDDCBCreateConsumer = Consumer.create({
             quantite: 1,
             modePaiement: 2,
             montantTtc: offer.price_ttc / 100,
-            typeAdresseLiv: isDiffAddress ? 1 : 0,
+            typeAdresseLiv: 0,
             noCommandeBoutique: checkout.checkout_id
           }
         ],

@@ -55,12 +55,15 @@ const clientCreateConsumer = Consumer.create({
           args.client.codeClient = clientExistEmail.client.codeClient
         }
 
+        console.log(args)
+
         soapClient.createOrUpdateClientEx(args, function(err, result) {
           if (err) {
             console.log('aboweb failed', err)
           }
 
           const codeClient = result.codeClient
+          console.log(result)
 
           return patchClient(client, codeClient)
             .then(function(parsedBody) {
