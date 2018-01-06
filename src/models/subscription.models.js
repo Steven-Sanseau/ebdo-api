@@ -5,36 +5,61 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    client_id: {
+    aboweb_subscription_id: {
       type: DataTypes.INTEGER
     },
-    aboweb_id: {
+    aboweb_client_id: {
       type: DataTypes.INTEGER
     },
-    checkout_id: {
+    aboweb_offer_id: {
+      type: DataTypes.STRING
+    },
+    first_number_delivered: {
       type: DataTypes.INTEGER
     },
-    offer_id: {
+    last_number_delivered: {
       type: DataTypes.INTEGER
     },
-    token_id: {
+    is_invoiced: {
+      type: DataTypes.BOOLEAN
+    },
+    is_suspended: {
+      type: DataTypes.BOOLEAN
+    },
+    is_resubscription: {
+      type: DataTypes.BOOLEAN
+    },
+    free_subscription: {
+      type: DataTypes.BOOLEAN
+    },
+    number_of_copy: {
       type: DataTypes.INTEGER
     },
-    address_delivery_id: {
-      type: DataTypes.INTEGER
+    order_number: {
+      type: DataTypes.STRING
     },
-    address_invoice_id: {
-      type: DataTypes.INTEGER
+    begin_at: {
+      type: DataTypes.DATE
     },
-    voucher_id: {
-      type: DataTypes.INTEGER
+    end_at: {
+      type: DataTypes.DATE
     },
-    duration: {
-      type: DataTypes.INTEGER
-    }
+    invoiced_number: {
+      type: DataTypes.STRING
+    },
+    status: {
+      type: DataTypes.STRING
+    },
   })
 
-  Subscription.associate = models => {}
+
+  Subscription.associate = models => {
+    Subscription.hasOne(models.Offer, {
+      targetKey: 'aboweb_offer_id',
+      foreignKey: 'aboweb_id',
+      constraints: false
+    })
+  }
 
   return Subscription
 }

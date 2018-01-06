@@ -1,5 +1,3 @@
-import { Client } from './client.models'
-
 export default (sequelize, DataTypes) => {
   const Token = sequelize.define('Token', {
     token_id: {
@@ -8,6 +6,9 @@ export default (sequelize, DataTypes) => {
       primaryKey: true
     },
     token_type: {
+      type: DataTypes.STRING
+    },
+    aboweb_id: {
       type: DataTypes.STRING
     },
     stripe_token_id: {
@@ -19,10 +20,34 @@ export default (sequelize, DataTypes) => {
     stripe_card_id: {
       type: DataTypes.STRING
     },
+    stripe_card_country: {
+      type: DataTypes.STRING
+    },
+    stripe_card_brand: {
+      type: DataTypes.STRING
+    },
+    stripe_card_cvc_check: {
+      type: DataTypes.STRING
+    },
+    stripe_card_exp_month: {
+      type: DataTypes.INTEGER
+    },
+    stripe_card_exp_year: {
+      type: DataTypes.INTEGER
+    },
+    stripe_card_last4: {
+      type: DataTypes.STRING
+    },
     slimpay_rum_id: {
       type: DataTypes.STRING
     },
     slimpay_token_id: {
+      type: DataTypes.STRING
+    },
+    slimpay_bic: {
+      type: DataTypes.STRING
+    },
+    slimpay_iban: {
       type: DataTypes.STRING
     },
     slimpay_rum_code: {

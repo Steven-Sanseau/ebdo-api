@@ -2,11 +2,11 @@ import Sequelize from 'sequelize'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import { logger } from '../lib/logger'
+import { logger } from './logger'
 import { env } from './env'
 
 const db = {}
-let sslObj = { logging: console.log }
+let sslObj = {}
 
 if (env.NODE_ENV !== 'developpment') {
   sslObj = { ssl: true }
@@ -22,6 +22,7 @@ const sequelize = new Sequelize(
     port: env.POSTGRESPORT,
     host: env.POSTGRESHOST,
     dialectOptions: sslObj,
+    logging: console.log,
     define: {
       paranoid: true,
       underscored: true,
@@ -49,7 +50,7 @@ Object.keys(db).forEach(function(modelName) {
   }
 })
 // DEVHACK
-// sequelize.sync()
+sequelize.sync()
 // assign the sequelize variables to the db object and returning the db.
 export default _.extend(
   {

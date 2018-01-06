@@ -5,7 +5,9 @@ const api = addressService => ({
   createAddress: async ctx =>
     ctx.created(await addressService.create(ctx.request.body)),
   updateAddress: async ctx =>
-    ctx.ok(await addressService.update(ctx.params.id, ctx.request.body))
+    ctx.ok(await addressService.update(ctx.params.id, ctx.request.body)),
+  updateAddressAboweb: async ctx =>
+    ctx.ok(await addressService.updateAboweb(ctx.params.id, ctx.request.body))
 })
 
 export default createController(api)
@@ -13,3 +15,4 @@ export default createController(api)
   .get('/:id', 'getAddress')
   .post('', 'createAddress')
   .patch('/:id', 'updateAddress')
+  .patch('/aboweb/:id', 'updateAddressAboweb')

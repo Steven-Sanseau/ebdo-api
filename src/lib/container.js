@@ -34,6 +34,8 @@ export function configureContainer() {
   const OfferModel = db.Offer
   const SponsorModel = db.Sponsor
   const TokenModel = db.Token
+  const CronModel = db.Cron
+  const SubscriptionModel = db.Subscription
 
   return createContainer(opts)
     .loadModules(modulesToLoad, {
@@ -54,6 +56,8 @@ export function configureContainer() {
       NewsletterModel,
       OfferModel,
       SponsorModel,
-      TokenModel
+      TokenModel,
+      CronModel,
+      SubscriptionModel
     })
 }

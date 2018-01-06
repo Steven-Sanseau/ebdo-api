@@ -4,7 +4,7 @@ import { env } from '../lib/env'
 import uniqid from 'uniqid'
 
 const urlQueue = `https://sqs.${env.AWS_AREA}.${env.AWS_URL_BASE}${
-  env.AWS_URL_NEW_CLIENT
+  env.AWS_URL_NEW_CARD_STRIPE
 }`
 
 const producer = Producer.create({
@@ -14,10 +14,10 @@ const producer = Producer.create({
   secretAccessKey: env.AWS_ACCESS_KEY
 })
 
-export default async function newClientProducer(message) {
+export default async function newCardProducer(message) {
   const params = {
     body: JSON.stringify(message),
-    id: uniqid('producer-newClient-')
+    id: uniqid('producer-newCard-')
   }
 
   return producer.send(params, err => {

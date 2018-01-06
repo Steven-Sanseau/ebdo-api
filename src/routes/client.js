@@ -6,15 +6,13 @@ const api = clientService => ({
     ctx.ok(await clientService.findByEmail(ctx.params.email)),
   createClient: async ctx =>
     ctx.created(await clientService.create(ctx.request.body)),
-  updateClient: async ctx =>
-    ctx.ok(await clientService.update(ctx.params.id, ctx.request.body))
+  updateAbowebConsumerClient: async ctx =>
+    ctx.ok(await clientService.updateAboweb(ctx.params.id, ctx.request.body))
 })
 
 export default createController(api)
   .prefix('/v1/client')
-  // .get('', 'findClient')
-  .get('/count', 'countCliente')
+  .get('/count', 'countClient')
   .get('/:email', 'getClient')
   .post('', 'createClient')
-  .patch('/:id', 'updateClient')
-// .delete('/:id', 'removeClient')
+  .patch('/aboweb/:id', 'updateAbowebConsumerClient')

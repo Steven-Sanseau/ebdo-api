@@ -22,15 +22,9 @@ export default (sequelize, DataTypes) => {
     },
     first_name: {
       type: DataTypes.STRING,
-      validate: {
-        notEmpty: true
-      }
     },
     last_name: {
-      type: DataTypes.STRING,
-      validate: {
-        notEmpty: true
-      }
+      type: DataTypes.STRING
     },
     login_code: {
       type: DataTypes.INTEGER
@@ -52,6 +46,11 @@ export default (sequelize, DataTypes) => {
     Client.hasMany(models.Token, {
       targetKey: 'token_id',
       foreignKey: 'client_id'
+    })
+    Client.hasMany(models.Subscription, {
+      targetKey: 'aboweb_client_id',
+      foreignKey: 'aboweb_client_id',
+      constraints: false
     })
   }
 

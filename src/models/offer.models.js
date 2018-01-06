@@ -11,9 +11,6 @@ export default (sequelize, DataTypes) => {
     aboweb_id: {
       type: DataTypes.STRING
     },
-    price_ht: {
-      type: DataTypes.FLOAT
-    },
     price_ttc: {
       type: DataTypes.FLOAT
     },
@@ -23,20 +20,29 @@ export default (sequelize, DataTypes) => {
     description: {
       type: DataTypes.TEXT
     },
-    ref: {
-      type: DataTypes.INTEGER
-    },
     time_limited: {
       type: DataTypes.BOOLEAN
     },
     duration: {
       type: DataTypes.INTEGER
     },
+    country_shipping: {
+      type: DataTypes.STRING
+    },
     shipping_cost: {
       type: DataTypes.FLOAT
     },
     is_gift: {
       type: DataTypes.BOOLEAN
+    },
+    is_free: {
+      type: DataTypes.BOOLEAN
+    },
+    is_free_gift: {
+      type: DataTypes.BOOLEAN
+    },
+    payment_method: {
+      type: DataTypes.INTEGER
     }
   })
 

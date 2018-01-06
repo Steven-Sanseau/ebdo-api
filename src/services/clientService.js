@@ -25,9 +25,10 @@ export default class ClientService {
 
   async findByEmail(email) {
     assertEmail(email)
+    const pickedEmail = _.toLower(email.trim())
 
-    const client = await this.clientStore.getByEmail(email)
-    NotFound.assert(client, `Client with email "${email}" not found`)
+    const client = await this.clientStore.getByEmail(pickedEmail)
+    NotFound.assert(client, `Client with email "${pickedEmail}" not found`)
 
     return { client }
   }
@@ -60,11 +61,10 @@ export default class ClientService {
     return { client: clientStored }
   }
 
-  async update(id, data) {
+  async updateAboweb(id, data) {
     BadRequest.assert(id, 'No id client payload given')
 
     const pickedClient = pickProps(data.client)
-    pickedClient.email = _.toLower(pickedClient.email.trim())
     BadRequest.assert(pickedClient, 'No client payload given')
 
     await this.findById(id)
@@ -75,7 +75,7 @@ export default class ClientService {
       .catch(err =>
         Conflict.assert(
           err,
-          `Client with email "${err.errors[0].message}" already found`
+          `Client with id "${err.errors[0].message}" already found`
         )
       )
   }
