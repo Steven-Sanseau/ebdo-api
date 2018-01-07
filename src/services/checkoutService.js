@@ -109,7 +109,7 @@ export default class CheckoutService {
       `Checkout with offer "${pickedCheckout.offer_id}" not found`
     )
 
-    let token = null;
+    let token = null
 
     if (!offer.is_free_gift && !offer.is_free) {
       BadRequest.assert(pickedCheckout.token_id, 'token_id is required')
@@ -134,14 +134,19 @@ export default class CheckoutService {
     checkoutStored.status = 'created'
 
     // OFFRE ESSAI GRATUIT
-    if (offer.time_limited && offer.payment_method === 2 && offer.is_free_gift && offer.is_free) {
+    if (
+      offer.time_limited &&
+      offer.payment_method === 2 &&
+      offer.is_free_gift &&
+      offer.is_free
+    ) {
       try {
-        checkoutStored.status = 'created'
+        checkoutStored.status = 'free'
 
         const producer = await newSubscriptionDDCB({
           offer: offer,
           checkout: checkoutStored,
-          client: client,
+          client: client
         })
       } catch (err) {
         checkoutStored.status = 'declined'
@@ -149,8 +154,8 @@ export default class CheckoutService {
       }
     }
 
-    // OFFRE À Durée Déterminée && Stripe CB Payment
-    if (offer.time_limited && offer.payment_method === 2 && !offer.is_free_gift && !offer.is_free) {
+    //Offre PARRAIN DD CB
+    if (offer.time_limited && offer.payment_method === 2 && offer.is_gift) {
       try {
         const chargeStripe = await this.chargeCard(
           token,
@@ -159,47 +164,108 @@ export default class CheckoutService {
           client
         )
 
-        checkoutStored.status = 'paid'
+        checkoutStored.status = 'cb/paid'
+
+        //TODO WAITING FOR ABOWEB REPLY ABOUT PARRAINAGE ET CODE PARRAIN
+        // const producer = await newSubscriptionDDCB({
+        //   offer: offer,
+        //   checkout: checkoutStored,
+        //   client: client
+        // })
+      } catch (err) {
+        checkoutStored.status = 'cb/declined'
+        PaymentError.assert(!err, err.message)
+      }
+    }
+
+    //OFFFRE PARRAINE CODE VALID ET ABO PAYE
+    if (
+      offer.time_limited &&
+      offer.payment_method === 2 &&
+      offer.is_gift &&
+      offer.is_free
+    ) {
+      try {
+        checkoutStored.status = 'code/valid/paid'
+
+        //TODO WAITING FOR ABOWEB REPLY ABOUT PARRAINAGE ET CODE PARRAIN
+        // const producer = await newSubscriptionDDCB({
+        //   offer: offer,
+        //   checkout: checkoutStored,
+        //   client: client
+        // })
+      } catch (err) {
+        checkoutStored.status = 'cb/declined'
+        PaymentError.assert(!err, err.message)
+      }
+    }
+
+    // OFFRE À Durée Déterminée && Stripe CB Payment
+    if (
+      offer.time_limited &&
+      offer.payment_method === 2 &&
+      !offer.is_free_gift &&
+      !offer.is_free
+    ) {
+      try {
+        const chargeStripe = await this.chargeCard(
+          token,
+          offer,
+          checkoutStored,
+          client
+        )
+
+        checkoutStored.status = 'cb/paid'
 
         const producer = await newSubscriptionDDCB({
           offer: offer,
           checkout: checkoutStored,
-          client: client,
+          client: client
         })
       } catch (err) {
-        checkoutStored.status = 'declined'
+        checkoutStored.status = 'cb/declined'
         PaymentError.assert(!err, err.message)
       }
     }
 
     // OFFRE À Durée Libre && Stripe CB Token
-    if (!offer.time_limited && offer.payment_method === 2 && !offer.is_free_gift && !offer.is_free) {
+    if (
+      !offer.time_limited &&
+      offer.payment_method === 2 &&
+      !offer.is_free_gift &&
+      !offer.is_free
+    ) {
       try {
         const producer = await newSubscriptionADLCB({
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          token: token,
+          token: token
         })
-        checkoutStored.status = 'finished'
+        checkoutStored.status = 'cb/signed'
       } catch (err) {
-        checkoutStored.status = 'finished/aboweb-error'
+        checkoutStored.status = 'cb/aboweb-error'
         PaymentError.assert(!err, err.message)
       }
     }
 
     // OFFRE À Durée Libre && SLIMPAY token
-    if (!offer.time_limited && offer.payment_method === 1 && !offer.is_free_gift && !offer.is_free) {
+    if (
+      !offer.time_limited &&
+      offer.payment_method === 1 &&
+      !offer.is_free_gift &&
+      !offer.is_free
+    ) {
       try {
         const producer = await newSubscriptionADLSEPA({
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          token: token,
+          token: token
         })
-        checkoutStored.status = 'finished'
+        checkoutStored.status = 'mandate/signed'
       } catch (err) {
-        checkoutStored.status = 'finished/aboweb-error'
+        checkoutStored.status = 'mandate/aboweb-error'
         PaymentError.assert(!err, err.message)
       }
     }
@@ -273,9 +339,9 @@ export default class CheckoutService {
     )
     NotFound.assert(offer, `Offer with "${JSON.stringify(offer)}" not found`)
     if (offer.time_limited && offer.payment_method === 2) {
-      pickedCheckout.status = 'paid/aboweb-transfered'
+      pickedCheckout.status = 'cb/signed/aboweb-transfered'
     } else {
-      pickedCheckout.status = 'finished/aboweb-transfered'
+      pickedCheckout.status = 'mandate/signed/aboweb-transfered'
     }
 
     return this.checkoutStore
