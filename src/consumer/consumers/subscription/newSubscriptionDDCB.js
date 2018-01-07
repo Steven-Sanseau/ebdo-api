@@ -23,7 +23,6 @@ const subscriptionDDCBCreateConsumer = Consumer.create({
       const client = message.client
       const checkout = message.checkout
       const offer = message.offer
-      const isDiffAddress = message.isDiffAddress
 
       let args = {
         clientTampon: {

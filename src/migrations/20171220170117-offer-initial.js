@@ -780,9 +780,47 @@ module.exports = {
         payment_method: 2,
         created_at: new Date(),
         updated_at: new Date()
-      }
+      },
 
-      //
+      // J'offre  3 mois 10€ / mois
+      {
+        name: 'abo-duree-determinee-offre-parrain-3-mois-10-euro-france-cb',
+        aboweb_id: 'F-EB-3000-12-DD-0-PAR',
+        price_ttc: 3000,
+        monthly_price_ttc: 10,
+        description:
+          'Abonnement offert à durée déterminée, 4 numéro par mois pendant 3 mois pour 10€ par mois paiement par CB, livraison en france',
+        time_limited: true,
+        duration: 12,
+        shipping_cost: 0,
+        is_gift: true,
+        is_free: false,
+        is_free_gift: false,
+        country_shipping: 'FR',
+        payment_method: 2,
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+
+      // JE reçois 3 mois 10€ / mois
+      {
+        name: 'abo-duree-determinee-offre-parrain-3-mois-10-euro-france-cb',
+        aboweb_id: 'F-EB-0000-12-DD-0-GRA-PARR',
+        price_ttc: 0,
+        monthly_price_ttc: 0,
+        description:
+          'Abonnement gratuit offert par un parrain à durée déterminée, 4 numéro par mois pendant 3 mois pour 0€ par mois paiement par Code parrain, livraison en france',
+        time_limited: true,
+        duration: 12,
+        shipping_cost: 0,
+        is_gift: true,
+        is_free: true,
+        is_free_gift: false,
+        country_shipping: 'FR',
+        payment_method: 2,
+        created_at: new Date(),
+        updated_at: new Date()
+      }
       // {
       //   name: 'abo-duree-determinee-3-month-5-euro-belgique-cb',
       //   aboweb_id: 'EB-1500-12-DD-1-BE',
