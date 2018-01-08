@@ -12,6 +12,13 @@ export default function createOfferStore(logger, OfferModel) {
       return offer
     },
 
+    async getByAbowebId(abowebId) {
+      const offer = await OfferModel.findOne({
+        where: { aboweb_id: abowebId }
+      })
+      return offer
+    },
+
     async create(data) {
       const offer = await OfferModel.build(data).save()
       return offer

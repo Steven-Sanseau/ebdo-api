@@ -93,14 +93,14 @@ export default class CheckoutService {
       `address invoice "${pickedAddressInvoice.address_id}" not found`
     )
 
-    const addressDelivery = await this.addressStore.getByIdAndClientId(
+    let addressDelivery = await this.addressStore.getByIdAndClientId(
       pickedAddressDelivery.address_id,
       pickedClient.client_id
     )
-    NotFound.assert(
-      addressDelivery,
-      `address delivery "${pickedAddressDelivery.address_id}" not found`
-    )
+
+    if (!addressDelivery) {
+      addressDelivery = addressInvoice
+    }
 
     const useSameAddressDelivery =
       addressDelivery.address_equal && addressInvoice.address_equal
@@ -120,7 +120,7 @@ export default class CheckoutService {
       })
     }
 
-    const offer = await this.offerStore.getById(pickedOffer.offer_id)
+    const offer = await this.offerStore.getByAbowebId(pickedOffer.aboweb_id)
     NotFound.assert(
       offer,
       `Checkout with offer "${pickedOffer.offer_id}" not found`
@@ -149,6 +149,8 @@ export default class CheckoutService {
     checkoutStored.setDelivery_address(addressDelivery)
     checkoutStored.setInvoice_address(addressInvoice)
     checkoutStored.status = 'created'
+    checkoutStored.cgv_accepted = pickedCheckout.cgv_accepted
+    const checkoutSaved = await checkoutStored.save()
 
     // OFFRE ESSAI GRATUIT
     if (
@@ -159,6 +161,8 @@ export default class CheckoutService {
     ) {
       try {
         checkoutStored.status = 'free'
+        checkoutStored.payment_method = 0
+        checkoutStored.is_gift = true
 
         const producer = await newSubscriptionDDCB({
           offer: offer,
