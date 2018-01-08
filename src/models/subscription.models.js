@@ -6,7 +6,8 @@ export default (sequelize, DataTypes) => {
       primaryKey: true
     },
     aboweb_subscription_id: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      primaryKey: true
     },
     aboweb_client_id: {
       type: DataTypes.INTEGER
@@ -49,9 +50,8 @@ export default (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.STRING
-    },
+    }
   })
-
 
   Subscription.associate = models => {
     Subscription.hasOne(models.Offer, {
