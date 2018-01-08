@@ -62,9 +62,7 @@ const subscriptionADLCBCreateConsumer = Consumer.create({
             .catch(function(err) {
               console.log('post failed', err)
             })
-        }
-
-        if (err) {
+        } else {
           console.log('aboweb failed', err)
         }
       })

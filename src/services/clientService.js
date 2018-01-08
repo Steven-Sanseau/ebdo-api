@@ -56,7 +56,6 @@ export default class ClientService {
 
     pickedClient.type_client = 0
     const clientStored = await this.clientStore.create(pickedClient)
-    // const producer = await newClientProducer({ pickedClient })
 
     return { client: clientStored }
   }

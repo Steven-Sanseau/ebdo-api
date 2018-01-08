@@ -51,75 +51,92 @@ export default class CheckoutService {
   }
 
   async create(body) {
-    BadRequest.assert(body.checkout, 'No checkout payload given')
-    console.log(body)
-    const pickedCheckout = pickProps(body.checkout)
-    BadRequest.assert(pickedCheckout.client_id, 'client_id is required')
-    BadRequest.assert(
-      pickedCheckout.address_invoice_id,
-      'address_invoice_id is required'
-    )
-    BadRequest.assert(
-      pickedCheckout.address_delivery_id,
-      'address_delivery_id is required'
-    )
-    BadRequest.assert(pickedCheckout.offer_id, 'offer_id is required')
+    BadRequest.assert(body, 'No data received')
 
-    const client = await this.clientStore.getById(pickedCheckout.client_id)
-    NotFound.assert(
-      client,
-      `Checkout with client "${pickedCheckout.client_id}" not found`
+    const pickedCheckout = _.pick(
+      ['payment_method', 'cgv_accepted', 'status'],
+      body.checkout
     )
+    const pickedToken = _.pick(body.token, ['token_id'])
+    const pickedOffer = _.pick(body.offer, ['aboweb_id', 'offer_id'])
+    const pickedClient = _.pick(body.client.data, ['client_id', 'email'])
+    const pickedAddressInvoice = _.pick(body.addressInvoice, [
+      'address_id',
+      'is_equal',
+      'type_address'
+    ])
+    const pickedAddressDelivery = _.pick(body.addressDelivery, [
+      'address_id',
+      'is_equal',
+      'type_address'
+    ])
+
+    console.log(pickedAddressInvoice)
+    console.log('body', body.addressInvoice)
+
+    BadRequest.assert(pickedClient.client_id, 'client_id is required')
+    BadRequest.assert(
+      pickedAddressInvoice.address_id,
+      'address invoice id is required'
+    )
+    BadRequest.assert(pickedOffer.offer_id, 'offer_id is required')
+
+    const client = await this.clientStore.getById(pickedClient.client_id)
+    NotFound.assert(client, `client "${pickedClient.client_id}" not found`)
 
     const addressInvoice = await this.addressStore.getByIdAndClientId(
-      pickedCheckout.address_invoice_id,
-      pickedCheckout.client_id
+      pickedAddressInvoice.address_id,
+      pickedClient.client_id
     )
     NotFound.assert(
       addressInvoice,
-      `Checkout with address invoice "${
-        pickedCheckout.address_invoice_id
-      }" not found`
+      `address invoice "${pickedAddressInvoice.address_id}" not found`
     )
 
-    const addressDelivery = await this.addressStore.getByIdAndClientId(
-      pickedCheckout.address_delivery_id,
-      pickedCheckout.client_id
+    let addressDelivery = await this.addressStore.getByIdAndClientId(
+      pickedAddressDelivery.address_id,
+      pickedClient.client_id
     )
-    NotFound.assert(
-      addressDelivery,
-      `Checkout with address delivery "${
-        pickedCheckout.address_delivery_id
-      }" not found`
-    )
+
+    if (!addressDelivery) {
+      addressDelivery = addressInvoice
+    }
 
     const useSameAddressDelivery =
       addressDelivery.address_equal && addressInvoice.address_equal
 
+    if (!client.aboweb_id) {
+      const producerClient = await newClientProducer({
+        client: client,
+        addressInvoice,
+        addressDelivery
+      })
+    }
     if (!useSameAddressDelivery) {
       const producerAddressDelivery = await newAddressProducer({
         client: client,
+        addressInvoice,
         addressDelivery
       })
     }
 
-    const offer = await this.offerStore.getById(pickedCheckout.offer_id)
+    const offer = await this.offerStore.getByAbowebId(pickedOffer.aboweb_id)
     NotFound.assert(
       offer,
-      `Checkout with offer "${pickedCheckout.offer_id}" not found`
+      `Checkout with offer "${pickedOffer.offer_id}" not found`
     )
 
     let token = null
 
     if (!offer.is_free_gift && !offer.is_free) {
-      BadRequest.assert(pickedCheckout.token_id, 'token_id is required')
+      BadRequest.assert(pickedToken.token_id, 'token_id is required')
       token = await this.tokenStore.getByIdAndClientId(
-        pickedCheckout.token_id,
-        pickedCheckout.client_id
+        pickedToken.token_id,
+        client.client_id
       )
       NotFound.assert(
         token,
-        `Checkout with token "${pickedCheckout.token_id}" not found`
+        `Checkout with token "${pickedToken.token_id}" not found`
       )
     }
 
@@ -132,6 +149,8 @@ export default class CheckoutService {
     checkoutStored.setDelivery_address(addressDelivery)
     checkoutStored.setInvoice_address(addressInvoice)
     checkoutStored.status = 'created'
+    checkoutStored.cgv_accepted = pickedCheckout.cgv_accepted
+    const checkoutSaved = await checkoutStored.save()
 
     // OFFRE ESSAI GRATUIT
     if (
@@ -142,6 +161,8 @@ export default class CheckoutService {
     ) {
       try {
         checkoutStored.status = 'free'
+        checkoutStored.payment_method = 0
+        checkoutStored.is_gift = true
 
         const producer = await newSubscriptionDDCB({
           offer: offer,
@@ -220,7 +241,10 @@ export default class CheckoutService {
         const producer = await newSubscriptionDDCB({
           offer: offer,
           checkout: checkoutStored,
-          client: client
+          client: client,
+          token: token,
+          addressInvoice,
+          addressDelivery
         })
       } catch (err) {
         checkoutStored.status = 'cb/declined'
@@ -240,7 +264,9 @@ export default class CheckoutService {
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          token: token
+          token: token,
+          addressInvoice,
+          addressDelivery
         })
         checkoutStored.status = 'cb/signed'
       } catch (err) {
@@ -261,7 +287,9 @@ export default class CheckoutService {
           offer: offer,
           checkout: checkoutStored,
           client: client,
-          token: token
+          token: token,
+          addressInvoice,
+          addressDelivery
         })
         checkoutStored.status = 'mandate/signed'
       } catch (err) {
