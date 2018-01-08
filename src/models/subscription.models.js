@@ -6,8 +6,7 @@ export default (sequelize, DataTypes) => {
       primaryKey: true
     },
     aboweb_subscription_id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true
+      type: DataTypes.INTEGER
     },
     aboweb_client_id: {
       type: DataTypes.INTEGER
