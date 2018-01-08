@@ -38,6 +38,17 @@ export default class AddressService {
     return addressGet
   }
 
+  async findById(id) {
+    assertId(id)
+    const idParsed = parseInt(id)
+    BadRequest.assert(Number.isInteger(idParsed), 'id must be a number')
+
+    const address = this.addressStore.getById(idParsed)
+    NotFound.assert(address, `Address with id "${id}" not found`)
+
+    return address
+  }
+
   async create(body) {
     BadRequest.assert(body.address, 'No address payload given')
     const address = body.address

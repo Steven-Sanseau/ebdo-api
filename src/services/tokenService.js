@@ -91,7 +91,9 @@ export default class TokenService {
       //Durée libre && stripe payment
       if (!offerObject.time_limited && offerObject.payment_method === 2) {
         const producer = await newCardProducer({
-          token: tokenSaved
+          token: tokenSaved,
+          offer: offerObject,
+          client: clientObject
         })
       }
     } catch (err) {
