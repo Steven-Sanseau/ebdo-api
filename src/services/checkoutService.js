@@ -102,6 +102,9 @@ export default class CheckoutService {
     const useSameAddressDelivery =
       addressDelivery.address_equal && addressInvoice.address_equal
 
+    console.log('delivery', addressDelivery)
+    console.log('invoice', addressInvoice)
+
     if (!client.aboweb_id) {
       const producerClient = await newClientProducer({
         client: client,

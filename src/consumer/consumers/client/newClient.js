@@ -35,18 +35,21 @@ const clientCreateConsumer = Consumer.create({
           client: {
             typeClient: client.type_client,
             email: client.email,
-            nom: addressInvoice.last_name || null,
-            prenom: addressInvoice.first_name || null,
-            origineAbm: client.source || null,
-            societe: addressInvoice.company || null,
-            adresse1: addressInvoice.address_pre || null,
-            adresse2: addressInvoice.address || null,
-            adresse3: addressInvoice.address_post || null,
-            cp: addressInvoice.postal_code || null,
-            ville: addressInvoice.city || null,
-            codeIsoPays: addressInvoice.country || null
+            nom: addressInvoice.last_name,
+            telephone: addressInvoice.phone,
+            prenom: addressInvoice.first_name,
+            origineAbm: client.source,
+            societe: addressInvoice.company,
+            adresse1: addressInvoice.address_pre,
+            adresse2: addressInvoice.address,
+            adresse3: addressInvoice.address_post,
+            cp: addressInvoice.postal_code,
+            ville: addressInvoice.city,
+            codeIsoPays: addressInvoice.country
           }
         }
+
+        console.log('client', args)
         if (
           !errClientEmail &&
           clientExistEmail.client &&
@@ -54,8 +57,6 @@ const clientCreateConsumer = Consumer.create({
         ) {
           args.client.codeClient = clientExistEmail.client.codeClient
         }
-
-        console.log(args)
 
         soapClient.createOrUpdateClientEx(args, function(err, result) {
           if (err) {

@@ -7,6 +7,8 @@ const api = tokenService => ({
     ctx.ok(await tokenService.updateAboweb(ctx.params.id, ctx.request.body)),
   validateSlimpayToken: async ctx =>
     ctx.ok(await tokenService.validTokenSlimpay(ctx.params.id)),
+  getAbowebIdToken: async ctx =>
+    ctx.ok(await tokenService.findById(ctx.params.id)),
   getIframe: async ctx =>
     ctx.ok(
       await tokenService.createTokenSlimpay(
@@ -22,3 +24,4 @@ export default createController(api)
   .post('', 'createToken')
   .get('/slimpay/valid/:id', 'validateSlimpayToken')
   .patch('/aboweb/:id', 'updateAbowebConsumerToken')
+  .get('/aboweb/:id', 'getAbowebIdToken')

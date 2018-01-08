@@ -32,6 +32,7 @@ const newCardConsumer = Consumer.create({
         lastNumbers: String(token.stripe_card_last4)
       }
 
+      console.log('card', args)
       const soapClient = await new AbowebService().createSoapClient(url)
 
       soapClient.createCarteBancaire(args, function(err, result) {

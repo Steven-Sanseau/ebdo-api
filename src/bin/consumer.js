@@ -10,6 +10,7 @@ import newAddressConsumer from '../consumer/consumers/address/newAddress'
 import subscriptionDDCBCreateConsumer from '../consumer/consumers/subscription/newSubscriptionDDCB'
 import subscriptionADLCBCreateConsumer from '../consumer/consumers/subscription/newSubscriptionADLCB'
 import subscriptionADLSEPACreateConsumer from '../consumer/consumers/subscription/newSubscriptionADLSEPA'
+import debugConsumer from '../consumer/consumers/debug/debugConsumer'
 
 try {
   //clientCreateConsumer
@@ -53,6 +54,13 @@ try {
     console.log(err.message)
   })
   subscriptionADLSEPACreateConsumer.start()
+
+  // debug
+  console.log('Create Queue from debug')
+  debugConsumer.on('error', err => {
+    console.log(err.message)
+  })
+  debugConsumer.start()
 } catch (e) {
   Raven.captureException(e)
 }

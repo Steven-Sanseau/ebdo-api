@@ -15,4 +15,17 @@ export const patchClient = (client, codeClient) => {
   return rp(options)
 }
 
-export default patchClient
+export const getAbowebIdClient = clientId => {
+  const options = {
+    method: 'GET',
+    uri: env.API_URL + `client/aboweb/${clientId}`,
+    json: true,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  return rp(options)
+}
+
+export default { patchClient, getAbowebIdClient }
