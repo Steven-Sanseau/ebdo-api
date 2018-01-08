@@ -49,9 +49,8 @@ export default (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.STRING
-    },
+    }
   })
-
 
   Subscription.associate = models => {
     Subscription.hasOne(models.Offer, {

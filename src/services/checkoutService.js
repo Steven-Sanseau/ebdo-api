@@ -71,9 +71,6 @@ export default class CheckoutService {
       'type_address'
     ])
 
-    console.log(pickedAddressInvoice)
-    console.log('body', body.addressInvoice)
-
     BadRequest.assert(pickedClient.client_id, 'client_id is required')
     BadRequest.assert(
       pickedAddressInvoice.address_id,
@@ -155,7 +152,7 @@ export default class CheckoutService {
     // OFFRE ESSAI GRATUIT
     if (
       offer.time_limited &&
-      offer.payment_method === 2 &&
+      offer.payment_method === 0 &&
       offer.is_free_gift &&
       offer.is_free
     ) {

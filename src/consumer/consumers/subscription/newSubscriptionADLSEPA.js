@@ -43,7 +43,8 @@ const subscriptionADLSEPACreateConsumer = Consumer.create({
             modePaiement: 3,
             montantTtc: offer.price_ttc / 100,
             typeAdresseLiv: 0,
-            noCommandeBoutique: checkout.checkout_id
+            noCommandeBoutique: checkout.checkout_id,
+            titre: offer.name.substring(0, 39)
           }
         ],
         refEditeur: env.ABO_WEB_REF_EDITEUR,
