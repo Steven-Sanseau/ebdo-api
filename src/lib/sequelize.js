@@ -50,7 +50,7 @@ Object.keys(db).forEach(function(modelName) {
   }
 })
 // DEVHACK
-sequelize.sync()
+// sequelize.sync()
 // assign the sequelize variables to the db object and returning the db.
 export default _.extend(
   {

@@ -5,7 +5,7 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    abboweb_id: {
+    aboweb_id: {
       type: DataTypes.INTEGER
     },
     voucher: {

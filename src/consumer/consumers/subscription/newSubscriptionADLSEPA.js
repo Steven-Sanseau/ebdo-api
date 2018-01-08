@@ -24,7 +24,6 @@ const subscriptionADLSEPACreateConsumer = Consumer.create({
       const client = message.client
       const token = message.token
       const offer = message.offer
-      const isDiffAddress = message.isDiffAddress
 
       let args = {
         clientTampon: {

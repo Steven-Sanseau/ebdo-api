@@ -13,36 +13,42 @@ import subscriptionADLSEPACreateConsumer from '../consumer/consumers/subscriptio
 
 try {
   //clientCreateConsumer
+  console.log('Create Queue from clientCreateConsumer')
   clientCreateConsumer.on('error', err => {
     console.log(err.message)
   })
   clientCreateConsumer.start()
 
   //newCardConsumer
+  console.log('Create Queue from newCardConsumer')
   newCardConsumer.on('error', err => {
     console.log(err.message)
   })
   newCardConsumer.start()
 
   //newAddressConsumer
+  console.log('Create Queue from newAddressConsumer')
   newAddressConsumer.on('error', err => {
     console.log(err.message)
   })
   newAddressConsumer.start()
 
   //subscriptionDDCBCreateConsumer
+  console.log('Create Queue from subscriptionDDCBCreateConsumer')
   subscriptionDDCBCreateConsumer.on('error', err => {
     console.log(err.message)
   })
   subscriptionDDCBCreateConsumer.start()
 
   //subscriptionADLCBCreateConsumer
+  console.log('Create Queue from subscriptionADLCBCreateConsumer')
   subscriptionADLCBCreateConsumer.on('error', err => {
     console.log(err.message)
   })
   subscriptionADLCBCreateConsumer.start()
 
   // subscriptionADLSEPACreateConsumer
+  console.log('Create Queue from subscriptionADLSEPACreateConsumer')
   subscriptionADLSEPACreateConsumer.on('error', err => {
     console.log(err.message)
   })

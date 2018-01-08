@@ -24,7 +24,6 @@ const subscriptionADLCBCreateConsumer = Consumer.create({
       const client = message.client
       const token = message.token
       const offer = message.offer
-      const isDiffAddress = message.isDiffAddress
 
       let args = {
         clientTampon: {
@@ -63,9 +62,7 @@ const subscriptionADLCBCreateConsumer = Consumer.create({
             .catch(function(err) {
               console.log('post failed', err)
             })
-        }
-
-        if (err) {
+        } else {
           console.log('aboweb failed', err)
         }
       })
