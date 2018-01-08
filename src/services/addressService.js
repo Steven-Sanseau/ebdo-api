@@ -1,4 +1,4 @@
-import { NotFound, BadRequest, Conflict } from 'fejl'
+import { NotFound, BadRequest, Conflict, NotAuthenticated } from 'fejl'
 import _ from 'lodash'
 import newClientProducer from '../producers/newClientProducer'
 
@@ -23,15 +23,19 @@ export default class AddressService {
     this.clientStore = clientStore
   }
 
-  async findById(id) {
-    assertId(id)
-    const idParsed = parseInt(id)
-    BadRequest.assert(Number.isInteger(idParsed), 'id must be a number')
+  async findByAddressTypeAndClientId(addressType, id) {
+    const addressTypeString = addressType.toString()
+    const clientId = parseInt(id)
+    BadRequest.assert(Number.isInteger(clientId), 'id client must be a number')
+    BadRequest.assert(addressTypeString, 'type address is undefined')
 
-    const address = this.addressStore.getById(idParsed)
-    NotFound.assert(address, `Address with id "${id}" not found`)
+    const addressGet = this.addressStore.getByTypeAndClientId(
+      addressTypeString,
+      clientId
+    )
+    NotFound.assert(addressGet, `Address with id "${id}" not found`)
 
-    return address
+    return addressGet
   }
 
   async create(body) {

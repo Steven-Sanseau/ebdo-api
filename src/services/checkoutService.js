@@ -59,10 +59,6 @@ export default class CheckoutService {
       pickedCheckout.address_invoice_id,
       'address_invoice_id is required'
     )
-    BadRequest.assert(
-      pickedCheckout.address_delivery_id,
-      'address_delivery_id is required'
-    )
     BadRequest.assert(pickedCheckout.offer_id, 'offer_id is required')
 
     const client = await this.clientStore.getById(pickedCheckout.client_id)
