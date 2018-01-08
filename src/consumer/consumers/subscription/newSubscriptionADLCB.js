@@ -2,6 +2,8 @@ import Consumer from 'sqs-consumer'
 import AWS from 'aws-sdk'
 import AbowebService from '../../../services/abowebService'
 import patchCheckout from '../../api/checkout'
+import { getAbowebIdClient } from '../../api/client'
+import { getAbowebIdToken } from '../../api/token'
 import { env } from '../../../lib/env'
 
 AWS.config.update({
@@ -25,48 +27,77 @@ const subscriptionADLCBCreateConsumer = Consumer.create({
       const token = message.token
       const offer = message.offer
 
-      let args = {
-        clientTampon: {
-          codeClient: client.aboweb_client_id,
-          nom: client.last_name,
-          email: client.email,
-          prenom: client.first_name,
-          nePasModifierClient: 1,
-          noCommandeBoutique: checkout.checkout_id,
-          refCarteBancaire: token.aboweb_id
-        },
-        lstLignePanierTampon: [
-          {
-            codeTarif: offer.aboweb_id,
-            quantite: 1,
-            modePaiement: 6,
-            montantTtc: offer.price_ttc / 100,
-            typeAdresseLiv: 0,
-            noCommandeBoutique: checkout.checkout_id,
-            titre: offer.name.substring(0, 39)
+      getAbowebIdClient(client.client_id)
+        .then(async function(parsedBody) {
+          if (parsedBody.client.aboweb_client_id) {
+            client.aboweb_client_id = parsedBody.client.aboweb_client_id
+
+            getAbowebIdToken(token.token_id)
+              .then(async function(parsedBody) {
+                if (parsedBody.token.aboweb_id) {
+                  token.aboweb_id = parsedBody.token.aboweb_id
+
+                  let args = {
+                    clientTampon: {
+                      codeClient: client.aboweb_client_id,
+                      nom: client.last_name,
+                      email: client.email,
+                      prenom: client.first_name,
+                      nePasModifierClient: 1,
+                      noCommandeBoutique: checkout.checkout_id,
+                      refCarteBancaire: token.aboweb_id
+                    },
+                    lstLignePanierTampon: [
+                      {
+                        codeTarif: offer.aboweb_id,
+                        quantite: 1,
+                        modePaiement: 6,
+                        montantTtc: offer.price_ttc / 100,
+                        typeAdresseLiv: 0,
+                        noCommandeBoutique: checkout.checkout_id,
+                        titre: offer.name.substring(0, 39)
+                      }
+                    ],
+                    refEditeur: env.ABO_WEB_REF_EDITEUR,
+                    refSociete: env.ABO_WEB_REF_SOCIETE
+                  }
+
+                  console.log('ADLCB', args)
+
+                  const soapClient = await new AbowebService().createSoapClient(
+                    url
+                  )
+
+                  soapClient.ABM_CREATION_FICHIER_ABM(args, function(
+                    err,
+                    result
+                  ) {
+                    if (result.return.result) {
+                      const codeCheckout = result.return.refAction
+
+                      return patchCheckout(checkout, codeCheckout)
+                        .then(function(parsedBody) {
+                          done()
+                        })
+                        .catch(function(err) {
+                          console.log('post failed', err)
+                        })
+                    } else {
+                      console.log('aboweb failed', err)
+                    }
+                  })
+                }
+              })
+              .catch(function(err) {
+                console.log('get token aboweb id failed', err)
+              })
+          } else {
+            console.log('client fetch failed')
           }
-        ],
-        refEditeur: env.ABO_WEB_REF_EDITEUR,
-        refSociete: env.ABO_WEB_REF_SOCIETE
-      }
-
-      const soapClient = await new AbowebService().createSoapClient(url)
-
-      soapClient.ABM_CREATION_FICHIER_ABM(args, function(err, result) {
-        if (result.return.result) {
-          const codeCheckout = result.return.refAction
-
-          return patchCheckout(checkout, codeCheckout)
-            .then(function(parsedBody) {
-              done()
-            })
-            .catch(function(err) {
-              console.log('post failed', err)
-            })
-        } else {
-          console.log('aboweb failed', err)
-        }
-      })
+        })
+        .catch(function(err) {
+          console.log('get client aboweb id failed', err)
+        })
     } catch (err) {
       console.log(err)
     }

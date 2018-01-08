@@ -15,4 +15,17 @@ export const patchToken = (token, codeCard) => {
   return rp(options)
 }
 
-export default patchToken
+export const getAbowebIdToken = tokenId => {
+  const options = {
+    method: 'GET',
+    uri: env.API_URL + `token/aboweb/${tokenId}`,
+    json: true,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  return rp(options)
+}
+
+export default { patchToken, getAbowebIdToken }
