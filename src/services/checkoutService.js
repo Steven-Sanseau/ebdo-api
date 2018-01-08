@@ -150,6 +150,7 @@ export default class CheckoutService {
     checkoutStored.setInvoice_address(addressInvoice)
     checkoutStored.status = 'created'
     checkoutStored.cgv_accepted = pickedCheckout.cgv_accepted
+
     const checkoutSaved = await checkoutStored.save()
 
     // OFFRE ESSAI GRATUIT
@@ -236,6 +237,8 @@ export default class CheckoutService {
           client
         )
 
+        checkoutStored.payment_method = 2
+        checkoutStored.is_gift = false
         checkoutStored.status = 'cb/paid'
 
         const producer = await newSubscriptionDDCB({
@@ -268,6 +271,8 @@ export default class CheckoutService {
           addressInvoice,
           addressDelivery
         })
+        checkoutStored.payment_method = 2
+        checkoutStored.is_gift = false
         checkoutStored.status = 'cb/signed'
       } catch (err) {
         checkoutStored.status = 'cb/aboweb-error'
@@ -291,6 +296,7 @@ export default class CheckoutService {
           addressInvoice,
           addressDelivery
         })
+        checkoutStored.payment_method = 1
         checkoutStored.status = 'mandate/signed'
       } catch (err) {
         checkoutStored.status = 'mandate/aboweb-error'
