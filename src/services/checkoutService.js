@@ -9,6 +9,7 @@ import newSubscriptionADLSEPA from '../producers/newSubscriptionADLSEPA'
 
 import stripe from '../lib/stripe'
 import Emailer from '../lib/emailer'
+import env from '../lib/env'
 
 const assertEmail = BadRequest.makeAssert('No email given')
 const pickProps = data =>
@@ -232,6 +233,15 @@ export default class CheckoutService {
         checkoutStored.status = 'cb/declined'
         PaymentError.assert(!err, err.message)
       }
+
+      const mail = await this.sendMailADD(
+        client,
+        offer,
+        checkoutStored,
+        token,
+        addressDelivery,
+        addressInvoice
+      )
     }
 
     // OFFRE À Durée Libre && Stripe CB Token
@@ -283,12 +293,6 @@ export default class CheckoutService {
       }
     }
 
-    const emailSuccess = await this.sendMailSuccessSuscribe(
-      client,
-      offer,
-      checkoutStored
-    )
-
     const checkoutreturn = await checkoutStored.save()
     return { checkout: checkoutreturn }
   }
@@ -316,22 +320,46 @@ export default class CheckoutService {
     return offer.price_ttc
   }
 
-  async sendMailSuccessSuscribe(client, offer, checkout) {
-    const template_path = path.resolve(
-      './src/emails/subscribe_resume.mjml.mustache'
-    )
-    const template_data = {
-      ctatext: 'ME CONNECTER SUR EBDO',
-      ctalink: 'https://ebdo-lejournal.com',
-      offre: offer.description,
-      passwordLessText: 'resume suscbribe less explications etc.....',
-      homeLink: 'https://ebdo-subscribe-front-staging.herokuapp.com'
-    }
-
-    return await Emailer.sendMail(template_path, template_data, {
-      to: client.email,
-      from: 'contact@ebdo-lejournal.com',
-      subject: 'Merci de votre engagement a nos côtés'
+  async sendMailADD(
+    client,
+    offer,
+    checkout,
+    token,
+    addressDelivery,
+    addressInvoice
+  ) {
+    const msg = await Emailer.message('subscribe_add', async function(
+      err,
+      msg
+    ) {
+      const countryLong = {
+        FR: 'France',
+        CH: 'Suisse',
+        BE: 'Belgique',
+        LU: 'Luxembourg'
+      }
+      await msg.sendMail({
+        to: client.email,
+        client,
+        offer,
+        checkout,
+        token,
+        addressDelivery,
+        addressInvoice,
+        offer_month: offer.duration / 4,
+        card_brand:
+          offer.payment_method === 1 ? 'IBAN' : token.stripe_card_brand,
+        card_last4:
+          offer.payment_method === 1
+            ? token.slimpay_iban
+            : token.stripe_card_last4,
+        offer_subprice_ttc:
+          offer.monthly_price_ttc * (offer.duration * offer.duration / 4),
+        offer_price_ttc: offer.price_ttc / 100,
+        offer_shipping_cost:
+          offer.shipping_cost * (offer.duration * offer.duration / 4),
+        offer_country: countryLong[offer.country]
+      })
     })
   }
 

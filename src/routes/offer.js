@@ -2,7 +2,7 @@ import { createController } from 'awilix-koa'
 
 const api = offerService => ({
   findOffer: async ctx => {
-    // ctx.set('Cache-Control', 'public, max-age=3600')
+    ctx.set('Cache-Control', 'public, max-age=3600')
     //TODO CACHE strategie
     return ctx.ok(
       await offerService.findOffer(

@@ -40,7 +40,6 @@ export async function createServer() {
     .use(scopePerRequest(container))
     // Load routes (API "controllers")
     .use(loadControllers('../routes/*.js', { cwd: __dirname }))
-
     // Default handler when nothing stopped the chain.
     .use(notFoundHandler)
 
