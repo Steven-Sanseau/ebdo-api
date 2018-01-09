@@ -31,7 +31,10 @@ export default (sequelize, DataTypes) => {
     },
     login_code_created_at: {
       type: DataTypes.DATE
-    }
+    },
+    is_godson: {
+      type: DataTypes.BOOLEAN
+    },
   })
 
   Client.associate = models => {
