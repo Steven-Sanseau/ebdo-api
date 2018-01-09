@@ -218,6 +218,7 @@ export default class TokenService {
         tokenStored.slimpay_token_id = dataToken.id
 
         return dataToken._links['https://api.slimpay.net/alps#user-approval']
+        // IFRAME
         // return slimpay.getIframe(signMandate.traversal).then(iframeResult => {
         //   if (iframeResult.body && iframeResult.body.content) {
         //     return iframeResult.body.content

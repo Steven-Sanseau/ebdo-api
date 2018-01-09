@@ -12,7 +12,8 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     aboweb_subscribe_id: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      unique: true
     },
     payment_method: {
       type: DataTypes.INTEGER
