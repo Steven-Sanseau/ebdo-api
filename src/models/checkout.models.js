@@ -29,11 +29,12 @@ export default (sequelize, DataTypes) => {
     },
     source: {
       type: DataTypes.STRING
-    }
+    },
   })
 
   Checkout.associate = models => {
-    Checkout.belongsTo(models.Client, { foreignKey: 'client_id' })
+    Checkout.belongsTo(models.Client, { as: 'client', foreignKey: 'client_id' })
+    Checkout.belongsTo(models.Client, { as: 'godson', foreignKey: 'godson_id' })
 
     Checkout.belongsTo(models.Token, { foreignKey: 'token_id' })
 

@@ -1,6 +1,5 @@
 import { NotFound, BadRequest, Conflict } from 'fejl'
 import _ from 'lodash'
-import newClientProducer from '../producers/newClientProducer'
 
 const assertEmail = BadRequest.makeAssert('No email given')
 const pickProps = data =>
@@ -10,7 +9,8 @@ const pickProps = data =>
     'type_client',
     'aboweb_client_id',
     'first_name',
-    'last_name'
+    'last_name',
+    'is_godson'
   ])
 
 export default class ClientService {

@@ -81,18 +81,16 @@ export default class CheckoutService {
     const client = await this.clientStore.getById(pickedClient.client_id)
     NotFound.assert(client, `client "${pickedClient.client_id}" not found`)
 
-    const addressInvoice = await this.addressStore.getByIdAndClientId(
-      pickedAddressInvoice.address_id,
-      pickedClient.client_id
+    const addressInvoice = await this.addressStore.getById(
+      pickedAddressInvoice.address_id
     )
     NotFound.assert(
       addressInvoice,
       `address invoice "${pickedAddressInvoice.address_id}" not found`
     )
 
-    let addressDelivery = await this.addressStore.getByIdAndClientId(
-      pickedAddressDelivery.address_id,
-      pickedClient.client_id
+    let addressDelivery = await this.addressStore.getById(
+      pickedAddressDelivery.address_id
     )
 
     if (!addressDelivery) {
@@ -178,6 +176,8 @@ export default class CheckoutService {
 
     //Offre PARRAIN DD CB
     if (offer.time_limited && offer.payment_method === 2 && offer.is_gift) {
+      checkoutStored.is_gift = true
+
       try {
         const chargeStripe = await this.chargeCard(
           token,
@@ -205,7 +205,8 @@ export default class CheckoutService {
       offer.time_limited &&
       offer.payment_method === 2 &&
       !offer.is_free_gift &&
-      !offer.is_free
+      !offer.is_free &&
+      !offer.is_gift
     ) {
       try {
         const chargeStripe = await this.chargeCard(
