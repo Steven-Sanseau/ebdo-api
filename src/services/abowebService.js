@@ -45,7 +45,6 @@ export default class AbowebService {
           `${env.ABO_WEB_URL}AbonnementService?wsdl`
         )
         let subscriptions = ABOWEB_RESULTS_LIMIT
-        let subscriptionsUpdated = 0
         let offset = 0
 
         while (subscriptions >= ABOWEB_RESULTS_LIMIT) {
@@ -54,6 +53,7 @@ export default class AbowebService {
             date2: new Date().toISOString(),
             offset
           })
+
           if (response) {
             response.abonnement.forEach(async abonnement => {
               await this.SubscriptionModel.upsert(
@@ -75,11 +75,8 @@ export default class AbowebService {
                   status: abonnement.etat,
                   created_at: abonnement.creation,
                   updated_at: abonnement.modification
-                },
-                { aboweb_subscription_id: abonnement.refAbonnement }
-              )
-                .then(() => subscriptionsUpdated++)
-                .catch(err => console.log(err, abonnement))
+                }
+              ).catch(err => console.log(err, abonnement))
             })
 
             offset += response.abonnement.length
@@ -92,7 +89,7 @@ export default class AbowebService {
         await this.CronModel.build({
           type: CRON_TYPE_SUBSCRIPTIONS,
           data: {
-            subscriptionsUpdated: subscriptionsUpdated
+            subscriptionsUpdated: offset
           }
         }).save()
         resolve()
@@ -119,7 +116,6 @@ export default class AbowebService {
           `${env.ABO_WEB_URL}ClientService?wsdl`
         )
         let clients = ABOWEB_RESULTS_LIMIT
-        let clientsUpdated = 0
         let offset = 0
 
         while (clients >= ABOWEB_RESULTS_LIMIT) {
@@ -137,11 +133,8 @@ export default class AbowebService {
                   last_name: client.nom,
                   type_client: client.typeClient,
                   aboweb_client_id: client.codeClient
-                },
-                { aboweb_client_id: client.codeClient }
-              )
-                .then(() => clientsUpdated++)
-                .catch(err => console.log(err, client))
+                }
+              ).catch(err => console.log(err, abonnement))
 
               // Update invoice address
               const clientDb = await this.ClientModel.findOne({
@@ -159,8 +152,7 @@ export default class AbowebService {
                     client_id: clientDb.client_id,
                     type_address: 'invoice',
                     address_equal: true
-                  },
-                  { client_id: clientDb.client_id, type_address: 'invoice' }
+                  }
                 ).catch(err => console.log(err, client))
               }
             })
@@ -175,7 +167,7 @@ export default class AbowebService {
         await this.CronModel.build({
           type: CRON_TYPE_CLIENTS,
           data: {
-            clientsUpdated: clientsUpdated
+            clientsUpdated: offset
           }
         }).save()
         resolve()
