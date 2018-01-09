@@ -192,7 +192,6 @@ export default class TokenService {
             signatory: {
               familyName: addressObject.last_name,
               givenName: addressObject.first_name,
-              telephone: addressObject.phone,
               email: clientObject.email,
               billingAddress: {
                 street1: addressObject.address,
