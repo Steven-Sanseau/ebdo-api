@@ -200,28 +200,6 @@ export default class CheckoutService {
       }
     }
 
-    //OFFFRE PARRAINE CODE VALID ET ABO PAYE
-    if (
-      offer.time_limited &&
-      offer.payment_method === 2 &&
-      offer.is_gift &&
-      offer.is_free
-    ) {
-      try {
-        checkoutStored.status = 'code/valid/paid'
-
-        //TODO WAITING FOR ABOWEB REPLY ABOUT PARRAINAGE ET CODE PARRAIN
-        // const producer = await newSubscriptionDDCB({
-        //   offer: offer,
-        //   checkout: checkoutStored,
-        //   client: client
-        // })
-      } catch (err) {
-        checkoutStored.status = 'cb/declined'
-        PaymentError.assert(!err, err.message)
-      }
-    }
-
     // OFFRE À Durée Déterminée && Stripe CB Payment
     if (
       offer.time_limited &&
