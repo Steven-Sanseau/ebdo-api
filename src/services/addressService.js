@@ -14,6 +14,7 @@ const pickProps = data =>
     'country',
     'phone',
     'type_address',
+    'company',
     'address_equal'
   ])
 

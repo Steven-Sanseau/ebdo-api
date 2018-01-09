@@ -26,71 +26,58 @@ const subscriptionDDCBCreateConsumer = Consumer.create({
       const client = message.client
       const checkout = message.checkout
       const offer = message.offer
+      const token = message.token
+
       getAbowebIdClient(client.client_id)
         .then(async function(parsedBody) {
           if (parsedBody.client.aboweb_client_id) {
             client.aboweb_client_id = parsedBody.client.aboweb_client_id
 
-            getAbowebIdToken(token.token_id)
-              .then(async function(parsedBody) {
-                if (parsedBody.token.aboweb_id) {
-                  token.aboweb_id = parsedBody.token.aboweb_id
-
-                  let args = {
-                    clientTampon: {
-                      codeClient: client.aboweb_client_id,
-                      nom: client.last_name,
-                      email: client.email,
-                      prenom: client.first_name,
-                      nePasModifierClient: 1,
-                      noCommandeBoutique: checkout.checkout_id
-                    },
-                    lstLignePanierTampon: [
-                      {
-                        codeTarif: offer.aboweb_id,
-                        quantite: 1,
-                        modePaiement: 2,
-                        montantTtc: offer.price_ttc / 100,
-                        typeAdresseLiv: 0,
-                        noCommandeBoutique: checkout.checkout_id,
-                        titre: offer.name.substring(0, 39)
-                      }
-                    ],
-                    refEditeur: env.ABO_WEB_REF_EDITEUR,
-                    refSociete: env.ABO_WEB_REF_SOCIETE
-                  }
-
-                  console.log('DDCB', args)
-
-                  const soapClient = await new AbowebService().createSoapClient(
-                    url
-                  )
-
-                  soapClient.ABM_CREATION_FICHIER_ABM(args, function(
-                    err,
-                    result
-                  ) {
-                    if (result.return.result) {
-                      const codeCheckout = result.return.refAction
-
-                      return patchCheckout(checkout, codeCheckout)
-                        .then(function(parsedBody) {
-                          done()
-                        })
-                        .catch(function(err) {
-                          console.log('post failed', err)
-                        })
-                    }
-
-                    if (err) {
-                      console.log('aboweb failed', err)
-                    }
-                  })
+            let args = {
+              clientTampon: {
+                codeClient: client.aboweb_client_id,
+                nom: client.last_name,
+                email: client.email,
+                prenom: client.first_name,
+                nePasModifierClient: 1,
+                noCommandeBoutique: checkout.checkout_id
+              },
+              lstLignePanierTampon: [
+                {
+                  codeTarif: offer.aboweb_id,
+                  quantite: 1,
+                  modePaiement: 2,
+                  montantTtc: offer.price_ttc / 100,
+                  typeAdresseLiv: 0,
+                  noCommandeBoutique: checkout.checkout_id,
+                  titre: offer.name.substring(0, 39)
                 }
-              })
-              .catch(function(err) {
-                console.log('get token aboweb id failed', err)
-              })
+              ],
+              refEditeur: env.ABO_WEB_REF_EDITEUR,
+              refSociete: env.ABO_WEB_REF_SOCIETE
+            }
+
+            console.log('DDCB', args)
+
+            const soapClient = await new AbowebService().createSoapClient(url)
+
+            soapClient.ABM_CREATION_FICHIER_ABM(args, function(err, result) {
+              if (result.return.result) {
+                const codeCheckout = result.return.refAction
+
+                return patchCheckout(checkout, codeCheckout)
+                  .then(function(parsedBody) {
+                    done()
+                  })
+                  .catch(function(err) {
+                    console.log('post failed', err)
+                  })
+              }
+
+              if (err) {
+                console.log('aboweb failed', err)
+              }
+            })
           } else {
             console.log('client fetch failed')
           }
