@@ -2,11 +2,16 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    queryInterface.addColumn('Client', 'login_code', {
+    queryInterface.addColumn('Client', 'id_client_god_father', {
       type: Sequelize.INTEGER
     })
-    queryInterface.addColumn('Client', 'login_code_created_at', {
-      type: Sequelize.DATE
+    queryInterface.addIndex('Client', ['email'], {
+      indexName: 'email_client',
+      indicesType: 'UNIQUE'
+    })
+    queryInterface.addIndex('Client', ['aboweb_client_id'], {
+      indexName: 'aboweb_client_id',
+      indicesType: 'UNIQUE'
     })
     return queryInterface
   },

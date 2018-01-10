@@ -1,18 +1,12 @@
-import Client from 'node-mjml-mustache-nodemailer'
-import sgTransport from 'nodemailer-sendgrid-transport'
 import { env } from '../lib/env'
+import Emailer from '@sendgrid/mail'
+
 const options = {
   auth: {
     api_key: env.SENDGRID_API_KEY
   }
 }
 
-const config = {
-  default_from: 'contact@ebdo-lejournal.com',
-  cache: false,
-  smtp: sgTransport(options)
-}
-
-const Emailer = new Client(config)
-
+Emailer.setApiKey(env.SENDGRID_API_KEY)
+Emailer.setSubstitutionWrappers('{{', '}}')
 export default Emailer
