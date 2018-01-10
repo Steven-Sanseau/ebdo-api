@@ -48,7 +48,7 @@ export default class LoginService {
       templateId: '823b211e-edc4-4829-9b61-c9a9f9c1cc09',
       substitutions: {
         login_code: code,
-        first_name: user.first_name || null,
+        first_name: user.first_name || '',
         website_url: env.FRONT_URL,
         subject: `👉 ${code} - Votre code de connexion à ebdo-lejournal.com`
       }
