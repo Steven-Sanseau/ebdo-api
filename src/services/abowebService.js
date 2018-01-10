@@ -131,7 +131,7 @@ export default class AbowebService {
                 last_name: client.nom,
                 type_client: client.typeClient,
                 aboweb_client_id: client.codeClient
-              }).catch(err => console.log(err, abonnement))
+              }).catch(err => console.log(err, client))
 
               // Update invoice address
               const clientDb = await this.ClientModel.findOne({
@@ -147,6 +147,7 @@ export default class AbowebService {
                   country: client.codeIsoPays,
                   client_id: clientDb.client_id,
                   type_address: 'invoice',
+                  aboweb_address_id: clientDb.client_aboweb_id,
                   address_equal: true
                 }).catch(err => console.log(err, client))
               }

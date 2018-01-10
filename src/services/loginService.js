@@ -35,13 +35,17 @@ export default class LoginService {
   }
 
   async sendMailCodeLogin(code, user) {
-    const msg = await Emailer.message('login', async function(err, msg) {
-      await msg.sendMail({
-        to: user.email,
+    const msg = await Emailer.send({
+      to: { email: user.email, name: user.first_name },
+      from: 'Ebdo <contact+login@ebdo-lejournal.com>',
+      category: 'login_code',
+      templateId: '823b211e-edc4-4829-9b61-c9a9f9c1cc09',
+      substitutions: {
         login_code: code,
         first_name: user.first_name || null,
-        website_url: env.FRONT_URL
-      })
+        website_url: env.FRONT_URL,
+        subject: `👉 ${code} - Votre code de connexion à ebdo-lejournal.com`
+      }
     })
   }
 

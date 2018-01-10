@@ -9,7 +9,7 @@ import newSubscriptionADLSEPA from '../producers/newSubscriptionADLSEPA'
 
 import stripe from '../lib/stripe'
 import Emailer from '../lib/emailer'
-import env from '../lib/env'
+import { env } from '../lib/env'
 
 const assertEmail = BadRequest.makeAssert('No email given')
 const pickProps = data =>
@@ -101,9 +101,6 @@ export default class CheckoutService {
     const useSameAddressDelivery =
       addressDelivery.address_equal && addressInvoice.address_equal
 
-    console.log('delivery', addressDelivery)
-    console.log('invoice', addressInvoice)
-
     if (!client.aboweb_id) {
       const producerClient = await newClientProducer({
         client: client,
@@ -169,6 +166,16 @@ export default class CheckoutService {
           checkout: checkoutStored,
           client: client
         })
+
+        const mail = await this.sendMailsubscribe(
+          ['try-free', 'try'],
+          client,
+          offer,
+          checkoutStored,
+          token,
+          addressDelivery,
+          addressInvoice
+        )
       } catch (err) {
         checkoutStored.status = 'declined'
         PaymentError.assert(!err, err.message)
@@ -188,6 +195,16 @@ export default class CheckoutService {
         )
 
         checkoutStored.status = 'cb/paid'
+
+        const mail = await this.sendMailsubscribe(
+          ['subscription-offer-cb', 'subscription-offer', 'subscription'],
+          client,
+          offer,
+          checkoutStored,
+          token,
+          addressDelivery,
+          addressInvoice
+        )
 
         //TODO WAITING FOR ABOWEB REPLY ABOUT PARRAINAGE ET CODE PARRAIN
         // const producer = await newSubscriptionDDCB({
@@ -234,7 +251,8 @@ export default class CheckoutService {
         PaymentError.assert(!err, err.message)
       }
 
-      const mail = await this.sendMailADD(
+      const mail = await this.sendMailsubscribe(
+        ['subscription-add-cb', 'subscription-add', 'subscription'],
         client,
         offer,
         checkoutStored,
@@ -263,6 +281,16 @@ export default class CheckoutService {
         checkoutStored.payment_method = 2
         checkoutStored.is_gift = false
         checkoutStored.status = 'cb/signed'
+
+        const mail = await this.sendMailsubscribe(
+          ['subscription-adl-cb', 'subscription-adl', 'subscription'],
+          client,
+          offer,
+          checkoutStored,
+          token,
+          addressDelivery,
+          addressInvoice
+        )
       } catch (err) {
         checkoutStored.status = 'cb/aboweb-error'
         PaymentError.assert(!err, err.message)
@@ -287,6 +315,15 @@ export default class CheckoutService {
         })
         checkoutStored.payment_method = 1
         checkoutStored.status = 'mandate/signed'
+        const mail = await this.sendMailsubscribe(
+          ['subscription-add-sepa', 'subscription-add', 'subscription'],
+          client,
+          offer,
+          checkoutStored,
+          token,
+          addressDelivery,
+          addressInvoice
+        )
       } catch (err) {
         checkoutStored.status = 'mandate/aboweb-error'
         PaymentError.assert(!err, err.message)
@@ -320,7 +357,8 @@ export default class CheckoutService {
     return offer.price_ttc
   }
 
-  async sendMailADD(
+  async sendMailsubscribe(
+    type,
     client,
     offer,
     checkout,
@@ -328,38 +366,65 @@ export default class CheckoutService {
     addressDelivery,
     addressInvoice
   ) {
-    const msg = await Emailer.message('subscribe_add', async function(
-      err,
-      msg
-    ) {
-      const countryLong = {
-        FR: 'France',
-        CH: 'Suisse',
-        BE: 'Belgique',
-        LU: 'Luxembourg'
-      }
-      await msg.sendMail({
-        to: client.email,
-        client,
-        offer,
-        checkout,
-        token,
-        addressDelivery,
-        addressInvoice,
+    const countryLong = {
+      FR: 'France',
+      CH: 'Suisse',
+      BE: 'Belgique',
+      LU: 'Luxembourg'
+    }
+
+    const templateTypeId = {
+      adl: '0df0b4c6-ccc3-4ed2-b496-ccf7232216d1',
+      free: '54c6a2a9-386b-4934-a5dd-832f1387fc9b',
+      add: '90ab196e-58ff-4521-99a6-81470ac942b5'
+    }
+
+    Emailer.send({
+      to: {
+        email: client.email,
+        name: `${client.first_name} ${client.last_name}`
+      },
+      from: 'Ebdo <contact+newsubscription@ebdo-lejournal.com>',
+      templateId: _.find(templateTypeId, templateId),
+      category: type,
+      substitutions: {
+        checkout_checkout_id: checkout.checkout_id,
+        client_first_name: client.first_name,
+        client_client_aboweb_id: client.aboweb_client_id,
         offer_month: offer.duration / 4,
         card_brand:
-          offer.payment_method === 1 ? 'IBAN' : token.stripe_card_brand,
+          offer.payment_method === 1 ? 'IBAN' : token.stripe_card_brand || '',
         card_last4:
           offer.payment_method === 1
-            ? token.slimpay_iban
-            : token.stripe_card_last4,
-        offer_subprice_ttc:
-          offer.monthly_price_ttc * (offer.duration * offer.duration / 4),
+            ? token.slimpay_iban || ''
+            : token.stripe_card_last4 || '',
+        offer_subprice_ttc: offer.monthly_price_ttc * (offer.duration / 4),
         offer_price_ttc: offer.price_ttc / 100,
-        offer_shipping_cost:
-          offer.shipping_cost * (offer.duration * offer.duration / 4),
-        offer_country: countryLong[offer.country]
-      })
+        offer_shipping_cost: offer.duration * (offer.shipping_cost * 4),
+        offer_country: _.find(countryLong, offer.country),
+        addressInvoice_first_name: addressInvoice.first_name,
+        addressInvoice_last_name: addressInvoice.last_name,
+        addressInvoice_company: addressInvoice.company || '',
+        addressInvoice_address: addressInvoice.address,
+        addressInvoice_address_post: addressInvoice.address_post,
+        addressInvoice_postal_code: addressInvoice.postal_code,
+        addressInvoice_city: addressInvoice.city,
+        addressInvoice_country: addressInvoice.country,
+        addressDelivery_first_name: addressDelivery.first_name,
+        addressDelivery_last_name: addressDelivery.last_name,
+        addressDelivery_company: addressDelivery.company,
+        addressDelivery_address: addressDelivery.address,
+        addressDelivery_address_post: addressDelivery.address_post,
+        addressDelivery_postal_code: addressDelivery.postal_code,
+        addressDelivery_city: addressDelivery.city,
+        addressDelivery_country: addressDelivery.country,
+        offer_duration: offer.duration,
+        offer_monthly_price_ttc: offer.monthly_price_ttc,
+        website_url: env.FRONT_URL
+      }
+    }).catch(error => {
+      //Log friendly error
+      console.error(error.toString())
     })
   }
 
