@@ -173,10 +173,11 @@ export default class CheckoutService {
           client,
           offer,
           checkoutStored,
-          token,
+          null,
           addressDelivery,
           addressInvoice
         )
+        console.log(mail)
       } catch (err) {
         checkoutStored.status = 'declined'
         PaymentError.assert(!err, err.message)
@@ -381,9 +382,9 @@ export default class CheckoutService {
 
     const templateTypeId = {
       adl: '0df0b4c6-ccc3-4ed2-b496-ccf7232216d1',
-      free: '9c4747d5-e833-419c-b3d8-64b5f099d0b8',
+      free: '54c6a2a9-386b-4934-a5dd-832f1387fc9b',
       add: '90ab196e-58ff-4521-99a6-81470ac942b5',
-      offer: '90ab196e-58ff-4521-99a6-81470ac942b5'
+      offer: '9c4747d5-e833-419c-b3d8-64b5f099d0b8'
     }
 
     Emailer.send({
@@ -395,16 +396,19 @@ export default class CheckoutService {
       templateId: _.find(templateTypeId, templateId),
       category: type,
       substitutions: {
+        subject: '',
         checkout_checkout_id: checkout.checkout_id,
         client_first_name: client.first_name,
         client_client_aboweb_id: client.aboweb_client_id,
         offer_month: offer.duration / 4,
-        card_brand:
-          offer.payment_method === 1 ? 'IBAN' : token.stripe_card_brand || '',
-        card_last4:
-          offer.payment_method === 1
+        card_brand: token
+          ? offer.payment_method === 1 ? 'IBAN' : token.stripe_card_brand
+          : '',
+        card_last4: token
+          ? offer.payment_method === 1
             ? token.slimpay_iban || ''
-            : token.stripe_card_last4 || '',
+            : token.stripe_card_last4 || ''
+          : '',
         offer_subprice_ttc: offer.monthly_price_ttc * (offer.duration / 4),
         offer_price_ttc: offer.price_ttc / 100,
         offer_shipping_cost: offer.duration * (offer.shipping_cost * 4),

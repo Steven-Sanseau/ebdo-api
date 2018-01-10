@@ -58,6 +58,8 @@ export default class LoginService {
   }
 
   async getJwt(email, code) {
+    BadRequest.assert(code, 'Code empty')
+    BadRequest.assert(email, 'Email empty empty')
     const user = await this.clientStore.getByEmailAndCode(email, code)
     NotFound.assert(user, 'Invalid code')
 
