@@ -39,7 +39,9 @@ const newAddressConsumer = Consumer.create({
               societe: addressDelivery.company,
               adresse1: addressDelivery.address_pre,
               adresse2: addressDelivery.address,
-              adresse3: addressDelivery.address_post,
+              adresse3: addressDelivery.address_post
+                ? addressDelivery.address_post.substring(0, 40)
+                : '',
               cp: addressDelivery.postal_code,
               ville: addressDelivery.city,
               codeIsoPays: addressDelivery.country
