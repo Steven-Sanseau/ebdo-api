@@ -11,6 +11,7 @@ import { logger } from './logger'
 import { configureContainer } from './container'
 import { notFoundHandler } from '../middleware/notFound'
 import { errorHandler } from '../middleware/errorHandler'
+import { env } from '../lib/env'
 
 /**
  * Creates and returns a new Koa application.
@@ -32,7 +33,9 @@ export async function createServer() {
     // Adds ctx.ok(), ctx.notFound(), etc..
     .use(respond())
     // Handles CORS.
-    .use(cors())
+    .use(cors({
+      origin: env.FRONT_URL
+    }))
     // Parses request bodies.
     .use(bodyParser())
     // Creates an Awilix scope per request. Check out the awilix-koa
