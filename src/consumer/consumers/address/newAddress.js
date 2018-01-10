@@ -3,6 +3,7 @@ import AWS from 'aws-sdk'
 import { patchAddress } from '../../api/address'
 import { env } from '../../../lib/env'
 import AbowebService from '../../../services/abowebService'
+import { getAbowebIdClient } from '../../api/client'
 
 AWS.config.update({
   accessKeyId: env.AWS_KEY_ID || '',
@@ -23,40 +24,50 @@ const newAddressConsumer = Consumer.create({
       const addressDelivery = message.addressDelivery
       const client = message.client
 
-      let args = {
-        adresse: {
-          typeAdresse: 1,
-          codeClient: client.aboweb_client_id,
-          nom: addressDelivery.last_name || null,
-          prenom: addressDelivery.first_name || null,
-          societe: addressDelivery.company || null,
-          adresse1: addressDelivery.address_pre || null,
-          adresse2: addressDelivery.address || null,
-          adresse3: addressDelivery.address_post || null,
-          cp: addressDelivery.postal_code || null,
-          ville: addressDelivery.city || null,
-          codeIsoPays: addressDelivery.country || null
-        }
-      }
+      getAbowebIdClient(client.client_id).then(async function(parsedBody) {
+        if (parsedBody.client.aboweb_client_id) {
+          client.aboweb_client_id = parsedBody.client.aboweb_client_id
 
-      const soapClient = await new AbowebService().createSoapClient(url)
+          let args = {
+            adresse: {
+              typeAdresse: 1,
+              refAdresse: addressDelivery.aboweb_id || null,
+              codeClient: client.aboweb_client_id,
+              nom: addressDelivery.last_name,
+              prenom: addressDelivery.first_name,
+              telephone: addressDelivery.phone,
+              societe: addressDelivery.company,
+              adresse1: addressDelivery.address_pre,
+              adresse2: addressDelivery.address,
+              adresse3: addressDelivery.address_post
+                ? addressDelivery.address_post.substring(0, 40)
+                : '',
+              cp: addressDelivery.postal_code,
+              ville: addressDelivery.city,
+              codeIsoPays: addressDelivery.country
+            }
+          }
+          console.log('adress', args)
+          const soapClient = await new AbowebService().createSoapClient(url)
 
-      soapClient.createOrUpdateAdresseEx(args, function(err, result) {
-        if (err) {
-          console.log('create new client card to aboweb failed', err.body)
-          return null
-        }
+          soapClient.createOrUpdateAdresseEx(args, function(err, result) {
+            if (err) {
+              console.log('create new client card to aboweb failed', err.body)
+              return null
+            }
 
-        const codeAddress = result.refAdresse
+            const codeAddress = result.refAdresse
 
-        return patchAddress(addressDelivery, codeAddress)
-          .then(function(parsedBody) {
-            return done()
+            return patchAddress(addressDelivery, codeAddress)
+              .then(function(parsedBody) {
+                return done()
+              })
+              .catch(function(err) {
+                console.log('post ebdo api new card aboweb id failed', err)
+                return null
+              })
           })
-          .catch(function(err) {
-            console.log('post ebdo api new card aboweb id failed', err)
-            return null
-          })
+        }
       })
     } catch (err) {
       console.log(err)
