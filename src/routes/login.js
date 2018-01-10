@@ -1,5 +1,5 @@
 import { createController } from 'awilix-koa'
-import jwtMiddleware from "koa-jwt"
+import jwtMiddleware from 'koa-jwt'
 
 import { env } from '../lib/env'
 
@@ -8,8 +8,7 @@ const api = loginService => ({
     ctx.ok(await loginService.sendCodeLogin(ctx.params.email)),
   getJwt: async ctx =>
     ctx.ok(await loginService.getJwt(ctx.params.email, ctx.params.code)),
-  protectedRoute: async ctx =>
-    ctx.ok()
+  protectedRoute: async ctx => ctx.ok()
 })
 
 export default createController(api)

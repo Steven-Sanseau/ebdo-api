@@ -168,6 +168,7 @@ export default class CheckoutService {
         })
 
         const mail = await this.sendMailsubscribe(
+          'free',
           ['try-free', 'try'],
           client,
           offer,
@@ -197,6 +198,7 @@ export default class CheckoutService {
         checkoutStored.status = 'cb/paid'
 
         const mail = await this.sendMailsubscribe(
+          'offer',
           ['subscription-offer-cb', 'subscription-offer', 'subscription'],
           client,
           offer,
@@ -252,6 +254,7 @@ export default class CheckoutService {
       }
 
       const mail = await this.sendMailsubscribe(
+        'add',
         ['subscription-add-cb', 'subscription-add', 'subscription'],
         client,
         offer,
@@ -283,6 +286,7 @@ export default class CheckoutService {
         checkoutStored.status = 'cb/signed'
 
         const mail = await this.sendMailsubscribe(
+          'adl',
           ['subscription-adl-cb', 'subscription-adl', 'subscription'],
           client,
           offer,
@@ -316,6 +320,7 @@ export default class CheckoutService {
         checkoutStored.payment_method = 1
         checkoutStored.status = 'mandate/signed'
         const mail = await this.sendMailsubscribe(
+          'add',
           ['subscription-add-sepa', 'subscription-add', 'subscription'],
           client,
           offer,
@@ -358,6 +363,7 @@ export default class CheckoutService {
   }
 
   async sendMailsubscribe(
+    templateId,
     type,
     client,
     offer,
@@ -375,8 +381,9 @@ export default class CheckoutService {
 
     const templateTypeId = {
       adl: '0df0b4c6-ccc3-4ed2-b496-ccf7232216d1',
-      free: '54c6a2a9-386b-4934-a5dd-832f1387fc9b',
-      add: '90ab196e-58ff-4521-99a6-81470ac942b5'
+      free: '9c4747d5-e833-419c-b3d8-64b5f099d0b8',
+      add: '90ab196e-58ff-4521-99a6-81470ac942b5',
+      offer: '90ab196e-58ff-4521-99a6-81470ac942b5'
     }
 
     Emailer.send({
