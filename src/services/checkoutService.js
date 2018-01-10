@@ -168,7 +168,7 @@ export default class CheckoutService {
         })
 
         const mail = await this.sendMailsubscribe(
-          'free',
+          '54c6a2a9-386b-4934-a5dd-832f1387fc9b',
           ['try-free', 'try'],
           client,
           offer,
@@ -199,7 +199,7 @@ export default class CheckoutService {
         checkoutStored.status = 'cb/paid'
 
         const mail = await this.sendMailsubscribe(
-          'offer',
+          '9c4747d5-e833-419c-b3d8-64b5f099d0b8',
           ['subscription-offer-cb', 'subscription-offer', 'subscription'],
           client,
           offer,
@@ -249,21 +249,21 @@ export default class CheckoutService {
           addressInvoice,
           addressDelivery
         })
+        const mail = await this.sendMailsubscribe(
+          '90ab196e-58ff-4521-99a6-81470ac942b5',
+          ['subscription-add-cb', 'subscription-add', 'subscription'],
+          client,
+          offer,
+          checkoutStored,
+          token,
+          addressDelivery,
+          addressInvoice
+        )
+        console.log(mail)
       } catch (err) {
         checkoutStored.status = 'cb/declined'
         PaymentError.assert(!err, err.message)
       }
-
-      const mail = await this.sendMailsubscribe(
-        'add',
-        ['subscription-add-cb', 'subscription-add', 'subscription'],
-        client,
-        offer,
-        checkoutStored,
-        token,
-        addressDelivery,
-        addressInvoice
-      )
     }
 
     // OFFRE À Durée Libre && Stripe CB Token
@@ -287,7 +287,7 @@ export default class CheckoutService {
         checkoutStored.status = 'cb/signed'
 
         const mail = await this.sendMailsubscribe(
-          'adl',
+          '0df0b4c6-ccc3-4ed2-b496-ccf7232216d1',
           ['subscription-adl-cb', 'subscription-adl', 'subscription'],
           client,
           offer,
@@ -296,6 +296,7 @@ export default class CheckoutService {
           addressDelivery,
           addressInvoice
         )
+        console.log(mail)
       } catch (err) {
         checkoutStored.status = 'cb/aboweb-error'
         PaymentError.assert(!err, err.message)
@@ -321,7 +322,7 @@ export default class CheckoutService {
         checkoutStored.payment_method = 1
         checkoutStored.status = 'mandate/signed'
         const mail = await this.sendMailsubscribe(
-          'add',
+          '90ab196e-58ff-4521-99a6-81470ac942b5',
           ['subscription-add-sepa', 'subscription-add', 'subscription'],
           client,
           offer,
@@ -330,6 +331,7 @@ export default class CheckoutService {
           addressDelivery,
           addressInvoice
         )
+        console.log(mail)
       } catch (err) {
         checkoutStored.status = 'mandate/aboweb-error'
         PaymentError.assert(!err, err.message)
@@ -380,27 +382,20 @@ export default class CheckoutService {
       LU: 'Luxembourg'
     }
 
-    const templateTypeId = {
-      adl: '0df0b4c6-ccc3-4ed2-b496-ccf7232216d1',
-      free: '54c6a2a9-386b-4934-a5dd-832f1387fc9b',
-      add: '90ab196e-58ff-4521-99a6-81470ac942b5',
-      offer: '9c4747d5-e833-419c-b3d8-64b5f099d0b8'
-    }
-
-    Emailer.send({
+    console.log(templateId)
+    const mail = {
       to: {
         email: client.email,
         name: `${client.first_name} ${client.last_name}`
       },
       from: 'Ebdo <contact+newsubscription@ebdo-lejournal.com>',
-      templateId: _.find(templateTypeId, templateId),
+      templateId: templateId,
       category: type,
       substitutions: {
-        subject: '',
         checkout_checkout_id: checkout.checkout_id,
         client_first_name: client.first_name,
         client_client_aboweb_id: client.aboweb_client_id,
-        offer_month: offer.duration / 4,
+        offer_month: offer.duration ? offer.duration / 4 : 4,
         card_brand: token
           ? offer.payment_method === 1 ? 'IBAN' : token.stripe_card_brand
           : '',
@@ -409,34 +404,44 @@ export default class CheckoutService {
             ? token.slimpay_iban || ''
             : token.stripe_card_last4 || ''
           : '',
-        offer_subprice_ttc: offer.monthly_price_ttc * (offer.duration / 4),
+        offer_subprice_ttc: offer.duration
+          ? offer.monthly_price_ttc * (offer.duration / 4)
+          : offer.monthly_price_ttc,
         offer_price_ttc: offer.price_ttc / 100,
-        offer_shipping_cost: offer.duration * (offer.shipping_cost * 4),
+        offer_shipping_cost: offer.duration
+          ? offer.duration * (offer.shipping_cost * 4)
+          : offer.shipping_cost * 4,
         offer_country: _.find(countryLong, offer.country),
         addressInvoice_first_name: addressInvoice.first_name,
         addressInvoice_last_name: addressInvoice.last_name,
         addressInvoice_company: addressInvoice.company || '',
         addressInvoice_address: addressInvoice.address,
-        addressInvoice_address_post: addressInvoice.address_post,
+        addressInvoice_address_post: addressInvoice.address_post || '',
         addressInvoice_postal_code: addressInvoice.postal_code,
         addressInvoice_city: addressInvoice.city,
-        addressInvoice_country: addressInvoice.country,
+        addressInvoice_country: offer.country,
         addressDelivery_first_name: addressDelivery.first_name,
         addressDelivery_last_name: addressDelivery.last_name,
         addressDelivery_company: addressDelivery.company,
         addressDelivery_address: addressDelivery.address,
-        addressDelivery_address_post: addressDelivery.address_post,
+        addressDelivery_address_post: addressDelivery.address_post || '',
         addressDelivery_postal_code: addressDelivery.postal_code,
         addressDelivery_city: addressDelivery.city,
-        addressDelivery_country: addressDelivery.country,
+        addressDelivery_country: offer.country,
         offer_duration: offer.duration,
         offer_monthly_price_ttc: offer.monthly_price_ttc,
         website_url: env.FRONT_URL
       }
-    }).catch(error => {
-      //Log friendly error
-      console.error(error.toString())
-    })
+    }
+    console.log(mail)
+    return Emailer.send(mail)
+      .then(e => {
+        console.log(e)
+      })
+      .catch(error => {
+        //Log friendly error
+        console.error(error.toString())
+      })
   }
 
   async updateAboweb(id, data) {

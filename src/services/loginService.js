@@ -32,7 +32,7 @@ export default class LoginService {
     })
 
     const mail = await this.sendMailCodeLogin(code, user)
-    return { mail }
+    return { result: true }
   }
 
   async sendMailCodeLogin(code, user) {
