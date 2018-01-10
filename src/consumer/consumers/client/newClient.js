@@ -42,8 +42,8 @@ const clientCreateConsumer = Consumer.create({
             societe: addressInvoice.company,
             adresse1: addressInvoice.address_pre,
             adresse2: addressInvoice.address,
-            adresse3: addressDelivery.address_post
-              ? addressDelivery.address_post.substring(0, 40)
+            adresse3: addressInvoice.address_post
+              ? addressInvoice.address_post.substring(0, 40)
               : '',
             cp: addressInvoice.postal_code,
             ville: addressInvoice.city,
