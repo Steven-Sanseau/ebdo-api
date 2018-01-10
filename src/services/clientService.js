@@ -10,7 +10,8 @@ const pickProps = data =>
     'aboweb_client_id',
     'first_name',
     'last_name',
-    'is_godson'
+    'is_godson',
+    'id_client_god_father'
   ])
 
 export default class ClientService {

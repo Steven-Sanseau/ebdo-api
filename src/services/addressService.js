@@ -86,13 +86,25 @@ export default class AddressService {
     return { address: addressStored, client: clientUpdated }
   }
 
-  async update(id, data) {
+  async update(id, data, clientLoggedId) {
     assertId(id)
 
     const address = data.address
     BadRequest.assert(address, 'No address payload given')
 
-    await this.findById(id)
+    const addressStored = await this.findById(id)
+
+    console.log(
+      id,
+      data,
+      addressStored.client_id === clientLoggedId,
+      clientLoggedId,
+      addressStored.client_id
+    )
+    NotAuthenticated.assert(
+      addressStored.client_id === clientLoggedId,
+      "You can't change an address that does not belong to you"
+    )
 
     const picked = pickProps(address)
 

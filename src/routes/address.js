@@ -13,7 +13,13 @@ const api = addressService => ({
   createAddress: async ctx =>
     ctx.created(await addressService.create(ctx.request.body)),
   updateAddress: async ctx =>
-    ctx.ok(await addressService.update(ctx.params.id, ctx.request.body)),
+    ctx.ok(
+      await addressService.update(
+        ctx.params.id,
+        ctx.request.body,
+        ctx.state.user.client_id
+      )
+    ),
   updateAddressAboweb: async ctx =>
     ctx.ok(await addressService.updateAboweb(ctx.params.id, ctx.request.body))
 })
@@ -24,5 +30,7 @@ export default createController(api)
     before: [jwtMiddleware({ secret: env.JWT_PRIVATE_KEY })]
   })
   .post('', 'createAddress')
-  .patch('/:id', 'updateAddress')
+  .patch('/:id', 'updateAddress', {
+    before: [jwtMiddleware({ secret: env.JWT_PRIVATE_KEY })]
+  })
   .patch('/aboweb/:id', 'updateAddressAboweb')
