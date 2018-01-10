@@ -58,10 +58,18 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN
     },
     aboweb_address_id: {
-      type: DataTypes.STRING,
-      unique: true
+      type: DataTypes.STRING
     }
-  })
+  },
+  {
+    indexes: [
+      {
+        unique: true,
+        fields: ['type_address', 'client_id']
+      }
+    ]
+  }
+  )
 
   Address.associate = models => {
     Address.belongsTo(models.Client, {
