@@ -137,11 +137,11 @@ export default class CheckoutService {
     }
 
     const checkoutStored = await this.checkoutStore.create(pickedCheckout)
-    checkoutStored.setClient(client)
-    checkoutStored.setOffer(offer)
-    if (!token) {
+    if (!offer.is_free_gift && !offer.is_free) {
       checkoutStored.setToken(token)
     }
+    checkoutStored.setClient(client)
+    checkoutStored.setOffer(offer)
     checkoutStored.setDelivery_address(addressDelivery)
     checkoutStored.setInvoice_address(addressInvoice)
     checkoutStored.status = 'created'
