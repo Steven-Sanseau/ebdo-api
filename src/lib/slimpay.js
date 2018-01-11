@@ -56,10 +56,7 @@ class SlimPay {
   }
 
   init() {
-    this.endPoint =
-      this.env === 'production'
-        ? 'https://api.slimpay.net/'
-        : 'https://api.preprod.slimpay.com/'
+    this.endPoint = 'https://api.slimpay.net/'
     var authPath = 'oauth/token?grant_type=client_credentials&scope=api'
     this.authURI = this.endPoint + authPath
     this.authConfig = {
