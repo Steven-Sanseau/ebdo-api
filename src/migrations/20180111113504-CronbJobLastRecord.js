@@ -2,7 +2,9 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.addIndex('Address', { unique: true, fields: ['type_address', 'client_id'] })
+    return queryInterface.addColumn('Cron', 'last_record_updated_at', {
+      type: Sequelize.DATE
+    })
   },
 
   down: (queryInterface, Sequelize) => {
