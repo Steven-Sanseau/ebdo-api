@@ -34,8 +34,7 @@ const subscriptionADLSEPACreateConsumer = Consumer.create({
 
             getAbowebIdToken(token.token_id)
               .then(async function(parsedBody) {
-                if (parsedBody.token.aboweb_id) {
-                  token.aboweb_id = parsedBody.token.aboweb_id
+                if (parsedBody.token.token_type === 'slimpay') {
                   let args = {
                     clientTampon: {
                       codeClient: client.aboweb_client_id,
@@ -86,6 +85,8 @@ const subscriptionADLSEPACreateConsumer = Consumer.create({
                         })
                     }
                   })
+                } else {
+                  console.log('token is not slimpay type')
                 }
               })
               .catch(function(err) {
