@@ -16,51 +16,59 @@ try {
   //clientCreateConsumer
   console.log('Create Queue from clientCreateConsumer')
   clientCreateConsumer.on('error', err => {
-    Raven.captureException(err)
+    console.log(err.message)
+    Raven.captureException(err.message)
   })
   clientCreateConsumer.start()
 
   //newCardConsumer
   console.log('Create Queue from newCardConsumer')
   newCardConsumer.on('error', err => {
-    Raven.captureException(err)
+    console.log(err.message)
+    Raven.captureException(err.message)
   })
   newCardConsumer.start()
 
   //newAddressConsumer
   console.log('Create Queue from newAddressConsumer')
   newAddressConsumer.on('error', err => {
-    Raven.captureException(err)
+    console.log(err.message)
+    Raven.captureException(err.message)
   })
   newAddressConsumer.start()
 
   //subscriptionDDCBCreateConsumer
   console.log('Create Queue from subscriptionDDCBCreateConsumer')
   subscriptionDDCBCreateConsumer.on('error', err => {
-    Raven.captureException(err)
+    console.log(err.message)
+    Raven.captureException(err.message)
   })
   subscriptionDDCBCreateConsumer.start()
 
   //subscriptionADLCBCreateConsumer
   console.log('Create Queue from subscriptionADLCBCreateConsumer')
   subscriptionADLCBCreateConsumer.on('error', err => {
-    Raven.captureException(err)
+    console.log(err.message)
+    Raven.captureException(err.message)
   })
   subscriptionADLCBCreateConsumer.start()
 
   // subscriptionADLSEPACreateConsumer
   console.log('Create Queue from subscriptionADLSEPACreateConsumer')
   subscriptionADLSEPACreateConsumer.on('error', err => {
-    Raven.captureException(err)
+    console.log(err.message)
+    Raven.captureException(err.message)
   })
   subscriptionADLSEPACreateConsumer.start()
 
   // debug
   console.log('Create Queue from debug')
   debugConsumer.on('error', err => {
-    Raven.captureException(err)
+    console.log(err.message)
+    Raven.captureException(err.message)
   })
   debugConsumer.start()
 } catch (e) {
+  console.log(e)
   Raven.captureException(e)
 }
