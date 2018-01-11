@@ -10,6 +10,9 @@ export default (sequelize, DataTypes) => {
     },
     data: {
       type: DataTypes.JSON
+    },
+    last_record_updated_at: {
+      type: DataTypes.DATE
     }
   })
 

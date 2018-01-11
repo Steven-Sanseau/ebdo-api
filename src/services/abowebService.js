@@ -32,20 +32,21 @@ export default class AbowebService {
    * Method to fetch all modified subscriptions from Aboweb and sync them with our database
    */
   async syncSubscriptions() {
+    let offset = 0
+
     return new Promise(async (resolve, reject) => {
       try {
         const lastCronjob = await this.CronModel.findOne({
           where: { type: CRON_TYPE_SUBSCRIPTIONS },
-          order: [['created_at', 'DESC']]
+          order: [['last_record_updated_at', 'DESC']]
         })
         const lastModified = lastCronjob
-          ? lastCronjob.created_at.toISOString()
+          ? lastCronjob.last_record_updated_at.toISOString()
           : new Date(0).toISOString()
         const soapClient = await this.createSoapClient(
           `${env.ABO_WEB_URL}AbonnementService?wsdl`
         )
         let subscriptions = ABOWEB_RESULTS_LIMIT
-        let offset = 0
 
         while (subscriptions >= ABOWEB_RESULTS_LIMIT) {
           const response = await soapClient.getAbonnementsModifiedBetweenAsync({
@@ -85,14 +86,10 @@ export default class AbowebService {
           }
         }
 
-        await this.CronModel.build({
-          type: CRON_TYPE_SUBSCRIPTIONS,
-          data: {
-            subscriptionsUpdated: offset
-          }
-        }).save()
+        await this.saveCronjobModel(CRON_TYPE_SUBSCRIPTIONS, this.SubscriptionModel, offset);
         resolve()
       } catch (e) {
+        await this.saveCronjobModel(CRON_TYPE_SUBSCRIPTIONS, this.SubscriptionModel, offset, e);
         reject(e)
       }
     })
@@ -102,26 +99,28 @@ export default class AbowebService {
    * Method to fetch all modified clients from Aboweb and sync them with our database
    */
   async syncClients() {
+    let offset = 0
+
     return new Promise(async (resolve, reject) => {
       try {
         const lastCronjob = await this.CronModel.findOne({
           where: { type: CRON_TYPE_CLIENTS },
-          order: [['created_at', 'DESC']]
+          order: [['last_record_updated_at', 'DESC']]
         })
         const lastModified = lastCronjob
-          ? lastCronjob.created_at.toISOString()
+          ? lastCronjob.last_record_updated_at.toISOString()
           : null
         const soapClient = await this.createSoapClient(
           `${env.ABO_WEB_URL}ClientService?wsdl`
         )
         let clients = ABOWEB_RESULTS_LIMIT
-        let offset = 0
 
         while (clients >= ABOWEB_RESULTS_LIMIT) {
           const response = await soapClient.getClientsModifiedBetweenAsync({
             date1: lastModified,
             offset
           })
+
           if (response) {
             response.client.forEach(async client => {
               // Update client
@@ -161,16 +160,24 @@ export default class AbowebService {
           }
         }
 
-        await this.CronModel.build({
-          type: CRON_TYPE_CLIENTS,
-          data: {
-            clientsUpdated: offset
-          }
-        }).save()
+        await this.saveCronjobModel(CRON_TYPE_CLIENTS, this.ClientModel, offset);
         resolve()
       } catch (e) {
+        await this.saveCronjobModel(CRON_TYPE_CLIENTS, this.ClientModel, offset, e);
         reject(e)
       }
     })
+  }
+
+  async saveCronjobModel(type, model, offset, error = false) {
+    const lastRecordUpdated = await model.findOne({ order: [['updated_at', 'DESC']] });
+    await this.CronModel.build({
+      type,
+      data: {
+        recordsUpdated: offset,
+        error
+      },
+      last_record_updated_at: lastRecordUpdated ? lastRecordUpdated.updated_at : new Date()
+    }).save()
   }
 }
