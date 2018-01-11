@@ -29,7 +29,7 @@ export default (sequelize, DataTypes) => {
     },
     source: {
       type: DataTypes.STRING
-    },
+    }
   })
 
   Checkout.associate = models => {
