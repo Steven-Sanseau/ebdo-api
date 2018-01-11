@@ -24,12 +24,13 @@ const newCardConsumer = Consumer.create({
 
       let args = {
         prestataire: '2',
-        cbCode: String(token.stripe_card_id),
-        token: String(token.stripe_customer_id),
-        dateVal: String(
-          token.stripe_card_exp_month + String(token.stripe_card_exp_year)
-        ).substring(2),
-        lastNumbers: String(token.stripe_card_last4)
+        cbCode: token.stripe_card_id,
+        token: token.stripe_customer_id,
+        dateVal: `
+          ${token.stripe_card_exp_month}${token.stripe_card_exp_year.substring(
+          2
+        )}`,
+        lastNumbers: token.stripe_card_last4
       }
 
       console.log('card', args)
