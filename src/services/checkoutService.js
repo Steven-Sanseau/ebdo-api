@@ -419,7 +419,7 @@ export default class CheckoutService {
         addressInvoice_address_post: addressInvoice.address_post || '',
         addressInvoice_postal_code: addressInvoice.postal_code,
         addressInvoice_city: addressInvoice.city,
-        addressInvoice_country: offer.country,
+        addressInvoice_country: addressInvoice.country,
         addressDelivery_first_name: addressDelivery.first_name,
         addressDelivery_last_name: addressDelivery.last_name,
         addressDelivery_company: addressDelivery.company,
@@ -427,7 +427,7 @@ export default class CheckoutService {
         addressDelivery_address_post: addressDelivery.address_post || '',
         addressDelivery_postal_code: addressDelivery.postal_code,
         addressDelivery_city: addressDelivery.city,
-        addressDelivery_country: offer.country,
+        addressDelivery_country: addressDelivery.country,
         offer_duration: offer.duration,
         offer_monthly_price_ttc: offer.monthly_price_ttc,
         website_url: env.FRONT_URL
