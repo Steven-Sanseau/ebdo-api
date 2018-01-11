@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    queryInterface.bulkInsert('Offer', [
+    return queryInterface.bulkInsert('Offer', [
       {
         // NUM GRATUIT 0€
         name: 'abo-duree-determinee-0-euro-france-gratuit',
