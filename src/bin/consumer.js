@@ -16,49 +16,49 @@ try {
   //clientCreateConsumer
   console.log('Create Queue from clientCreateConsumer')
   clientCreateConsumer.on('error', err => {
-    console.log(err.message)
+    Raven.captureException(err)
   })
   clientCreateConsumer.start()
 
   //newCardConsumer
   console.log('Create Queue from newCardConsumer')
   newCardConsumer.on('error', err => {
-    console.log(err.message)
+    Raven.captureException(err)
   })
   newCardConsumer.start()
 
   //newAddressConsumer
   console.log('Create Queue from newAddressConsumer')
   newAddressConsumer.on('error', err => {
-    console.log(err.message)
+    Raven.captureException(err)
   })
   newAddressConsumer.start()
 
   //subscriptionDDCBCreateConsumer
   console.log('Create Queue from subscriptionDDCBCreateConsumer')
   subscriptionDDCBCreateConsumer.on('error', err => {
-    console.log(err.message)
+    Raven.captureException(err)
   })
   subscriptionDDCBCreateConsumer.start()
 
   //subscriptionADLCBCreateConsumer
   console.log('Create Queue from subscriptionADLCBCreateConsumer')
   subscriptionADLCBCreateConsumer.on('error', err => {
-    console.log(err.message)
+    Raven.captureException(err)
   })
   subscriptionADLCBCreateConsumer.start()
 
   // subscriptionADLSEPACreateConsumer
   console.log('Create Queue from subscriptionADLSEPACreateConsumer')
   subscriptionADLSEPACreateConsumer.on('error', err => {
-    console.log(err.message)
+    Raven.captureException(err)
   })
   subscriptionADLSEPACreateConsumer.start()
 
   // debug
   console.log('Create Queue from debug')
   debugConsumer.on('error', err => {
-    console.log(err.message)
+    Raven.captureException(err)
   })
   debugConsumer.start()
 } catch (e) {

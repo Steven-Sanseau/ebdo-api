@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    queryInterface.sequelize.query(`
+    return queryInterface.sequelize.query(`
 CREATE TABLE "Address" (
     address_id integer NOT NULL,
     last_name character varying(255),
