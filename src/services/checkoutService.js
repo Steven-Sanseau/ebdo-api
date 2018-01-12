@@ -322,8 +322,8 @@ export default class CheckoutService {
         checkoutStored.payment_method = 1
         checkoutStored.status = 'mandate/signed'
         const mail = await this.sendMailsubscribe(
-          '90ab196e-58ff-4521-99a6-81470ac942b5',
-          ['subscription-add-sepa', 'subscription-add', 'subscription'],
+          '0df0b4c6-ccc3-4ed2-b496-ccf7232216d1',
+          ['subscription-adl-sepa', 'subscription-adl', 'subscription'],
           client,
           offer,
           checkoutStored,
@@ -375,13 +375,6 @@ export default class CheckoutService {
     addressDelivery,
     addressInvoice
   ) {
-    const countryLong = {
-      FR: 'France',
-      CH: 'Suisse',
-      BE: 'Belgique',
-      LU: 'Luxembourg'
-    }
-
     console.log(templateId)
     const mail = {
       to: {
@@ -411,7 +404,7 @@ export default class CheckoutService {
         offer_shipping_cost: offer.duration
           ? offer.duration * (offer.shipping_cost * 4)
           : offer.shipping_cost * 4,
-        offer_country: _.find(countryLong, offer.country),
+        offer_country: offer.country,
         addressInvoice_first_name: addressInvoice.first_name,
         addressInvoice_last_name: addressInvoice.last_name,
         addressInvoice_company: addressInvoice.company || '',
