@@ -397,14 +397,16 @@ export default class CheckoutService {
             ? token.slimpay_iban || ''
             : token.stripe_card_last4 || ''
           : '',
-        offer_subprice_ttc: offer.duration
-          ? offer.monthly_price_ttc * (offer.duration / 4)
-          : offer.monthly_price_ttc,
+        offer_subprice_ttc:
+          offer.duration > 0
+            ? offer.monthly_price_ttc * (offer.duration / 4)
+            : offer.monthly_price_ttc,
         offer_price_ttc: offer.price_ttc / 100,
-        offer_shipping_cost: offer.duration
-          ? offer.duration * (offer.shipping_cost * 4)
-          : offer.shipping_cost * 4,
-        offer_country: offer.country,
+        offer_shipping_cost:
+          offer.duration > 0
+            ? offer.duration * offer.shipping_cost
+            : offer.shipping_cost * 4,
+        offer_country: addressDelivery.country,
         addressInvoice_first_name: addressInvoice.first_name,
         addressInvoice_last_name: addressInvoice.last_name,
         addressInvoice_company: addressInvoice.company || '',
