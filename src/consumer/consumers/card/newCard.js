@@ -22,15 +22,17 @@ const newCardConsumer = Consumer.create({
       const url = `${env.ABO_WEB_URL}CarteBancaireService?wsdl`
       const token = message.token
 
+      const cardMonth =
+        String(token.stripe_card_exp_month).length === 1
+          ? `0${String(token.stripe_card_exp_month)}`
+          : String(token.stripe_card_exp_month)
+      const cardYear = String(token.stripe_card_exp_year).substring(2)
+
       let args = {
         prestataire: '2',
         cbCode: token.stripe_card_id,
         token: token.stripe_customer_id,
-        dateVal: String(
-          `${String(token.stripe_card_exp_month)}${String(
-            token.stripe_card_exp_year
-          ).substring(2)}`
-        ).trim(),
+        dateVal: cardYear + cardMonth,
         lastNumbers: token.stripe_card_last4
       }
 
