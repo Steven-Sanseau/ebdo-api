@@ -339,7 +339,7 @@ export default class CheckoutService {
     }
 
     const checkoutreturn = await checkoutStored.save()
-    return { checkout: checkoutreturn }
+    return { checkout: checkoutreturn, offer: offer }
   }
 
   async chargeCard(token, offer, checkout, client) {
