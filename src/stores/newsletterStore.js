@@ -9,7 +9,7 @@ export default function createNewsletterStore(logger, NewsletterModel) {
 
     async create(data) {
       const newsletter = await NewsletterModel.build(data).save()
-      return newsletter
+      return { newsletter }
     },
 
     async update(email, data) {

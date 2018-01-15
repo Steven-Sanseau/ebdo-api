@@ -2,6 +2,7 @@ export default function createClientStore(logger, ClientModel) {
   return {
     async count(params) {
       const nbClient = await ClientModel.findAndCountAll({})
+
       return { count: nbClient.count }
     },
 
