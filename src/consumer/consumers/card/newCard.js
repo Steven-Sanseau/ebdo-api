@@ -42,23 +42,20 @@ const newCardConsumer = Consumer.create({
       soapClient.createCarteBancaire(args, function(err, result) {
         if (err) {
           console.log('create new client card to aboweb failed', err.body)
-          return null
         }
 
         const codeCard = result.result
 
-        return patchToken(token, codeCard)
+        patchToken(token, codeCard)
           .then(function(parsedBody) {
-            return done()
+            done()
           })
           .catch(function(err) {
             console.log('post ebdo api new card aboweb id failed', err)
-            return null
           })
       })
     } catch (err) {
       console.log(err)
-      return null
     }
   },
   sqs: new AWS.SQS()

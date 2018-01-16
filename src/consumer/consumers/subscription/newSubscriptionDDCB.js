@@ -79,7 +79,7 @@ const subscriptionDDCBCreateConsumer = Consumer.create({
               }
             })
           } else {
-            console.log('client fetch failed')
+            console.log('client fetch failed', parsedBody)
           }
         })
         .catch(function(err) {
