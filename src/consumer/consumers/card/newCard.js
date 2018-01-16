@@ -41,7 +41,7 @@ const newCardConsumer = Consumer.create({
 
       soapClient.createCarteBancaire(args, function(err, result) {
         if (err) {
-          console.log('create new client card to aboweb failed', err.body)a
+          console.log('create new client card to aboweb failed', err.body)
         }
 
         const codeCard = result.result
