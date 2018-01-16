@@ -86,13 +86,15 @@ const subscriptionADLCBCreateConsumer = Consumer.create({
                       console.log('aboweb failed', err)
                     }
                   })
+                } else {
+                  console.log('fetch token failed', parsedBody)
                 }
               })
               .catch(function(err) {
                 console.log('get token aboweb id failed', err)
               })
           } else {
-            console.log('client fetch failed')
+            console.log('client fetch failed', parsedBody)
           }
         })
         .catch(function(err) {

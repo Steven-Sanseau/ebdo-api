@@ -15,6 +15,7 @@ const producer = Producer.create({
 })
 
 export default async function newCardProducer(message) {
+  message.queueName = env.AWS_URL_NEW_ADDRESS
   const params = {
     body: JSON.stringify(message),
     id: uniqid('producer-newCard-')

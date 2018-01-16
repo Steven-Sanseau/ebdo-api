@@ -63,6 +63,7 @@ const clientCreateConsumer = Consumer.create({
         soapClient.createOrUpdateClientEx(args, function(err, result) {
           if (err) {
             console.log('aboweb failed', err)
+            done(err)
           }
 
           const codeClient = result.codeClient

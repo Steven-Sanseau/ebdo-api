@@ -13,6 +13,7 @@ const producer = Producer.create({
 })
 
 export default async function newSubscriptionDDCB(message) {
+  message.queueName = env.AWS_URL_NEW_ADDRESS
   const params = {
     body: JSON.stringify(message),
     id: uniqid('producer-newSubscription-dd-cb-')
