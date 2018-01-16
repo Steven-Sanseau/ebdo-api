@@ -86,21 +86,21 @@ const subscriptionADLSEPACreateConsumer = Consumer.create({
                     }
                   })
                 } else {
-                  console.log('token is not slimpay type')
+                  console.log('token is not slimpay type', parsedBody)
                 }
               })
               .catch(function(err) {
                 console.log('get token aboweb id failed', err)
               })
           } else {
-            console.log('client fetch failed')
+            console.log('client fetch failed', parsedBody)
           }
         })
         .catch(function(err) {
           console.log('get client aboweb id failed', err)
         })
     } catch (err) {
-      console.log(err)
+      console.log('catch error try catch', err)
     }
   },
   sqs: new AWS.SQS()
