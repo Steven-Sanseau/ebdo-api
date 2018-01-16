@@ -14,27 +14,27 @@ const debugConsumer = Consumer.create({
   }`,
   handleMessage: async (bodyMessage, done) => {
     try {
-      const message = JSON.parse(bodyMessage)
-      const producer = Producer.create({
-        queueUrl: `https://sqs.${env.AWS_AREA}.${env.AWS_URL_BASE}${
-          message.queueName
-        }`,
-        region: env.AWS_AREA,
-        accessKeyId: env.AWS_KEY_ID,
-        secretAccessKey: env.AWS_ACCESS_KEY
-      })
-
-      const params = {
-        body: JSON.stringify(message),
-        id: uniqid('producer-debug-')
-      }
-
-      producer.send(params, err => {
-        done()
-      })
+      console.log('consumerDebug', bodyMessage)
+      // const message = JSON.parse(bodyMessage)
+      // const producer = Producer.create({
+      //   queueUrl: `https://sqs.${env.AWS_AREA}.${env.AWS_URL_BASE}${
+      //     message.queueName
+      //   }`,
+      //   region: env.AWS_AREA,
+      //   accessKeyId: env.AWS_KEY_ID,
+      //   secretAccessKey: env.AWS_ACCESS_KEY
+      // })
+      //
+      // const params = {
+      //   body: JSON.stringify(message),
+      //   id: uniqid('producer-debug-')
+      // }
+      //
+      // producer.send(params, err => {
+      //   done()
+      // })
     } catch (err) {
       console.log(err)
-      done(err)
     }
   },
   sqs: new AWS.SQS()
