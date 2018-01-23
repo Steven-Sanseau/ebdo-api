@@ -18,7 +18,7 @@ const newAddressConsumer = Consumer.create({
   handleMessage: async (bodyMessage, done) => {
     try {
       const message = JSON.parse(bodyMessage.Body)
-      console.log('message received newAddressConsumer')
+      console.log('message received newAddressConsumer', message)
 
       const url = `${env.ABO_WEB_URL}AdresseService?wsdl`
       const addressDelivery = message.addressDelivery
@@ -52,7 +52,10 @@ const newAddressConsumer = Consumer.create({
 
           soapClient.createOrUpdateAdresseEx(args, function(err, result) {
             if (err) {
-              console.log('create new client card to aboweb failed', err.body)
+              console.log(
+                'create new client address to aboweb failed',
+                err.body
+              )
               done(err)
             }
 

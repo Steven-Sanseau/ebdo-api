@@ -1,4 +1,7 @@
 import Consumer from 'sqs-consumer'
+import Producer from 'sqs-producer'
+import uniqid from 'uniqid'
+
 import AWS from 'aws-sdk'
 import { env } from '../../../lib/env'
 
