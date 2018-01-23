@@ -4,7 +4,7 @@ import AbowebService from '../../../services/abowebService'
 import patchCheckout from '../../api/checkout'
 import { env } from '../../../lib/env'
 
-import { getAbowebIdClient } from '../../api/client'
+import { getAbowebIdClient, produceClientById } from '../../api/client'
 import { getAbowebIdToken } from '../../api/token'
 
 AWS.config.update({
@@ -71,6 +71,7 @@ const subscriptionADLSEPACreateConsumer = Consumer.create({
                   ) {
                     if (err) {
                       console.log('aboweb failed', err)
+                      done(err)
                     }
 
                     if (result.return.result) {
@@ -82,25 +83,37 @@ const subscriptionADLSEPACreateConsumer = Consumer.create({
                         })
                         .catch(function(err) {
                           console.log('post failed', err)
+                          done(err)
                         })
                     }
                   })
                 } else {
                   console.log('token is not slimpay type', parsedBody)
+                  done(parsedBody)
                 }
               })
               .catch(function(err) {
                 console.log('get token aboweb id failed', err)
+                done(err)
               })
           } else {
-            console.log('client fetch failed', parsedBody)
+            produceClientById(parsedBody.client.client_id)
+              .then(function(parsedBody) {
+                done(err)
+              })
+              .catch(function(err) {
+                console.log('client new produce failed', err)
+                done(err)
+              })
           }
         })
         .catch(function(err) {
           console.log('get client aboweb id failed', err)
+          done(err)
         })
     } catch (err) {
       console.log('catch error try catch', err)
+      done(err)
     }
   },
   sqs: new AWS.SQS()

@@ -2,7 +2,7 @@ import Consumer from 'sqs-consumer'
 import AWS from 'aws-sdk'
 import AbowebService from '../../../services/abowebService'
 import patchCheckout from '../../api/checkout'
-import { getAbowebIdClient } from '../../api/client'
+import { getAbowebIdClient, produceClientById } from '../../api/client'
 import { getAbowebIdToken } from '../../api/token'
 import { env } from '../../../lib/env'
 
@@ -75,33 +75,46 @@ const subscriptionADLCBCreateConsumer = Consumer.create({
                     if (result.return.result) {
                       const codeCheckout = result.return.refAction
 
-                      return patchCheckout(checkout, codeCheckout)
+                      patchCheckout(checkout, codeCheckout)
                         .then(function(parsedBody) {
                           done()
                         })
                         .catch(function(err) {
                           console.log('post failed', err)
+                          done(err)
                         })
                     } else {
                       console.log('aboweb failed', err)
+                      done(err)
                     }
                   })
                 } else {
                   console.log('fetch token failed', parsedBody)
+                  done(parsedBody)
                 }
               })
               .catch(function(err) {
                 console.log('get token aboweb id failed', err)
+                done(err)
               })
           } else {
-            console.log('client fetch failed', parsedBody)
+            produceClientById(parsedBody.client.client_id)
+              .then(function(parsedBody) {
+                done(err)
+              })
+              .catch(function(err) {
+                console.log('client new produce failed', err)
+                done(err)
+              })
           }
         })
         .catch(function(err) {
           console.log('get client aboweb id failed', err)
+          done(err)
         })
     } catch (err) {
       console.log(err)
+      done(err)
     }
   },
   sqs: new AWS.SQS()

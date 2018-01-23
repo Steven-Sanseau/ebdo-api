@@ -15,4 +15,17 @@ export const patchAddress = (address, codeAddress) => {
   return rp(options)
 }
 
+export const getAddressByClientId = clientId => {
+  const options = {
+    method: 'GET',
+    uri: env.API_URL + `address/${clientId}`,
+    json: true,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  return rp(options)
+}
+
 export default patchAddress

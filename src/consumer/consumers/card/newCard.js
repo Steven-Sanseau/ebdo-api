@@ -52,10 +52,12 @@ const newCardConsumer = Consumer.create({
           })
           .catch(function(err) {
             console.log('post ebdo api new card aboweb id failed', err)
+            done(err)
           })
       })
     } catch (err) {
       console.log(err)
+      done(err)
     }
   },
   sqs: new AWS.SQS()

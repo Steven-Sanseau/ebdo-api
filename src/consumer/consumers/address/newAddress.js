@@ -53,25 +53,25 @@ const newAddressConsumer = Consumer.create({
           soapClient.createOrUpdateAdresseEx(args, function(err, result) {
             if (err) {
               console.log('create new client card to aboweb failed', err.body)
-              return null
+              done(err)
             }
 
             const codeAddress = result.refAdresse
 
-            return patchAddress(addressDelivery, codeAddress)
+            patchAddress(addressDelivery, codeAddress)
               .then(function(parsedBody) {
-                return done()
+                done()
               })
               .catch(function(err) {
                 console.log('post ebdo api new card aboweb id failed', err)
-                return null
+                done(err)
               })
           })
         }
       })
     } catch (err) {
       console.log(err)
-      return null
+      done(err)
     }
   },
   sqs: new AWS.SQS()
