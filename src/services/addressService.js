@@ -71,12 +71,12 @@ export default class AddressService {
     pickedAddress.client_id = clientStored.client_id
     const addressStored = await this.addressStore.create(pickedAddress)
 
-    clientStored.first_name = addressStored.first_name
-    clientStored.last_name = addressStored.last_name
-    const clientUpdated = await clientStored.save()
-
     //SEND ABOWEB client info
     if (addressStored.type_address === 'invoice') {
+      clientStored.first_name = addressStored.first_name
+      clientStored.last_name = addressStored.last_name
+      const clientUpdated = await clientStored.save()
+
       const producer = await newClientProducer({
         client: clientStored,
         addressInvoice: addressStored

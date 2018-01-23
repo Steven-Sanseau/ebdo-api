@@ -3,7 +3,7 @@ import AWS from 'aws-sdk'
 import AbowebService from '../../../services/abowebService'
 import patchCheckout from '../../api/checkout'
 
-import { getAbowebIdClient } from '../../api/client'
+import { getAbowebIdClient, produceClientById } from '../../api/client'
 import { getAbowebIdToken } from '../../api/token'
 import { env } from '../../../lib/env'
 
@@ -71,22 +71,33 @@ const subscriptionDDCBCreateConsumer = Consumer.create({
                   })
                   .catch(function(err) {
                     console.log('post failed', err)
+                    done(err)
                   })
               }
 
               if (err) {
                 console.log('aboweb failed', err)
+                done(err)
               }
             })
           } else {
-            console.log('client fetch failed', parsedBody)
+            produceClientById(parsedBody.client.client_id)
+              .then(function(parsedBody) {
+                done(err)
+              })
+              .catch(function(err) {
+                console.log('client new produce failed', err)
+                done(err)
+              })
           }
         })
         .catch(function(err) {
           console.log('get client aboweb id failed', err)
+          doen(err)
         })
     } catch (err) {
       console.log(err)
+      done(err)
     }
   },
   sqs: new AWS.SQS()
