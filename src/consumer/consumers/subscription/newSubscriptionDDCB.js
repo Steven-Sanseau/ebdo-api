@@ -93,7 +93,7 @@ const subscriptionDDCBCreateConsumer = Consumer.create({
         })
         .catch(function(err) {
           console.log('get client aboweb id failed', err)
-          doen(err)
+          done(err)
         })
     } catch (err) {
       console.log(err)
