@@ -75,13 +75,13 @@ export default class AddressService {
     if (addressStored.type_address === 'invoice') {
       clientStored.first_name = addressStored.first_name
       clientStored.last_name = addressStored.last_name
-      const clientUpdated = await clientStored.save()
 
       const producer = await newClientProducer({
         client: clientStored,
         addressInvoice: addressStored
       })
     }
+    const clientUpdated = await clientStored.save()
 
     return { address: addressStored, client: clientUpdated }
   }
