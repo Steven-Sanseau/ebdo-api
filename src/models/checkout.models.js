@@ -21,6 +21,9 @@ export default (sequelize, DataTypes) => {
     is_gift: {
       type: DataTypes.BOOLEAN
     },
+    is_free: {
+      type: DataTypes.BOOLEAN
+    },
     status: {
       type: DataTypes.STRING
     },
