@@ -71,17 +71,17 @@ export default class AddressService {
     pickedAddress.client_id = clientStored.client_id
     const addressStored = await this.addressStore.create(pickedAddress)
 
-    clientStored.first_name = addressStored.first_name
-    clientStored.last_name = addressStored.last_name
-    const clientUpdated = await clientStored.save()
-
     //SEND ABOWEB client info
     if (addressStored.type_address === 'invoice') {
+      clientStored.first_name = addressStored.first_name
+      clientStored.last_name = addressStored.last_name
+
       const producer = await newClientProducer({
         client: clientStored,
         addressInvoice: addressStored
       })
     }
+    const clientUpdated = await clientStored.save()
 
     return { address: addressStored, client: clientUpdated }
   }
@@ -94,13 +94,6 @@ export default class AddressService {
 
     const addressStored = await this.findById(id)
 
-    console.log(
-      id,
-      data,
-      addressStored.client_id === clientLoggedId,
-      clientLoggedId,
-      addressStored.client_id
-    )
     NotAuthenticated.assert(
       addressStored.client_id === clientLoggedId,
       "You can't change an address that does not belong to you"
@@ -111,6 +104,7 @@ export default class AddressService {
     let addressUpdated = await this.addressStore.update(id, picked)
 
     addressUpdated = addressUpdated[1][0]
+
     //SEND ABOWEB client info
     if (addressUpdated.type_address === 'invoice') {
       const clientStored = await this.clientStore.getById(

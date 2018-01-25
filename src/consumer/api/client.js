@@ -28,4 +28,17 @@ export const getAbowebIdClient = clientId => {
   return rp(options)
 }
 
-export default { patchClient, getAbowebIdClient }
+export const produceClientById = clientId => {
+  const options = {
+    method: 'GET',
+    uri: env.API_URL + `consumer/client/${clientId}`,
+    json: true,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  return rp(options)
+}
+
+export default { patchClient, getAbowebIdClient, produceClientById }

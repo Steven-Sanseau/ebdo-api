@@ -29,7 +29,7 @@ export default function createAddressStore(logger, AddressModel) {
         where: { address_id: id },
         returning: true
       })
-      console.log(address)
+
       return address
     }
   }

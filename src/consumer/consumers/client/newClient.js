@@ -77,11 +77,12 @@ const clientCreateConsumer = Consumer.create({
             })
             .catch(function(err) {
               console.log('post failed', err)
+              done(err)
             })
         })
       })
     } catch (err) {
-      console.log(err)
+      done(err)
     }
   },
   sqs: new AWS.SQS()

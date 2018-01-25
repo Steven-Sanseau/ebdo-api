@@ -17,19 +17,20 @@ export default class LoginService {
     const user = await this.clientStore.getByEmail(email)
     NotFound.assert(user, 'User not found')
 
+    let code = ''
     if (
       user.login_code_created_at &&
       (new Date() - user.login_code_created_at) / (1000 * 60) < 5
     ) {
-      TooManyRequests.makeAssert('Bad code login')
+      code = user.login_code
+    } else {
+      // Code between 1000 & 9999
+      code = Math.floor(Math.random() * (9999 - 1000 + 1) + 1000)
+      user.update({
+        login_code: code,
+        login_code_created_at: new Date()
+      })
     }
-
-    // Code between 1000 & 9999
-    const code = Math.floor(Math.random() * (9999 - 1000 + 1) + 1000)
-    user.update({
-      login_code: code,
-      login_code_created_at: new Date()
-    })
 
     const mail = await this.sendMailCodeLogin(code, user)
     return { result: true }

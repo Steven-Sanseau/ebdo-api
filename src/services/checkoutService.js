@@ -61,6 +61,7 @@ export default class CheckoutService {
     const pickedToken = _.pick(body.token, ['token_id'])
     const pickedOffer = _.pick(body.offer, ['aboweb_id', 'offer_id'])
     const pickedClient = _.pick(body.client.data, ['client_id', 'email'])
+    const pickedGodson = _.pick(body.godson, ['client_id'])
     const pickedAddressInvoice = _.pick(body.addressInvoice, [
       'address_id',
       'is_equal',
@@ -160,6 +161,7 @@ export default class CheckoutService {
         checkoutStored.status = 'free'
         checkoutStored.payment_method = 0
         checkoutStored.is_gift = true
+        checkoutStored.is_free = true
 
         const producer = await newSubscriptionDDCB({
           offer: offer,
@@ -177,7 +179,6 @@ export default class CheckoutService {
           addressDelivery,
           addressInvoice
         )
-        console.log(mail)
       } catch (err) {
         checkoutStored.status = 'declined'
         PaymentError.assert(!err, err.message)
@@ -196,7 +197,10 @@ export default class CheckoutService {
           client
         )
 
+        checkoutStored.is_gift = true
+        checkoutStored.is_free = false
         checkoutStored.status = 'cb/paid'
+        checkoutStored.godson_id = pickedGodson.client_id
 
         const mail = await this.sendMailsubscribe(
           '9c4747d5-e833-419c-b3d8-64b5f099d0b8',
@@ -259,7 +263,6 @@ export default class CheckoutService {
           addressDelivery,
           addressInvoice
         )
-        console.log(mail)
       } catch (err) {
         checkoutStored.status = 'cb/declined'
         PaymentError.assert(!err, err.message)
@@ -296,7 +299,6 @@ export default class CheckoutService {
           addressDelivery,
           addressInvoice
         )
-        console.log(mail)
       } catch (err) {
         checkoutStored.status = 'cb/aboweb-error'
         PaymentError.assert(!err, err.message)
@@ -331,7 +333,6 @@ export default class CheckoutService {
           addressDelivery,
           addressInvoice
         )
-        console.log(mail)
       } catch (err) {
         checkoutStored.status = 'mandate/aboweb-error'
         PaymentError.assert(!err, err.message)
@@ -375,7 +376,6 @@ export default class CheckoutService {
     addressDelivery,
     addressInvoice
   ) {
-    console.log(templateId)
     const mail = {
       to: {
         email: client.email,
@@ -428,14 +428,14 @@ export default class CheckoutService {
         website_url: env.FRONT_URL
       }
     }
-    console.log(mail)
+
     return Emailer.send(mail)
       .then(e => {
-        console.log(e)
+        // console.log(e)
       })
       .catch(error => {
         //Log friendly error
-        console.error(error.toString())
+        // console.error(error.toString())
       })
   }
 
