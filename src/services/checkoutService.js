@@ -161,6 +161,7 @@ export default class CheckoutService {
         checkoutStored.status = 'free'
         checkoutStored.payment_method = 0
         checkoutStored.is_gift = true
+        checkoutStored.is_free = true
 
         const producer = await newSubscriptionDDCB({
           offer: offer,
@@ -196,6 +197,8 @@ export default class CheckoutService {
           client
         )
 
+        checkoutStored.is_gift = true
+        checkoutStored.is_free = false
         checkoutStored.status = 'cb/paid'
         checkoutStored.godson_id = pickedGodson.client_id
 
