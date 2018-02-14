@@ -6,7 +6,7 @@ const pickProps = data =>
   pick(data, ['monthly_price_ttc', 'is_gift', 'time_limited', 'duration'])
 
 export default class OfferService {
-  constructor(offerStore) {
+  constructor(offerStore, clientStore, checkoutStore) {
     this.offerStore = offerStore
   }
 
