@@ -6,6 +6,8 @@ import newAddressProducer from '../producers/newAddressProducer'
 import newSubscriptionDDCB from '../producers/newSubscriptionDDCB'
 import newSubscriptionADLCB from '../producers/newSubscriptionADLCB'
 import newSubscriptionADLSEPA from '../producers/newSubscriptionADLSEPA'
+import json2csv from 'json2csv'
+import AWS from 'aws-sdk'
 
 import stripe from '../lib/stripe'
 import Emailer from '../lib/emailer'
@@ -24,6 +26,8 @@ const pickProps = data =>
     'cgv_accepted',
     'source'
   ])
+
+const CRON_TYPE_GODFATHER = 'exportOfferGodfather'
 
 export default class CheckoutService {
   constructor(
@@ -470,5 +474,121 @@ export default class CheckoutService {
           `Checkout with id "${err.errors[0].message}" is unavailable to update`
         )
       )
+  }
+
+  async exportGodfatherGift(fromDate, endDate) {
+    const checkoutList = await this.checkoutStore.getGiftCheckoutAllFromDate(
+      fromDate,
+      endDate
+    )
+    const returnCheckout = await this.getCheckoutData(checkoutList)
+
+    const fields = [
+      'offer.offer_id',
+      'offer.name',
+      'offer.aboweb_id',
+      'offer.price_ttc',
+      'offer.description',
+      'offer.monthly_price_ttc',
+      'offer.time_limited',
+      'offer.duration',
+      'client.client_id',
+      'client.aboweb_client_id',
+      'client.email',
+      'client.type_client',
+      'client.first_name',
+      'client.last_name',
+      'client.created_at',
+      'godson.aboweb_client_id',
+      'godson.email',
+      'godson.type_client',
+      'godson.first_name',
+      'godson.last_name',
+      'godson.id_client_god_father',
+      'godson.created_at',
+      'godson.created_at',
+      'invoice.address_id',
+      'invoice.last_name',
+      'invoice.first_name',
+      'invoice.address',
+      'invoice.address_post',
+      'invoice.address_pre',
+      'invoice.city',
+      'invoice.phone',
+      'invoice.postal_code',
+      'invoice.country',
+      'invoice.company',
+      'invoice.type_address',
+      'invoice.aboweb_address_id',
+      'invoice.created_at',
+      'invoice.client_id',
+      'delivery.address_id',
+      'delivery.last_name',
+      'delivery.first_name',
+      'delivery.address',
+      'delivery.address_post',
+      'delivery.address_pre',
+      'delivery.city',
+      'delivery.phone',
+      'delivery.postal_code',
+      'delivery.country',
+      'delivery.company',
+      'delivery.type_address',
+      'delivery.aboweb_address_id',
+      'delivery.created_at',
+      'delivery.client_id'
+    ]
+    const csv = json2csv({ data: returnCheckout, fields })
+
+    const s3 = new AWS.S3({
+      accessKeyId: env.AWS_KEY_ID,
+      secretAccessKey: env.AWS_ACCESS_KEY
+    })
+
+    const myBucket = 'ebdo'
+
+    const myKey = 'godfather-aboweb-csv/godfatherOffer.csv'
+
+    const params = { Bucket: myBucket, Key: myKey, Body: csv }
+
+    s3.putObject(params, function(err, data) {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log(
+          'Successfully uploaded data to ebdo/godfather-aboweb-csv/godfatherOffer.csv',
+          data
+        )
+      }
+    })
+
+    return returnCheckout
+  }
+
+  async getCheckoutData(checkoutList) {
+    return new Promise(async (resolve, reject) => {
+      const returnCheckout = []
+      for (let checkout of checkoutList) {
+        const offer = await this.offerStore.getById(checkout.offer_id)
+        const client = await this.clientStore.getById(checkout.client_id)
+        const godson = await this.clientStore.getById(checkout.godson_id)
+        const invoiceAddress = await this.addressStore.getById(
+          checkout.invoice_address_id
+        )
+        const deliveryAddress = await this.addressStore.getById(
+          checkout.delivery_address_id
+        )
+
+        returnCheckout.push({
+          offer: offer.dataValues,
+          client: client,
+          godson: godson,
+          invoice: invoiceAddress,
+          delivery: deliveryAddress
+        })
+      }
+
+      resolve(returnCheckout)
+    })
   }
 }
