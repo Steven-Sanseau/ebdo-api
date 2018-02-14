@@ -12,6 +12,17 @@ export default function createCheckoutStore(CheckoutModel) {
       return checkout
     },
 
+    async getGiftCheckoutAllFromDate(fromDate, endDate) {
+      const checkout = await CheckoutModel.findAll({
+        where: {
+          is_gift: true,
+          is_free: false,
+          created_at: { gte: fromDate, lte: endDate }
+        }
+      })
+      return checkout
+    },
+
     async create(data) {
       const checkout = await CheckoutModel.build(data).save()
       return checkout

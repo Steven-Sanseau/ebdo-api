@@ -1684,8 +1684,8 @@ module.exports = {
       // ADD PARRAIN OFFRE 12MOIS 5€
       {
         name: 'abo-duree-determinee-offre-parrain-12-mois-5-euro-france-cb',
-        aboweb_id: 'F-EB-PAR-24000-48-DD-0',
-        price_ttc: 24000,
+        aboweb_id: 'F-EB-PAR-6000-48-DD-0',
+        price_ttc: 6000,
         monthly_price_ttc: 5,
         description:
           'Abonnement offert à durée déterminée, 4 numéros par mois pendant 6 mois pour 5€ par mois paiement par CB, livraison en france',
@@ -1704,11 +1704,11 @@ module.exports = {
       // ADD PARRAIN OFFRE 12MOIS 10€
       {
         name: 'abo-duree-determinee-offre-parrain-12-mois-10-euro-france-cb',
-        aboweb_id: 'F-EB-PAR-24000-48-DD-0',
-        price_ttc: 24000,
+        aboweb_id: 'F-EB-PAR-12000-48-DD-0',
+        price_ttc: 12000,
         monthly_price_ttc: 10,
         description:
-          'Abonnement offert à durée déterminée, 4 numéros par mois pendant 6 mois pour 10€ par mois paiement par CB, livraison en france',
+          'Abonnement offert à durée déterminée, 4 numéros par mois pendant 12 mois pour 10€ par mois paiement par CB, livraison en france',
         time_limited: true,
         duration: 48,
         shipping_cost: 0,
@@ -1728,7 +1728,7 @@ module.exports = {
         price_ttc: 18000,
         monthly_price_ttc: 15,
         description:
-          'Abonnement offert à durée déterminée, 4 numéros par mois pendant 6 mois pour 15€ par mois paiement par CB, livraison en france',
+          'Abonnement offert à durée déterminée, 4 numéros par mois pendant 12 mois pour 15€ par mois paiement par CB, livraison en france',
         time_limited: true,
         duration: 48,
         shipping_cost: 0,
@@ -1748,7 +1748,7 @@ module.exports = {
         price_ttc: 24000,
         monthly_price_ttc: 20,
         description:
-          'Abonnement offert à durée déterminée, 4 numéros par mois pendant 6 mois pour 20€ par mois paiement par CB, livraison en france',
+          'Abonnement offert à durée déterminée, 4 numéros par mois pendant 12 mois pour 20€ par mois paiement par CB, livraison en france',
         time_limited: true,
         duration: 48,
         shipping_cost: 0,
