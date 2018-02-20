@@ -434,13 +434,6 @@ export default class CheckoutService {
     }
 
     return Emailer.send(mail)
-      .then(e => {
-        // console.log(e)
-      })
-      .catch(error => {
-        //Log friendly error
-        // console.error(error.toString())
-      })
   }
 
   async updateAboweb(id, data) {
@@ -547,18 +540,40 @@ export default class CheckoutService {
 
     const myBucket = 'ebdo'
 
-    const myKey = 'godfather-aboweb-csv/godfatherOffer.csv'
+    const myKey = `godfather-aboweb-csv/godfatherOffer-from-${fromDate}-to-${endDate}.csv`
 
-    const params = { Bucket: myBucket, Key: myKey, Body: csv }
+    const params = {
+      Bucket: myBucket,
+      Key: myKey,
+      Body: csv,
+      ACL: 'public-read'
+    }
 
-    s3.putObject(params, function(err, data) {
+    s3.upload(params, function(err, data) {
       if (err) {
-        console.log(err)
+        // console.log(err)
       } else {
-        console.log(
-          'Successfully uploaded data to ebdo/godfather-aboweb-csv/godfatherOffer.csv',
-          data
-        )
+        const mail = {
+          to: [
+            {
+              email: 'steven.sanseau@gmail.com'
+            },
+
+            {
+              email: 'steste.etsets@gmail.com'
+            }
+          ],
+          from: 'Ebdo <contact+cronJob@ebdo-lejournal.com>',
+          templateId: '80df493b-9bc2-48d0-a194-349ad1dc3303',
+          category: ['godson-cron', 'cron-job'],
+          substitutions: {
+            linkCsv: data.Location,
+            fromDate: fromDate,
+            toDate: endDate
+          }
+        }
+
+        return Emailer.send(mail)
       }
     })
 
