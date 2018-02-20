@@ -15,7 +15,10 @@ export default class LoginService {
   async sendCodeLogin(email) {
     BadRequest.assert(email)
     const user = await this.clientStore.getByEmail(email)
-    NotFound.assert(user, 'User not found')
+    NotFound.assert(
+      user,
+      "Cette adresse est incorrecte ou n'est pas reliée à un abonnement"
+    )
 
     let code = ''
     if (
