@@ -66,7 +66,7 @@ const newAddressConsumer = Consumer.create({
                 done()
               })
               .catch(function(err) {
-                console.log('post ebdo api new card aboweb id failed', err)
+                console.log('post ebdo api new address aboweb id failed', err)
                 done(err)
               })
           })
